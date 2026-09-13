@@ -284,8 +284,8 @@ export class EventDetailsDialogModal {
             <!-- Category & Description -->
             <div style="font-weight: 600; color: var(--accent);">
               ${event.kind === 'HOLIDAY' ? L.text('ui.holiday.253332', isKhmer) :
-                event.kind === 'HOLY_DAY' ? L.text('ui.holy_day.0aa415', isKhmer) :
-                event.kind === 'OBSERVANCE' ? L.text('ui.observance.16d557', isKhmer) :
+                event.kind === 'HOLY_DAY' ? L.text('ui.holy_day.28786d', isKhmer) :
+                event.kind === 'OBSERVANCE' ? L.text('ui.observance.5b9a87', isKhmer) :
                 L.text('ui.custom.917053', isKhmer)}
             </div>
             ${categoryDesc ? `<div style="font-size: 13px; line-height: 1.6; color: var(--on-surface-variant);">${categoryDesc}</div>` : ''}

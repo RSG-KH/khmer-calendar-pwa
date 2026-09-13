@@ -100,60 +100,61 @@ class KhmerCalendarApp {
   }
 
   private render() {
-    const app = document.getElementById('app');
-    if (!app) return;
+    const appEl = document.getElementById('app');
+    if (!appEl) return;
 
     const k = this.settings.language === 'km';
 
-    app.innerHTML = `
-      <div class="app-layout">
-        <!-- Tablet/Desktop Navigation Rail (72dp wide) -->
-        <nav class="nav-rail">
-          <div class="nav-rail-top">
+    // Exact Material 3 Scaffold matching Android CalendarApp.kt lines 190-240
+    appEl.innerHTML = `
+      <div class="scaffold">
+        <div class="scaffold-body">
+          <!-- Desktop/Tablet Left Navigation Rail -->
+          <nav class="left-nav-rail">
             <button class="rail-item ${this.activePage === 0 ? 'active' : ''}" data-page="0">
-              <span class="nav-icon">${Icons.calendar}</span>
-              <span class="nav-label">${L.text('ui.calendar.8d3744', k)}</span>
+              <div class="nav-tab-pill">${Icons.calendar}</div>
+              <span class="rail-label">${L.text('ui.calendar.ee8bd9', k)}</span>
             </button>
             <button class="rail-item ${this.activePage === 1 ? 'active' : ''}" data-page="1">
-              <span class="nav-icon">${Icons.events}</span>
-              <span class="nav-label">${L.text('ui.events.11d867', k)}</span>
+              <div class="nav-tab-pill">${Icons.events}</div>
+              <span class="rail-label">${L.text('ui.events.11d867', k)}</span>
             </button>
             <button class="rail-item ${this.activePage === 2 ? 'active' : ''}" data-page="2">
-              <span class="nav-icon">${Icons.settings}</span>
-              <span class="nav-label">${L.text('ui.settings.3c94ea', k)}</span>
+              <div class="nav-tab-pill">${Icons.settings}</div>
+              <span class="rail-label">${L.text('ui.settings.0e0a4f', k)}</span>
             </button>
-          </div>
-        </nav>
+          </nav>
 
-        <!-- Main Screen Body -->
-        <main class="main-body" id="screen-container"></main>
+          <!-- Main Content Area -->
+          <div class="screen-container" id="screen-container"></div>
+        </div>
 
-        <!-- Phone Bottom Navigation Bar (56dp high) -->
-        <nav class="nav-bar-phone">
-          <button class="nav-bar-item ${this.activePage === 0 ? 'active' : ''}" data-page="0">
-            <span class="nav-icon">${Icons.calendar}</span>
-            <span class="nav-label">${L.text('ui.calendar.8d3744', k)}</span>
+        <!-- Bottom Navigation Bar (Phone Portrait) -->
+        <nav class="bottom-bar">
+          <button class="nav-tab ${this.activePage === 0 ? 'active' : ''}" data-page="0">
+            <div class="nav-tab-pill">${Icons.calendar}</div>
+            <span class="nav-tab-label">${L.text('ui.calendar.ee8bd9', k)}</span>
           </button>
-          <button class="nav-bar-item ${this.activePage === 1 ? 'active' : ''}" data-page="1">
-            <span class="nav-icon">${Icons.events}</span>
-            <span class="nav-label">${L.text('ui.events.11d867', k)}</span>
+          <button class="nav-tab ${this.activePage === 1 ? 'active' : ''}" data-page="1">
+            <div class="nav-tab-pill">${Icons.events}</div>
+            <span class="nav-tab-label">${L.text('ui.events.11d867', k)}</span>
           </button>
-          <button class="nav-bar-item ${this.activePage === 2 ? 'active' : ''}" data-page="2">
-            <span class="nav-icon">${Icons.settings}</span>
-            <span class="nav-label">${L.text('ui.settings.3c94ea', k)}</span>
+          <button class="nav-tab ${this.activePage === 2 ? 'active' : ''}" data-page="2">
+            <div class="nav-tab-pill">${Icons.settings}</div>
+            <span class="nav-tab-label">${L.text('ui.settings.0e0a4f', k)}</span>
           </button>
         </nav>
       </div>
     `;
 
-    app.querySelectorAll('[data-page]').forEach(el => {
+    appEl.querySelectorAll('[data-page]').forEach(el => {
       el.addEventListener('click', () => {
         this.activePage = parseInt((el as HTMLElement).dataset.page!, 10);
         this.render();
       });
     });
 
-    const screenContainer = app.querySelector('#screen-container') as HTMLElement;
+    const screenContainer = document.getElementById('screen-container')!;
     if (this.activePage === 0) {
       this.renderCalendarScreen(screenContainer, k);
     } else if (this.activePage === 1) {
@@ -206,7 +207,7 @@ class KhmerCalendarApp {
     // 2. Calendar Month Card
     const calendarCardHtml = `
       <div class="calendar-month-card">
-        <!-- Animal Zodiac Background Watermark -->
+        <!-- Native Animal Zodiac Background Watermark -->
         <img src="${watermarkAnimal}" class="card-watermark-zodiac" alt="" />
 
         <div class="weekdays-row" style="position: relative; z-index: 1;">
@@ -222,8 +223,8 @@ class KhmerCalendarApp {
         <div class="card-divider" style="position: relative; z-index: 1;"></div>
         <div class="card-legend-row" style="position: relative; z-index: 1;">
           <div class="legend-item"><span class="mark-shape holiday"></span>${L.text('ui.holiday.253332', k)}</div>
-          ${this.settings.holyDayMarkers ? `<div class="legend-item"><span class="mark-shape holy_day"></span>${L.text('ui.holy_day.0aa415', k)}</div>` : ''}
-          <div class="legend-item"><span class="mark-shape observance"></span>${L.text('ui.observance.16d557', k)}</div>
+          ${this.settings.holyDayMarkers ? `<div class="legend-item"><span class="mark-shape holy_day"></span>${L.text('ui.holy_day.28786d', k)}</div>` : ''}
+          <div class="legend-item"><span class="mark-shape observance"></span>${L.text('ui.observance.5b9a87', k)}</div>
           ${monthEvents.some(e => e.kind === 'CUSTOM') ? `<div class="legend-item"><span class="mark-shape custom"></span>${L.text('ui.custom.917053', k)}</div>` : ''}
         </div>
       </div>
@@ -270,8 +271,8 @@ class KhmerCalendarApp {
               <span class="event-row-title">${k ? e.titleKm : e.titleEn}</span>
               <span class="event-row-kind ${e.kind.toLowerCase()}">
                 ${e.kind === 'HOLIDAY' ? L.text('ui.holiday.253332', k) :
-                  e.kind === 'HOLY_DAY' ? L.text('ui.holy_day.0aa415', k) :
-                  e.kind === 'OBSERVANCE' ? L.text('ui.observance.16d557', k) : L.text('ui.custom.917053', k)}
+                  e.kind === 'HOLY_DAY' ? L.text('ui.holy_day.28786d', k) :
+                  e.kind === 'OBSERVANCE' ? L.text('ui.observance.5b9a87', k) : L.text('ui.custom.917053', k)}
                 ${e.time ? ' · ' + e.time : ''}
               </span>
             </div>
@@ -289,7 +290,7 @@ class KhmerCalendarApp {
             ${calendarCardHtml}
             ${dateSummaryHtml}
             ${selectedDayEvents.length > 0 ? `
-              <div style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant); margin: 8px 0 4px 6px;">
+              <div style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant); margin: 10px 0 4px 6px;">
                 ${L.text('ui.events_on_the_day.a174fc', k)}
               </div>
               <div class="events-list-container">${renderEventRows(selectedDayEvents)}</div>
@@ -306,12 +307,12 @@ class KhmerCalendarApp {
       `;
     } else {
       container.innerHTML = `
-        <div class="calendar-phone-column">
+        <div class="screen-inner">
           ${calendarHeaderHtml}
           ${calendarCardHtml}
           ${dateSummaryHtml}
           ${selectedDayEvents.length > 0 ? `
-            <div style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant); margin: 8px 0 4px 6px;">
+            <div style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant); margin: 10px 0 4px 6px;">
               ${L.text('ui.events_on_the_day.a174fc', k)}
             </div>
             <div class="events-list-container">${renderEventRows(selectedDayEvents)}</div>
@@ -373,7 +374,7 @@ class KhmerCalendarApp {
 
       cell.addEventListener('click', () => {
         if (this.selectedDateStr === dateStr) {
-          // Double click / second tap opens date details dialog
+          // Second tap / click opens Date Details dialog
           this.dateDetailsModal.open(dateStr, dayEvents, k);
         } else {
           this.selectedDateStr = dateStr;
@@ -440,7 +441,7 @@ class KhmerCalendarApp {
   }
 
   /* ==========================================================================
-     PAGE 1: EVENTS SCREEN (matching EventsScreen in CalendarApp.kt)
+     PAGE 1: EVENTS SCREEN
      ========================================================================== */
   private renderEventsScreen(container: HTMLElement, k: boolean) {
     const rawEvents = EventRepository.forYearWithCustom(this.eventsYear);
@@ -499,8 +500,8 @@ class KhmerCalendarApp {
                     <span class="event-row-title">${k ? e.titleKm : e.titleEn}</span>
                     <span class="event-row-kind ${e.kind.toLowerCase()}">
                       ${e.kind === 'HOLIDAY' ? L.text('ui.holiday.253332', k) :
-                        e.kind === 'HOLY_DAY' ? L.text('ui.holy_day.0aa415', k) :
-                        e.kind === 'OBSERVANCE' ? L.text('ui.observance.16d557', k) : L.text('ui.custom.917053', k)}
+                        e.kind === 'HOLY_DAY' ? L.text('ui.holy_day.28786d', k) :
+                        e.kind === 'OBSERVANCE' ? L.text('ui.observance.5b9a87', k) : L.text('ui.custom.917053', k)}
                       ${e.time ? ' · ' + e.time : ''}
                     </span>
                   </div>
@@ -597,7 +598,7 @@ class KhmerCalendarApp {
      ========================================================================== */
   private renderSettingsScreen(container: HTMLElement, k: boolean) {
     container.innerHTML = `
-      <div class="settings-container">
+      <div class="settings-container" style="width: 100%; max-width: 640px;">
         <div class="settings-card">
           <div class="settings-card-title">${L.text('ui.appearance.23e609', k)}</div>
 
@@ -649,7 +650,7 @@ class KhmerCalendarApp {
         </div>
 
         <div class="settings-card">
-          <div class="settings-card-title">${k ? 'ប្រតិទិន' : 'CALENDAR'}</div>
+          <div class="settings-card-title">${L.text('ui.calendar.beb873', k)}</div>
           <div class="settings-row">
             <div class="settings-text-col">
               <span class="settings-title">${k ? 'បង្ហាញផ្កាឈូកថ្ងៃសីល' : 'Holy day lotus marker'}</span>

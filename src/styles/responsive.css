@@ -1,0 +1,60 @@
+/* Responsive Breakpoints matching Android LocalConfiguration */
+
+/* Default mobile: show bottom bar, hide rail */
+.left-nav-rail {
+  display: none;
+}
+
+.bottom-bar {
+  display: flex;
+}
+
+/* Landscape or Tablet (screen width >= 768px or landscape) */
+@media (min-width: 768px) {
+  .scaffold {
+    flex-direction: row !important;
+  }
+
+  .bottom-bar {
+    display: none !important;
+  }
+
+  .left-nav-rail {
+    display: flex !important;
+  }
+
+  .screen-container {
+    padding: 16px 20px 24px 20px;
+  }
+
+  .fab-add {
+    bottom: 28px !important;
+    right: 32px !important;
+  }
+}
+
+/* Wide screen 2-column layout for Calendar tab */
+@media (min-width: 960px) {
+  .calendar-two-columns {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    width: 100%;
+    max-width: 1080px !important;
+    align-items: flex-start;
+  }
+
+  .calendar-col-left {
+    width: 480px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .calendar-col-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+}

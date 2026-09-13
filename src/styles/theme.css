@@ -1,0 +1,100 @@
+/* Material 3 Palette & Tokens matching Android Theme.kt exactly */
+:root {
+  --font-scale: 1;
+  --font-family: 'Kantumruy Pro', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+
+  /* Accents */
+  --accent-blue-light: #4564B5;
+  --accent-blue-dark: #A8BFFF;
+  --accent-lavender-light: #7755A8;
+  --accent-lavender-dark: #CDB6FF;
+  --accent-rose-light: #A84465;
+  --accent-rose-dark: #FFB0C2;
+  --accent-amber-light: #8A5E18;
+  --accent-amber-dark: #F1C17C;
+  --accent-lime-light: #647500;
+  --accent-lime-dark: #CDDF70;
+
+  /* Default Light Theme */
+  --bg-color: #F3F4F8;
+  --bg-surface: #FFFFFF;
+  --bg-surface-variant: #F0F2F7;
+  --bg-surface-high: #EEF0F4;
+  --text-primary: #222632;
+  --text-secondary: #6D7485;
+  --outline: #E6E8F0;
+  --outline-variant: #D1D5DB;
+  --tertiary: #B34B5D; /* Holiday Red / Sunday text */
+  --secondary: #99601D; /* Holy day amber */
+  --accent: var(--accent-blue-light);
+  --accent-container: rgba(69, 100, 181, 0.12);
+  --on-accent: #FFFFFF;
+  --on-surface-variant: #6D7485;
+}
+
+[data-theme="dark"] {
+  --bg-color: #0C0E12;
+  --bg-surface: #1A1D24;
+  --bg-surface-variant: #252932;
+  --bg-surface-high: #252932;
+  --text-primary: #E9EAF0;
+  --text-secondary: #A2A8B7;
+  --outline: #303540;
+  --outline-variant: #303540;
+  --tertiary: #EEA0A7; /* Holiday Red / Sunday text in dark */
+  --secondary: #ECAF80;
+  --accent: var(--accent-blue-dark);
+  --accent-container: rgba(168, 191, 255, 0.14);
+  --on-accent: #182139;
+  --on-surface-variant: #A2A8B7;
+}
+
+/* Accent overrides */
+[data-accent="blue"] { --accent: var(--accent-blue-light); }
+[data-theme="dark"][data-accent="blue"] { --accent: var(--accent-blue-dark); --on-accent: #182139; --accent-container: rgba(168, 191, 255, 0.14); }
+
+[data-accent="lavender"] { --accent: var(--accent-lavender-light); --accent-container: rgba(119, 85, 168, 0.14); }
+[data-theme="dark"][data-accent="lavender"] { --accent: var(--accent-lavender-dark); --on-accent: #261744; --accent-container: rgba(205, 182, 255, 0.14); }
+
+[data-accent="rose"] { --accent: var(--accent-rose-light); --accent-container: rgba(168, 68, 101, 0.14); }
+[data-theme="dark"][data-accent="rose"] { --accent: var(--accent-rose-dark); --on-accent: #3E1020; --accent-container: rgba(255, 176, 194, 0.14); }
+
+[data-accent="amber"] { --accent: var(--accent-amber-light); --accent-container: rgba(138, 94, 24, 0.14); }
+[data-theme="dark"][data-accent="amber"] { --accent: var(--accent-amber-dark); --on-accent: #332000; --accent-container: rgba(241, 193, 124, 0.14); }
+
+[data-accent="lime"] { --accent: var(--accent-lime-light); --accent-container: rgba(100, 117, 0, 0.14); }
+[data-theme="dark"][data-accent="lime"] { --accent: var(--accent-lime-dark); --on-accent: #1E2500; --accent-container: rgba(205, 223, 112, 0.14); }
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: calc(14px * var(--font-scale));
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  background-color: var(--bg-color);
+}

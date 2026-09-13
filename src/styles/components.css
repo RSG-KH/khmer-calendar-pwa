@@ -1,0 +1,775 @@
+/* Material 3 Components matching Android CalendarApp.kt exactly */
+
+/* Top level Scaffold layout */
+.scaffold {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--bg-color);
+}
+
+.scaffold-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Screen Content Area (Centered 640px max) */
+.screen-container {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 10px 24px 10px;
+}
+
+.screen-inner {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   CALENDAR HEADER (inside CalendarScreen)
+   ========================================================================== */
+.calendar-header {
+  width: 100%;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+
+.header-year-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: var(--text-primary);
+  transition: background 0.15s;
+}
+
+.header-year-btn:active {
+  background: var(--bg-surface-variant);
+}
+
+.year-num {
+  font-size: calc(23px * var(--font-scale));
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.be-num {
+  font-size: calc(12px * var(--font-scale));
+  color: var(--on-surface-variant);
+  line-height: 1.2;
+}
+
+.header-month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.month-name-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: calc(19px * var(--font-scale));
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: background 0.15s;
+}
+
+.month-name-btn:active {
+  background: var(--bg-surface-variant);
+}
+
+.arrow-btn {
+  background: transparent;
+  border: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: background 0.15s;
+}
+
+.arrow-btn:active {
+  background: var(--bg-surface-variant);
+}
+
+.arrow-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+.btn-today-pill {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: calc(13px * var(--font-scale));
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 16px;
+  transition: background 0.15s;
+}
+
+.btn-today-pill:active {
+  background: var(--accent-container);
+}
+
+/* ==========================================================================
+   CALENDAR MONTH CARD (24dp rounded surface with grid, divider & legend)
+   ========================================================================== */
+.calendar-month-card {
+  width: 100%;
+  background: var(--bg-surface);
+  border-radius: 24px;
+  border: 1px solid var(--outline);
+  padding: 16px 10px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.card-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 60%;
+  opacity: 0.04;
+  pointer-events: none;
+  fill: var(--accent);
+}
+
+.weekdays-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  padding-bottom: 8px;
+  font-size: calc(11px * var(--font-scale));
+  font-weight: 500;
+  color: var(--on-surface-variant);
+}
+
+.weekdays-row .sunday-header {
+  color: var(--tertiary);
+}
+
+.month-grid-cells {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.cal-cell {
+  height: calc(56px * var(--font-scale));
+  border-radius: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.1s, transform 0.05s;
+}
+
+.cal-cell:active {
+  transform: scale(0.96);
+}
+
+.cal-cell.empty {
+  pointer-events: none;
+}
+
+.cal-cell.active-day {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.cal-cell.today:not(.active-day) {
+  border: 1.5px solid var(--accent);
+}
+
+.cell-day-num {
+  font-size: calc(16px * var(--font-scale));
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.cal-cell.active-day .cell-day-num {
+  color: var(--on-accent);
+  font-weight: 700;
+}
+
+.cal-cell.is-holiday .cell-day-num {
+  color: var(--tertiary);
+}
+
+.cal-cell.active-day.is-holiday .cell-day-num {
+  color: var(--on-accent);
+}
+
+.cell-lunar-label {
+  font-size: calc(10px * var(--font-scale));
+  color: var(--on-surface-variant);
+  margin-top: 1px;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.cal-cell.active-day .cell-lunar-label {
+  color: var(--on-accent);
+  opacity: 0.85;
+}
+
+.cell-lotus-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 75%;
+  height: 75%;
+  opacity: 0.25;
+  pointer-events: none;
+  fill: var(--secondary);
+}
+
+.cal-cell.active-day .cell-lotus-icon {
+  fill: var(--on-accent);
+}
+
+.cell-event-marks {
+  display: flex;
+  gap: 2px;
+  height: 7px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.mark-shape {
+  display: inline-block;
+}
+
+.mark-shape.holiday {
+  width: 6.5px;
+  height: 6.5px;
+  border-radius: 50%;
+  background: var(--tertiary);
+}
+
+.mark-shape.holy_day {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 7px solid var(--secondary);
+}
+
+.mark-shape.observance {
+  width: 6.5px;
+  height: 6.5px;
+  border-radius: 1.5px;
+  background: var(--accent);
+}
+
+.mark-shape.custom {
+  width: 7px;
+  height: 7px;
+  background: #E53935;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+.cal-cell.active-day .mark-shape {
+  background: var(--on-accent) !important;
+}
+
+/* Card Horizontal Divider */
+.card-divider {
+  height: 1px;
+  background: var(--outline-variant);
+  margin: 10px 8px 8px 8px;
+}
+
+/* Card Legend Row */
+.card-legend-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 4px 0 2px 0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: calc(11px * var(--font-scale));
+  color: var(--on-surface-variant);
+}
+
+/* ==========================================================================
+   EVENT ROW ITEMS (matching EventRow in CalendarApp.kt)
+   ========================================================================== */
+.event-row-card {
+  width: 100%;
+  background: var(--bg-surface);
+  border-radius: 16px;
+  border: 1px solid var(--outline);
+  padding: 10px 14px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.event-row-card:active {
+  background: var(--bg-surface-variant);
+}
+
+.event-row-date {
+  width: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.event-row-daynum {
+  font-size: calc(21px * var(--font-scale));
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.event-row-daynum.holiday {
+  color: var(--tertiary);
+}
+
+.event-row-weekday {
+  font-size: calc(10px * var(--font-scale));
+  color: var(--on-surface-variant);
+  margin-top: -1px;
+}
+
+.event-row-bar {
+  width: 3px;
+  height: 28px;
+  border-radius: 2px;
+  margin: 0 12px;
+  flex-shrink: 0;
+}
+
+.event-row-bar.holiday { background: var(--tertiary); }
+.event-row-bar.holy_day { background: var(--secondary); }
+.event-row-bar.observance { background: var(--accent); }
+.event-row-bar.custom { background: #E53935; }
+
+.event-row-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.event-row-title {
+  font-size: calc(13px * var(--font-scale));
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-row-kind {
+  font-size: calc(11px * var(--font-scale));
+  font-weight: 400;
+}
+
+.event-row-kind.holiday { color: var(--tertiary); }
+.event-row-kind.holy_day { color: var(--secondary); }
+.event-row-kind.observance { color: var(--accent); }
+.event-row-kind.custom { color: #E53935; }
+
+.event-row-chevron {
+  font-size: 20px;
+  color: var(--on-surface-variant);
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   NAVIGATION BARS
+   ========================================================================== */
+/* Mobile Bottom Bar (NavigationBar) */
+.bottom-bar {
+  height: calc(64px + var(--sab));
+  padding-bottom: var(--sab);
+  background-color: var(--bg-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border-top: 1px solid var(--outline);
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+.nav-tab {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--on-surface-variant);
+  gap: 2px;
+  transition: color 0.15s;
+}
+
+.nav-tab.active {
+  color: var(--accent);
+}
+
+.nav-tab-pill {
+  width: 64px;
+  height: 32px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.nav-tab.active .nav-tab-pill {
+  background: var(--accent-container);
+}
+
+.nav-tab svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+.nav-tab-label {
+  font-size: calc(12px * var(--font-scale));
+  font-weight: 500;
+}
+
+/* Desktop/Tablet Left Navigation Rail */
+.left-nav-rail {
+  width: 72px;
+  height: 100%;
+  background-color: var(--bg-color);
+  border-right: 1px solid var(--outline);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 16px;
+  flex-shrink: 0;
+  gap: 8px;
+  z-index: 20;
+}
+
+.rail-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--on-surface-variant);
+  padding: 8px 0;
+  gap: 4px;
+  transition: color 0.15s;
+}
+
+.rail-item.active {
+  color: var(--accent);
+}
+
+.rail-item .nav-tab-pill {
+  width: 56px;
+  height: 32px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rail-item.active .nav-tab-pill {
+  background: var(--accent-container);
+}
+
+.rail-item svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.rail-label {
+  font-size: calc(11px * var(--font-scale));
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   DATE DETAILS CARD (2-Column tablet card or popup)
+   ========================================================================== */
+.date-summary-card {
+  width: 100%;
+  background: var(--bg-surface);
+  border-radius: 14px;
+  border: 1px solid var(--outline);
+  padding: 12px 14px;
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.date-summary-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.date-summary-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+/* ==========================================================================
+   SETTINGS SCREEN
+   ========================================================================== */
+.settings-card {
+  width: 100%;
+  background: var(--bg-surface);
+  border-radius: 16px;
+  border: 1px solid var(--outline);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.settings-card-title {
+  padding: 14px 16px 6px 16px;
+  font-size: calc(12px * var(--font-scale));
+  font-weight: 600;
+  color: var(--on-surface-variant);
+  letter-spacing: 0.5px;
+}
+
+.settings-row {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--outline);
+}
+
+.settings-row:first-of-type {
+  border-top: none;
+}
+
+.settings-text-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.settings-title {
+  font-size: calc(14px * var(--font-scale));
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.settings-subtitle {
+  font-size: calc(12px * var(--font-scale));
+  color: var(--on-surface-variant);
+}
+
+/* Pill Choice Toggles */
+.choice-pill-group {
+  display: flex;
+  background: var(--bg-surface-variant);
+  border-radius: 16px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.choice-pill {
+  padding: 5px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: calc(12px * var(--font-scale));
+  font-weight: 500;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.choice-pill.active {
+  background: var(--bg-surface);
+  color: var(--accent);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Accent Color Circles */
+.accent-circles-row {
+  display: flex;
+  gap: 8px;
+}
+
+.accent-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.accent-btn.active {
+  transform: scale(1.2);
+  border-color: var(--text-primary);
+}
+
+/* Floating Action Button */
+.fab-add {
+  position: fixed;
+  bottom: calc(76px + var(--sab));
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 30;
+  transition: transform 0.15s;
+}
+
+.fab-add:active {
+  transform: scale(0.92);
+}
+
+/* Dialog modal surface matching Android RoundedCornerShape(28.dp) */
+.modal-dialog-surface {
+  background: var(--bg-surface);
+  border-radius: 28px;
+  border: 1px solid var(--outline);
+  width: 100%;
+  padding: 24px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  position: relative;
+  transform: scale(0.96);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.modal-overlay.open .modal-dialog-surface {
+  transform: scale(1);
+}
+
+.card-watermark-zodiac {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 62%;
+  height: 62%;
+  object-fit: contain;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme="light"] .card-watermark-zodiac {
+  opacity: 0.06;
+}
+
+.cell-lotus-img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 72%;
+  height: 72%;
+  object-fit: contain;
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.dialog-watermark-animal {
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+  width: 55%;
+  height: 55%;
+  object-fit: contain;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dialog-watermark-western {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 20%;
+  height: 20%;
+  object-fit: contain;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}

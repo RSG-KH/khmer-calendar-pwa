@@ -1,0 +1,6 @@
+# Consistent source line endings on Windows and Linux build hosts.
+* text=auto eol=lf
+
+# Preserve binary artwork and fonts.
+*.png binary
+*.ttf binary

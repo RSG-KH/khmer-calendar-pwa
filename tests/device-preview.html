@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Calendar device preview</title>
+<style>
+  body { margin: 16px; background: #dce1e7; color: #202530; font: 14px system-ui; }
+  label, button, select { font: inherit; margin-right: 8px; }
+  header { margin-bottom: 16px; }
+  iframe { border: 1px solid #aab0b8; transform: scale(.65); transform-origin: top left; display: block; background: white; }
+</style></head>
+<body>
+  <header><label for="device">Preview size</label><select id="device">
+    <option value="390,844">Phone · 390 × 844</option>
+    <option value="320,568">Small phone · 320 × 568</option>
+    <option value="844,390">Phone landscape · 844 × 390</option>
+    <option value="768,1024">Tablet portrait · 768 × 1024</option>
+    <option value="1024,768">Tablet landscape · 1024 × 768</option>
+    <option value="1366,1024">Large tablet · 1366 × 1024</option>
+  </select>
+  <label for="keyboard">Keyboard simulation</label><select id="keyboard">
+    <option value="0">Hidden</option>
+    <option value="0.4">Cover 40%</option>
+    <option value="0.6">Cover 60%</option>
+  </select></header>
+  <iframe src="/" title="Khmer Calendar device preview" width="390" height="844"></iframe>
+  <script>
+    // Test-only: reproduce iOS's visual-viewport resize while keeping the
+    // iframe's layout size and orientation intact. This is not a real keyboard.
+    const frame = document.querySelector('iframe');
+    const keyboard = document.getElementById('keyboard');
+    let updateKeyboard = () => {};
+    frame.addEventListener('load', () => {
+      const win = frame.contentWindow;
+      const viewport = win.visualViewport;
+      const simulated = new win.EventTarget();
+      const coveredHeight = () => Math.round(viewport.height * Number(keyboard.value));
+      Object.defineProperties(simulated, {
+        width: { get: () => viewport.width },
+        height: { get: () => viewport.height - coveredHeight() },
+        offsetTop: { get: () => viewport.offsetTop },
+        offsetLeft: { get: () => viewport.offsetLeft },
+        scale: { get: () => viewport.scale }
+      });
+      Object.defineProperty(win, 'visualViewport', { configurable: true, value: simulated });
+      const cover = win.document.createElement('div');
+      cover.setAttribute('aria-hidden', 'true');
+      cover.textContent = 'Simulated keyboard';
+      cover.style.cssText = 'position:fixed;inset:auto 0 0;z-index:1000;background:#303036;color:white;display:grid;place-items:center;font:16px system-ui;';
+      win.document.body.appendChild(cover);
+      updateKeyboard = () => {
+        cover.style.height = `${coveredHeight()}px`;
+        cover.hidden = keyboard.value === '0';
+        simulated.dispatchEvent(new win.Event('resize'));
+      };
+      viewport.addEventListener('resize', updateKeyboard);
+      viewport.addEventListener('scroll', () => simulated.dispatchEvent(new win.Event('scroll')));
+      updateKeyboard();
+    });
+    keyboard.addEventListener('change', () => updateKeyboard());
+    document.getElementById('device').addEventListener('change', event => {
+      const [width, height] = event.target.value.split(',');
+      frame.width = width; frame.height = height;
+    });
+  </script>
+</body></html>

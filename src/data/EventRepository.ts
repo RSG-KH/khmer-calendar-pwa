@@ -17,6 +17,7 @@ export interface CalendarEvent {
   officialSourceUrl?: string | null;
   time?: string;
   notes?: string;
+  instant?: string;
 }
 
 export class EventRepository {
@@ -101,7 +102,8 @@ export class EventRepository {
           titleEn: c.title,
           kind: 'CUSTOM',
           time: c.time,
-          notes: c.notes
+          notes: c.notes,
+          instant: c.instant
         });
       }
     }
@@ -132,7 +134,8 @@ export class EventRepository {
           titleEn: c.title,
           kind: 'CUSTOM',
           time: c.time,
-          notes: c.notes
+          notes: c.notes,
+          instant: c.instant
         });
       }
     }

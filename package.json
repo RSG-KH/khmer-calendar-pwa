@@ -1,12 +1,13 @@
 {
   "name": "khmer-calendar-pwa",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.1.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "build": "tsc && vite build && node scripts/build-service-worker.mjs",
+    "preview": "vite preview",
+    "test": "npm run build && node --test tests/*.test.mjs"
   },
   "devDependencies": {
     "typescript": "^5.7.3",

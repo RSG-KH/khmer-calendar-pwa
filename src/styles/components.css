@@ -752,10 +752,10 @@
 
 .dialog-watermark-animal {
   position: absolute;
-  bottom: -10px;
-  right: -10px;
-  width: 55%;
-  height: 55%;
+  bottom: 0;
+  right: 0;
+  width: 60%;
+  aspect-ratio: 1;
   object-fit: contain;
   opacity: 0.04;
   pointer-events: none;
@@ -767,7 +767,7 @@
   bottom: 20px;
   left: 20px;
   width: 20%;
-  height: 20%;
+  aspect-ratio: 1;
   object-fit: contain;
   opacity: 0.04;
   pointer-events: none;

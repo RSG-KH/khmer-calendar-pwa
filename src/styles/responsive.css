@@ -1,60 +1,25 @@
-/* Responsive Breakpoints matching Android LocalConfiguration */
-
-/* Default mobile: show bottom bar, hide rail */
-.left-nav-rail {
-  display: none;
+.left-nav-rail { display: none; }
+.bottom-bar { display: flex; }
+.calendar-two-columns { width: 100%; max-width: 640px; }
+.calendar-col-left, .calendar-col-right { min-width: 0; }
+.date-summary-card, .selected-day-events { display: none; }
+.calendar-col-right { margin-top: 16px; }
+@media (min-width: 740px) and (orientation: landscape) {
+  .bottom-bar { display: none; }
+  .left-nav-rail { display: flex; }
+  .screen-container { padding: 16px 20px 20px; }
+  .calendar-two-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; max-width: 1440px; height: 100%; min-height: 0; }
+  .calendar-col-left, .calendar-col-right { height: 100%; overflow-y: auto; overscroll-behavior: contain; padding-bottom: 20px; scrollbar-width: thin; }
+  .calendar-col-right { margin-top: 0; padding-top: 14px; }
+  .month-picker-dialog { max-width: 600px !important; }
 }
-
-.bottom-bar {
-  display: flex;
+@media (min-width: 960px) and (min-height: 600px) and (orientation: landscape) {
+  .date-summary-card { display: flex; }
+  .selected-day-events { display: block; }
 }
-
-/* Landscape or Tablet (screen width >= 768px or landscape) */
-@media (min-width: 768px) {
-  .scaffold {
-    flex-direction: row !important;
-  }
-
-  .bottom-bar {
-    display: none !important;
-  }
-
-  .left-nav-rail {
-    display: flex !important;
-  }
-
-  .screen-container {
-    padding: 16px 20px 24px 20px;
-  }
-
-  .fab-add {
-    bottom: 28px !important;
-    right: 32px !important;
-  }
-}
-
-/* Wide screen 2-column layout for Calendar tab */
-@media (min-width: 960px) {
-  .calendar-two-columns {
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
-    width: 100%;
-    max-width: 1080px !important;
-    align-items: flex-start;
-  }
-
-  .calendar-col-left {
-    width: 480px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .calendar-col-right {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-  }
+@media (orientation: landscape) and (max-height: 599px) {
+  .left-nav-rail { padding-top: 0; }
+  .rail-item { flex: 1; }
+  .cal-cell { height: calc(43px * var(--font-scale)); }
+  .screen-container { padding: 4px 12px; }
 }

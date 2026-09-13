@@ -1,11 +1,9 @@
 /**
- * Cloudflare Worker Cron Trigger (100% Free Tier)
- * Sends scheduled iOS 16.4+ Web Push notifications for Buddhist Holy Days and Holidays.
+ * Unused Cloudflare Worker prototype; not deployed by the GitHub Pages workflow.
+ * The PWA does not connect to this endpoint or schedule reminders.
  *
- * Environment variables:
- * - VAPID_SUBJECT: "mailto:support@khmercalendar.app"
- * - VAPID_PUBLIC_KEY: Your generated VAPID public key
- * - VAPID_PRIVATE_KEY: Your generated VAPID private key
+ * The registration sketch uses an optional SUBSCRIPTIONS KV binding.
+ * Event selection, VAPID signing and Web Push delivery are not implemented.
  */
 
 export default {
@@ -24,7 +22,7 @@ export default {
     return new Response('Khmer Calendar Push Scheduler Active', { status: 200 });
   },
 
-  // Cron trigger (e.g. runs every day at 00:00 UTC = 07:00 AM Cambodia Time)
+  // Placeholder only; no Cron Trigger is configured in this repository.
   async scheduled(event, env, ctx) {
     // 1. Fetch today's events from date calculation
     // 2. Broadcast push to registered endpoints using standard WebPush RFC 8291

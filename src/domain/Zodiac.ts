@@ -154,11 +154,11 @@ export class Zodiac {
     ];
     const mod = ((animalYear % 12) + 12) % 12;
     const name = animals[mod] || 'rat';
-    return `/assets/drawables/zodiac_${name}${compact ? '_400' : ''}.png`;
+    return `${import.meta.env.BASE_URL}assets/drawables/zodiac_${name}${compact ? '_400' : ''}.png`;
   }
 
   static getWesternDrawable(sign: ZodiacSign): string {
     const signKey = sign.signName.toLowerCase();
-    return `/assets/drawables/western_zodiac_${signKey}.png`;
+    return `${import.meta.env.BASE_URL}assets/drawables/western_zodiac_${signKey}.png`;
   }
 }

@@ -3,16 +3,21 @@
 import './styles/theme.css';
 import './styles/components.css';
 import './styles/responsive.css';
+import './styles/ios.css';
 
 import { KhmerCalendar, toEpochDay, khmerNumber } from './domain/KhmerCalendar';
 import { KhmerDateDetails } from './domain/KhmerDateDetails';
 import { Zodiac } from './domain/Zodiac';
 import { CalendarWords, L } from './data/i18n';
 import { EventRepository, CalendarEvent } from './data/EventRepository';
-import { Storage, AppSettings, AccentColor, ThemeMode, FontScale } from './data/Storage';
+import { Storage, AppSettings } from './data/Storage';
 import { Icons } from './ui/Icons';
 import { MonthPickerModal, CustomEventModal, DateDetailsDialogModal, EventDetailsDialogModal } from './ui/Modals';
-import { WebPushManager } from './push/PushManager';
+import { todayInZone } from './domain/DateTime';
+import { escapeHtml } from './ui/html';
+import { renderSettings } from './ui/Settings';
+import { isWindows } from './ui/Platform';
+import { adjacentMonth, bindMonthSwipe, MonthDirection } from './ui/MonthSwipe';
 
 class KhmerCalendarApp {
   private settings: AppSettings;
@@ -23,6 +28,7 @@ class KhmerCalendarApp {
   private eventsYear: number;
   private eventsFilter: number = 0; // 0 = All, 1 = Holidays, 2 = Observances, 3 = Holy Days, 4 = Custom
   private eventsSearchQuery: string = '';
+  private cleanupSettings?: () => void;
 
   private monthPicker: MonthPickerModal;
   private dateDetailsModal: DateDetailsDialogModal;
@@ -30,11 +36,12 @@ class KhmerCalendarApp {
   private customEventModal: CustomEventModal;
 
   constructor() {
+    document.documentElement.toggleAttribute('data-windows', isWindows());
     this.settings = Storage.getSettings();
-    const today = new Date();
-    this.currentYear = today.getFullYear();
-    this.currentMonth = today.getMonth() + 1;
-    this.selectedDateStr = `${this.currentYear}-${String(this.currentMonth).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    this.selectedDateStr = todayInZone(this.settings.todayTimeZone);
+    const [year, month] = this.selectedDateStr.split('-').map(Number);
+    this.currentYear = year;
+    this.currentMonth = month;
     this.eventsYear = this.currentYear;
 
     this.monthPicker = new MonthPickerModal((year, month) => {
@@ -44,7 +51,11 @@ class KhmerCalendarApp {
       this.render();
     });
 
-    this.customEventModal = new CustomEventModal(() => {
+    this.customEventModal = new CustomEventModal(event => {
+      this.eventsYear = Number(event.date.slice(0, 4));
+      this.activePage = 1;
+      this.eventsFilter = 4;
+      this.eventsSearchQuery = '';
       this.render();
     });
 
@@ -55,7 +66,8 @@ class KhmerCalendarApp {
           title: event.titleKm || event.titleEn,
           date: event.date,
           time: event.time,
-          notes: event.notes
+          notes: event.notes,
+          instant: event.instant
         });
       },
       (id) => {
@@ -75,11 +87,37 @@ class KhmerCalendarApp {
 
     this.applySettings();
     this.render();
+    bindMonthSwipe(document.getElementById('app')!, direction => this.changeMonth(direction));
     this.initServiceWorker();
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => this.applySettings());
+    // Refresh today after midnight or returning from another app.
+    let lastToday = todayInZone(this.settings.todayTimeZone);
+    const refreshToday = () => {
+      const today = todayInZone(this.settings.todayTimeZone);
+      if (today !== lastToday && !document.querySelector('.modal-overlay.open')) {
+        if (this.selectedDateStr === lastToday) {
+          this.selectedDateStr = today;
+          [this.currentYear, this.currentMonth] = today.split('-').map(Number);
+        }
+        lastToday = today;
+        this.render();
+      }
+    };
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshToday(); });
+    window.setInterval(refreshToday, 60_000);
   }
 
   private applySettings() {
     const root = document.documentElement;
+    root.lang = this.settings.language;
+    const appName = L.text('app.name', this.settings.language === 'km');
+    document.title = appName;
+    document.querySelector('meta[name="apple-mobile-web-app-title"]')?.setAttribute('content', appName);
+    const manifestPath = `${import.meta.env.BASE_URL}${this.settings.language === 'km' ? 'manifest.km.webmanifest' : 'manifest.webmanifest'}`;
+    const manifestLink = document.querySelector('link[rel="manifest"]');
+    if (manifestLink?.getAttribute('href') !== manifestPath) {
+      manifestLink?.setAttribute('href', manifestPath);
+    }
     root.setAttribute('data-accent', this.settings.accent);
     root.style.setProperty('--font-scale', String(this.settings.fontScale));
 
@@ -89,17 +127,22 @@ class KhmerCalendarApp {
     } else {
       root.setAttribute('data-theme', this.settings.theme);
     }
+    root.style.colorScheme = root.getAttribute('data-theme')!;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content',
+      root.getAttribute('data-theme') === 'dark' ? '#000000' : '#F2F2F7');
   }
 
   private initServiceWorker() {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js').catch(err => {
-        console.log('SW registration skipped:', err);
+    if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(err => {
+        console.warn('Offline setup failed:', err);
       });
     }
   }
 
   private render() {
+    this.cleanupSettings?.();
+    this.cleanupSettings = undefined;
     const appEl = document.getElementById('app');
     if (!appEl) return;
 
@@ -167,16 +210,26 @@ class KhmerCalendarApp {
   /* ==========================================================================
      PAGE 0: CALENDAR SCREEN
      ========================================================================== */
+  private changeMonth(direction: MonthDirection) {
+    const next = adjacentMonth(this.currentYear, this.currentMonth, direction);
+    if (!next) return;
+    this.currentYear = next.year;
+    this.currentMonth = next.month;
+    this.selectedDateStr = `${next.year}-${String(next.month).padStart(2, '0')}-01`;
+    this.render();
+  }
+
   private renderCalendarScreen(container: HTMLElement, k: boolean) {
-    const monthEvents = EventRepository.forMonth(this.currentYear, this.currentMonth);
+    const allMonthEvents = EventRepository.forMonth(this.currentYear, this.currentMonth);
+    const monthEvents = allMonthEvents.filter(event => this.settings.showHolyDaysInEvents || event.kind !== 'HOLY_DAY');
     const selectedParts = this.selectedDateStr.split('-').map(Number);
     const selectedDetails = KhmerDateDetails.fromGregorian(selectedParts[0], selectedParts[1], selectedParts[2]);
-    const selectedDayEvents = EventRepository.forDate(this.selectedDateStr);
+    const selectedDayEvents = monthEvents.filter(event => event.date === this.selectedDateStr);
 
     const midMonthDetails = KhmerDateDetails.fromGregorian(this.currentYear, this.currentMonth, 15);
     const watermarkAnimal = Zodiac.getAnimalDrawable(midMonthDetails.animalYear, false);
 
-    const isWideScreen = window.innerWidth >= 960;
+    const weekdays = Array.from({ length: 7 }, (_, day) => (day + (this.settings.mondayFirst ? 1 : 0)) % 7);
 
     // 1. Calendar Header
     const calendarHeaderHtml = `
@@ -187,13 +240,13 @@ class KhmerCalendarApp {
         </button>
 
         <div class="header-month-nav">
-          <button class="arrow-btn btn-prev-month" aria-label="${L.text('ui.previous_month.c03e1f', k)}">
+          <button class="arrow-btn btn-prev-month" ${this.currentYear === 1800 && this.currentMonth === 1 ? 'disabled' : ''} aria-label="${L.text('ui.previous_month.c03e1f', k)}">
             ${Icons.chevronLeft}
           </button>
           <button class="month-name-btn btn-jump-month">
             ${CalendarWords.month(this.currentMonth, k)}
           </button>
-          <button class="arrow-btn btn-next-month" aria-label="${L.text('ui.next_month.d2d40f', k)}">
+          <button class="arrow-btn btn-next-month" ${this.currentYear === 2200 && this.currentMonth === 12 ? 'disabled' : ''} aria-label="${L.text('ui.next_month.d2d40f', k)}">
             ${Icons.chevronRight}
           </button>
         </div>
@@ -208,16 +261,10 @@ class KhmerCalendarApp {
     const calendarCardHtml = `
       <div class="calendar-month-card">
         <!-- Native Animal Zodiac Background Watermark -->
-        <img src="${watermarkAnimal}" class="card-watermark-zodiac" alt="" />
+        <span class="card-watermark-zodiac tinted-watermark" style="--watermark-image: url('${watermarkAnimal}')" aria-hidden="true"></span>
 
         <div class="weekdays-row" style="position: relative; z-index: 1;">
-          <span class="sunday-header">${CalendarWords.weekday(0, k, 'short')}</span>
-          <span>${CalendarWords.weekday(1, k, 'short')}</span>
-          <span>${CalendarWords.weekday(2, k, 'short')}</span>
-          <span>${CalendarWords.weekday(3, k, 'short')}</span>
-          <span>${CalendarWords.weekday(4, k, 'short')}</span>
-          <span>${CalendarWords.weekday(5, k, 'short')}</span>
-          <span>${CalendarWords.weekday(6, k, 'short')}</span>
+          ${weekdays.map(day => `<span class="${day === 0 && this.settings.highlightSunday ? 'sunday-header' : ''}">${CalendarWords.weekday(day, k, 'narrow')}</span>`).join('')}
         </div>
         <div class="month-grid-cells" style="position: relative; z-index: 1;"></div>
         <div class="card-divider" style="position: relative; z-index: 1;"></div>
@@ -232,24 +279,19 @@ class KhmerCalendarApp {
 
     // 3. Consolidated Date Card (Clicking opens DateDetailsDialog)
     const dateSummaryHtml = `
-      <div class="date-summary-card" style="cursor: pointer;" title="${L.text('ui.date_details.e26d78', k)}">
+      <button class="date-summary-card" title="${L.text('ui.date_details.e26d78', k)}">
         <div class="date-summary-left">
-          <div style="font-size: calc(13px * var(--font-scale)); font-weight: 500; color: var(--text-primary); line-height: 1.3;">
-            ${CalendarWords.lunarFull(selectedDetails.lunar.day, selectedDetails.lunar.waxing, selectedDetails.lunar.month, k)}
-          </div>
-          <div style="font-size: calc(12px * var(--font-scale)); color: var(--on-surface-variant); margin-top: 2px;">
-            ${CalendarWords.animal(selectedDetails.animalYear, k)} · ${CalendarWords.sak(selectedDetails.sak, k)} · ${k ? 'ព.ស.' : 'B.E.'} ${CalendarWords.number(selectedDetails.lunar.buddhistYear, k)}
-          </div>
+          <div style="font-size: calc(13px * var(--font-scale)); font-weight: 500; color: var(--text-primary); line-height: 1.3;">${k ? CalendarWords.fullKhmerDate(selectedDetails) : CalendarWords.fullEnglishDate(selectedDetails)}</div>
         </div>
         <div class="date-summary-right">
           <div style="font-size: calc(12px * var(--font-scale)); color: var(--on-surface-variant);">
-            ${CalendarWords.month(selectedDetails.month, k)} ${CalendarWords.number(selectedDetails.day, k)}, ${CalendarWords.number(selectedDetails.year, k)}
+            ${CalendarWords.month(selectedDetails.month, false)} ${selectedDetails.day}, ${selectedDetails.year}
           </div>
           <div style="font-size: calc(12px * var(--font-scale)); font-weight: 500; color: var(--accent); margin-top: 2px;">
-            ${Zodiac.label(selectedDetails.zodiac, k)}
+            ${Zodiac.label(selectedDetails.zodiac, false)}
           </div>
         </div>
-      </div>
+      </button>
     `;
 
     // 4. Events Rows
@@ -261,40 +303,39 @@ class KhmerCalendarApp {
         const dayOfWeek = (dateObj.getUTCDay() === 0 ? 7 : dateObj.getUTCDay()) % 7;
         const isHol = e.kind === 'HOLIDAY';
         return `
-          <div class="event-row-card" data-event-id="${e.id}">
+          <button class="event-row-card" data-event-id="${escapeHtml(e.id)}" data-event-date="${escapeHtml(e.date)}">
             <div class="event-row-date">
               <span class="event-row-daynum ${isHol ? 'holiday' : ''}">${CalendarWords.number(d, k)}</span>
               <span class="event-row-weekday">${CalendarWords.weekday(dayOfWeek, k, 'short')}</span>
             </div>
             <div class="event-row-bar ${e.kind.toLowerCase()}"></div>
             <div class="event-row-content">
-              <span class="event-row-title">${k ? e.titleKm : e.titleEn}</span>
+              <span class="event-row-title">${escapeHtml(k ? e.titleKm : e.titleEn)}</span>
               <span class="event-row-kind ${e.kind.toLowerCase()}">
                 ${e.kind === 'HOLIDAY' ? L.text('ui.holiday.253332', k) :
                   e.kind === 'HOLY_DAY' ? L.text('ui.holy_day.28786d', k) :
                   e.kind === 'OBSERVANCE' ? L.text('ui.observance.5b9a87', k) : L.text('ui.custom.917053', k)}
-                ${e.time ? ' · ' + e.time : ''}
+                ${e.time ? ' · ' + escapeHtml(e.time) : ''}
               </span>
             </div>
             <span class="event-row-chevron">›</span>
-          </div>
+          </button>
         `;
       }).join('');
     };
 
-    if (isWideScreen) {
       container.innerHTML = `
         <div class="calendar-two-columns">
           <div class="calendar-col-left">
             ${calendarHeaderHtml}
             ${calendarCardHtml}
             ${dateSummaryHtml}
-            ${selectedDayEvents.length > 0 ? `
+            ${selectedDayEvents.length > 0 ? `<div class="selected-day-events">
               <div style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant); margin: 10px 0 4px 6px;">
                 ${L.text('ui.events_on_the_day.a174fc', k)}
               </div>
               <div class="events-list-container">${renderEventRows(selectedDayEvents)}</div>
-            ` : ''}
+            </div>` : ''}
           </div>
 
           <div class="calendar-col-right">
@@ -305,33 +346,14 @@ class KhmerCalendarApp {
           </div>
         </div>
       `;
-    } else {
-      container.innerHTML = `
-        <div class="screen-inner">
-          ${calendarHeaderHtml}
-          ${calendarCardHtml}
-          ${dateSummaryHtml}
-          ${selectedDayEvents.length > 0 ? `
-            <div style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant); margin: 10px 0 4px 6px;">
-              ${L.text('ui.events_on_the_day.a174fc', k)}
-            </div>
-            <div class="events-list-container">${renderEventRows(selectedDayEvents)}</div>
-          ` : ''}
-          <div style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant); margin: 16px 0 8px 6px;">
-            ${L.text('ui.all_events_in_month.ab923a', k, { month: CalendarWords.month(this.currentMonth, k) })} (${CalendarWords.number(monthEvents.length, k)})
-          </div>
-          <div class="events-list-container">${renderEventRows(monthEvents)}</div>
-        </div>
-      `;
-    }
 
     // Populate calendar grid cells
     const firstEpoch = toEpochDay(this.currentYear, this.currentMonth, 1);
-    const startOffset = new Date(firstEpoch * 86400000).getUTCDay(); // 0 = Sun
+    const firstWeekday = new Date(firstEpoch * 86400000).getUTCDay();
+    const startOffset = (firstWeekday + (this.settings.mondayFirst ? 6 : 0)) % 7;
     const daysInMonth = new Date(Date.UTC(this.currentYear, this.currentMonth, 0)).getUTCDate();
     const totalSlots = Math.ceil((startOffset + daysInMonth) / 7) * 7;
-    const today = new Date();
-    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const todayStr = todayInZone(this.settings.todayTimeZone);
 
     const gridCellsContainer = container.querySelector('.month-grid-cells')!;
     for (let slot = 0; slot < totalSlots; slot++) {
@@ -347,11 +369,15 @@ class KhmerCalendarApp {
       const lunar = KhmerCalendar.fromGregorian(this.currentYear, this.currentMonth, dayNum);
       const isActive = dateStr === this.selectedDateStr;
       const isToday = dateStr === todayStr;
-      const dayOfWeek = (startOffset + dayNum - 1) % 7;
-      const dayEvents = monthEvents.filter(e => e.date === dateStr);
-      const isHoliday = dayEvents.some(e => e.kind === 'HOLIDAY') || dayOfWeek === 0;
+      const dayOfWeek = (firstWeekday + dayNum - 1) % 7;
+      const dayEvents = allMonthEvents.filter(e => e.date === dateStr && (this.settings.holyDayMarkers || e.kind !== 'HOLY_DAY'));
+      const isHoliday = dayEvents.some(e => e.kind === 'HOLIDAY') || (this.settings.highlightSunday && dayOfWeek === 0);
 
-      const cell = document.createElement('div');
+      const cell = document.createElement('button');
+      cell.setAttribute('aria-label', `${CalendarWords.month(this.currentMonth, k)} ${CalendarWords.number(dayNum, k)}, ${CalendarWords.lunarFull(lunar.day, lunar.waxing, lunar.month, k)}`);
+      cell.setAttribute('aria-pressed', String(isActive));
+      cell.dataset.date = dateStr;
+      if (isToday) cell.setAttribute('aria-current', 'date');
       cell.className = 'cal-cell' +
         (isActive ? ' active-day' : '') +
         (isToday ? ' today' : '') +
@@ -366,19 +392,18 @@ class KhmerCalendarApp {
       }
 
       cell.innerHTML = `
-        ${lunar.isHolyDay && this.settings.holyDayMarkers ? `<img src="/assets/drawables/holy_day_lotus.png" class="cell-lotus-img" alt="" />` : ''}
+        ${lunar.isHolyDay && this.settings.holyDayMarkers ? `<img src="${import.meta.env.BASE_URL}assets/drawables/holy_day_lotus.png" class="cell-lotus-img" alt="" />` : ''}
         <span class="cell-day-num">${CalendarWords.number(dayNum, k)}</span>
-        <span class="cell-lunar-label">${CalendarWords.lunarShort(lunar.day, lunar.waxing, k)}</span>
+        ${this.settings.showLunar ? `<span class="cell-lunar-label">${CalendarWords.lunarShort(lunar.day, lunar.waxing, k)}</span>` : ''}
         ${marksHtml}
       `;
 
       cell.addEventListener('click', () => {
-        if (this.selectedDateStr === dateStr) {
-          // Second tap / click opens Date Details dialog
-          this.dateDetailsModal.open(dateStr, dayEvents, k);
-        } else {
-          this.selectedDateStr = dateStr;
-          this.render();
+        const repeated = this.selectedDateStr === dateStr;
+        this.selectedDateStr = dateStr;
+        this.render();
+        if (repeated || !window.matchMedia('(min-width: 960px) and (min-height: 600px) and (orientation: landscape)').matches) {
+          this.dateDetailsModal.open(dateStr, monthEvents.filter(e => e.date === dateStr), k);
         }
       });
 
@@ -386,25 +411,8 @@ class KhmerCalendarApp {
     }
 
     // Attach Header navigation events
-    container.querySelector('.btn-prev-month')?.addEventListener('click', () => {
-      this.currentMonth--;
-      if (this.currentMonth < 1) {
-        this.currentMonth = 12;
-        this.currentYear--;
-      }
-      this.selectedDateStr = `${this.currentYear}-${String(this.currentMonth).padStart(2, '0')}-01`;
-      this.render();
-    });
-
-    container.querySelector('.btn-next-month')?.addEventListener('click', () => {
-      this.currentMonth++;
-      if (this.currentMonth > 12) {
-        this.currentMonth = 1;
-        this.currentYear++;
-      }
-      this.selectedDateStr = `${this.currentYear}-${String(this.currentMonth).padStart(2, '0')}-01`;
-      this.render();
-    });
+    container.querySelector('.btn-prev-month')?.addEventListener('click', () => this.changeMonth(-1));
+    container.querySelector('.btn-next-month')?.addEventListener('click', () => this.changeMonth(1));
 
     container.querySelector('.btn-jump-month')?.addEventListener('click', () => {
       this.monthPicker.open(this.currentYear, this.currentMonth, k);
@@ -415,10 +423,8 @@ class KhmerCalendarApp {
     });
 
     container.querySelector('.btn-go-today')?.addEventListener('click', () => {
-      const now = new Date();
-      this.currentYear = now.getFullYear();
-      this.currentMonth = now.getMonth() + 1;
-      this.selectedDateStr = `${this.currentYear}-${String(this.currentMonth).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      this.selectedDateStr = todayInZone(this.settings.todayTimeZone);
+      [this.currentYear, this.currentMonth] = this.selectedDateStr.split('-').map(Number);
       this.render();
     });
 
@@ -432,7 +438,7 @@ class KhmerCalendarApp {
       card.addEventListener('click', () => {
         const evId = (card as HTMLElement).dataset.eventId;
         const allEvents = [...monthEvents, ...selectedDayEvents];
-        const event = allEvents.find(e => e.id === evId);
+        const event = allEvents.find(e => e.id === evId && e.date === (card as HTMLElement).dataset.eventDate);
         if (event) {
           this.eventDetailsModal.open(event, k);
         }
@@ -443,7 +449,7 @@ class KhmerCalendarApp {
   /* ==========================================================================
      PAGE 1: EVENTS SCREEN
      ========================================================================== */
-  private renderEventsScreen(container: HTMLElement, k: boolean) {
+  private renderEventsScreen(container: HTMLElement, k: boolean, resultsOnly = false) {
     const rawEvents = EventRepository.forYearWithCustom(this.eventsYear);
 
     // Apply Filter & Search Query
@@ -490,23 +496,23 @@ class KhmerCalendarApp {
               const dayOfWeek = (dateObj.getUTCDay() === 0 ? 7 : dateObj.getUTCDay()) % 7;
               const isHol = e.kind === 'HOLIDAY';
               return `
-                <div class="event-row-card" data-event-id="${e.id}">
+                <button class="event-row-card" data-event-id="${escapeHtml(e.id)}" data-event-date="${escapeHtml(e.date)}">
                   <div class="event-row-date">
                     <span class="event-row-daynum ${isHol ? 'holiday' : ''}">${CalendarWords.number(d, k)}</span>
                     <span class="event-row-weekday">${CalendarWords.weekday(dayOfWeek, k, 'short')}</span>
                   </div>
                   <div class="event-row-bar ${e.kind.toLowerCase()}"></div>
                   <div class="event-row-content">
-                    <span class="event-row-title">${k ? e.titleKm : e.titleEn}</span>
+                    <span class="event-row-title">${escapeHtml(k ? e.titleKm : e.titleEn)}</span>
                     <span class="event-row-kind ${e.kind.toLowerCase()}">
                       ${e.kind === 'HOLIDAY' ? L.text('ui.holiday.253332', k) :
                         e.kind === 'HOLY_DAY' ? L.text('ui.holy_day.28786d', k) :
                         e.kind === 'OBSERVANCE' ? L.text('ui.observance.5b9a87', k) : L.text('ui.custom.917053', k)}
-                      ${e.time ? ' · ' + e.time : ''}
+                      ${e.time ? ' · ' + escapeHtml(e.time) : ''}
                     </span>
                   </div>
                   <span class="event-row-chevron">›</span>
-                </div>
+                </button>
               `;
             }).join('')}
           </div>
@@ -514,23 +520,38 @@ class KhmerCalendarApp {
       `;
     }
 
+    const resultsHtml = monthsListHtml || `<div class="empty-events">${k ? 'គ្មានព្រឹត្តិការណ៍ទេ' : 'No events found'}</div>`;
+    const bindEventRows = () => container.querySelectorAll('.event-row-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const { eventId, eventDate } = (card as HTMLElement).dataset;
+        const event = rawEvents.find(event => event.id === eventId && event.date === eventDate);
+        if (event) this.eventDetailsModal.open(event, k);
+      });
+    });
+    if (resultsOnly) {
+      container.querySelector('.events-results')!.innerHTML = resultsHtml;
+      bindEventRows();
+      return;
+    }
+
     container.innerHTML = `
       <div class="events-screen-container">
         <!-- Events Header -->
         <div class="events-header">
-          <span style="font-size: 22px; font-weight: 700; color: var(--text-primary);">${L.text('ui.events.11d867', k)}</span>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <button class="arrow-btn btn-prev-events-year">${Icons.chevronLeft}</button>
+          <span class="events-title">${L.text('ui.events.11d867', k)}</span>
+          <div class="events-year-nav">
+            <button class="arrow-btn btn-prev-events-year" ${this.eventsYear === 1800 ? 'disabled' : ''} aria-label="${k ? 'ឆ្នាំមុន' : 'Previous year'}">${Icons.chevronLeft}</button>
             <span style="font-size: 20px; font-weight: 700; color: var(--text-primary); min-width: 60px; text-align: center;">
               ${CalendarWords.number(this.eventsYear, k)}
             </span>
-            <button class="arrow-btn btn-next-events-year">${Icons.chevronRight}</button>
+            <button class="arrow-btn btn-next-events-year" ${this.eventsYear === 2200 ? 'disabled' : ''} aria-label="${k ? 'ឆ្នាំបន្ទាប់' : 'Next year'}">${Icons.chevronRight}</button>
           </div>
+          <button class="add-event-button btn-fab-add" aria-label="${L.text('ui.add_event.bf2f10', k)}">${Icons.add}</button>
         </div>
 
         <!-- Search Bar -->
         <div class="events-search-bar">
-          <input type="text" id="events-search-input" placeholder="${L.text('ui.search_events.08c608', k)}" value="${this.eventsSearchQuery}" />
+          <input type="search" id="events-search-input" aria-label="${L.text('ui.search_events.08c608', k)}" placeholder="${L.text('ui.search_events.08c608', k)}" value="${escapeHtml(this.eventsSearchQuery)}" />
         </div>
 
         <!-- Filter Chips -->
@@ -543,10 +564,8 @@ class KhmerCalendarApp {
         </div>
 
         <!-- Grouped List -->
-        ${monthsListHtml || `<div style="text-align: center; color: var(--on-surface-variant); padding: 40px 0;">${k ? 'គ្មានព្រឹត្តិការណ៍ទេ' : 'No events found'}</div>`}
+        <div class="events-results" aria-live="polite">${resultsHtml}</div>
 
-        <!-- Floating Action Button to Add Event -->
-        <button class="fab-btn btn-fab-add" title="${L.text('ui.add_event.bf2f10', k)}">+</button>
       </div>
     `;
 
@@ -565,7 +584,7 @@ class KhmerCalendarApp {
     const searchInput = container.querySelector('#events-search-input') as HTMLInputElement;
     searchInput?.addEventListener('input', () => {
       this.eventsSearchQuery = searchInput.value;
-      this.render();
+      this.renderEventsScreen(container, k, true);
     });
 
     // Filter chips
@@ -582,164 +601,24 @@ class KhmerCalendarApp {
     });
 
     // Event Row Click: Open EventDetailsDialog
-    container.querySelectorAll('.event-row-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const evId = (card as HTMLElement).dataset.eventId;
-        const event = rawEvents.find(e => e.id === evId);
-        if (event) {
-          this.eventDetailsModal.open(event, k);
-        }
-      });
-    });
+    bindEventRows();
   }
 
   /* ==========================================================================
      PAGE 2: SETTINGS SCREEN
      ========================================================================== */
   private renderSettingsScreen(container: HTMLElement, k: boolean) {
-    container.innerHTML = `
-      <div class="settings-container" style="width: 100%; max-width: 640px;">
-        <div class="settings-card">
-          <div class="settings-card-title">${L.text('ui.appearance.23e609', k)}</div>
-
-          <div class="settings-row">
-            <div class="settings-text-col">
-              <span class="settings-title">${L.text('ui.language.b03320', k)}</span>
-            </div>
-            <div class="choice-pill-group">
-              <button class="choice-pill ${this.settings.language === 'km' ? 'active' : ''}" data-lang="km">${L.text('language.khmer', k)}</button>
-              <button class="choice-pill ${this.settings.language === 'en' ? 'active' : ''}" data-lang="en">${L.text('language.english', k)}</button>
-            </div>
-          </div>
-
-          <div class="settings-row">
-            <div class="settings-text-col">
-              <span class="settings-title">${k ? 'ទំហំអក្សរ' : 'Font size'}</span>
-            </div>
-            <div class="choice-pill-group">
-              <button class="choice-pill ${this.settings.fontScale === 0.9 ? 'active' : ''}" data-scale="0.9">90%</button>
-              <button class="choice-pill ${this.settings.fontScale === 1.0 ? 'active' : ''}" data-scale="1.0">100%</button>
-              <button class="choice-pill ${this.settings.fontScale === 1.1 ? 'active' : ''}" data-scale="1.1">110%</button>
-              <button class="choice-pill ${this.settings.fontScale === 1.2 ? 'active' : ''}" data-scale="1.2">120%</button>
-            </div>
-          </div>
-
-          <div class="settings-row">
-            <div class="settings-text-col">
-              <span class="settings-title">${L.text('ui.theme.99ca72', k)}</span>
-            </div>
-            <div class="choice-pill-group">
-              <button class="choice-pill ${this.settings.theme === 'system' ? 'active' : ''}" data-theme="system">${L.text('ui.system.8f97a4', k)}</button>
-              <button class="choice-pill ${this.settings.theme === 'light' ? 'active' : ''}" data-theme="light">${L.text('ui.light.aa790e', k)}</button>
-              <button class="choice-pill ${this.settings.theme === 'dark' ? 'active' : ''}" data-theme="dark">${L.text('ui.dark.4ae267', k)}</button>
-            </div>
-          </div>
-
-          <div class="settings-row">
-            <div class="settings-text-col">
-              <span class="settings-title">${k ? 'ពណ៌ចម្បង' : 'Accent color'}</span>
-            </div>
-            <div class="accent-circles-row">
-              <button class="accent-btn ${this.settings.accent === 'blue' ? 'active' : ''}" data-accent="blue" style="background: var(--accent-blue-light);" title="Blue"></button>
-              <button class="accent-btn ${this.settings.accent === 'lavender' ? 'active' : ''}" data-accent="lavender" style="background: var(--accent-lavender-light);" title="Lavender"></button>
-              <button class="accent-btn ${this.settings.accent === 'rose' ? 'active' : ''}" data-accent="rose" style="background: var(--accent-rose-light);" title="Rose"></button>
-              <button class="accent-btn ${this.settings.accent === 'amber' ? 'active' : ''}" data-accent="amber" style="background: var(--accent-amber-light);" title="Amber"></button>
-              <button class="accent-btn ${this.settings.accent === 'lime' ? 'active' : ''}" data-accent="lime" style="background: var(--accent-lime-light);" title="Lime"></button>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-card">
-          <div class="settings-card-title">${L.text('ui.calendar.beb873', k)}</div>
-          <div class="settings-row">
-            <div class="settings-text-col">
-              <span class="settings-title">${k ? 'បង្ហាញផ្កាឈូកថ្ងៃសីល' : 'Holy day lotus marker'}</span>
-            </div>
-            <input type="checkbox" id="check-lotus" ${this.settings.holyDayMarkers ? 'checked' : ''} style="width: 20px; height: 20px; accent-color: var(--accent);" />
-          </div>
-        </div>
-
-        <div class="settings-card">
-          <div class="settings-card-title">${k ? 'ការជូនដំណឹង' : 'NOTIFICATIONS'}</div>
-          <div class="settings-row">
-            <div class="settings-text-col">
-              <span class="settings-title">${k ? 'បើកការជូនដំណឹង' : 'Enable notifications'}</span>
-              <span class="settings-subtitle">${k ? 'ថ្ងៃសីល និងថ្ងៃឈប់សម្រាក (iOS 16.4+)' : 'Holy days & Holidays (iOS 16.4+)'}</span>
-            </div>
-            <button class="btn-today-pill btn-push-toggle">${this.settings.notificationsEnabled ? (k ? 'បានបើក' : 'Enabled') : (k ? 'បើកដំណើរការ' : 'Enable')}</button>
-          </div>
-        </div>
-
-        <div class="settings-card">
-          <div class="settings-card-title">${k ? 'អំពីកម្មវិធី' : 'ABOUT'}</div>
-          <div class="settings-row">
-            <div class="settings-text-col">
-              <span class="settings-title">Khmer Calendar PWA</span>
-              <span class="settings-subtitle">Version 1.0.0 · 100% Offline · No Ads · Apache 2.0</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-
-    container.querySelectorAll('[data-lang]').forEach(el => {
-      el.addEventListener('click', () => {
-        this.settings.language = (el as HTMLElement).dataset.lang as any;
-        Storage.saveSettings(this.settings);
-        this.applySettings();
-        this.render();
-      });
-    });
-
-    container.querySelectorAll('[data-scale]').forEach(el => {
-      el.addEventListener('click', () => {
-        this.settings.fontScale = parseFloat((el as HTMLElement).dataset.scale!) as FontScale;
-        Storage.saveSettings(this.settings);
-        this.applySettings();
-        this.render();
-      });
-    });
-
-    container.querySelectorAll('[data-theme]').forEach(el => {
-      el.addEventListener('click', () => {
-        this.settings.theme = (el as HTMLElement).dataset.theme as ThemeMode;
-        Storage.saveSettings(this.settings);
-        this.applySettings();
-        this.render();
-      });
-    });
-
-    container.querySelectorAll('[data-accent]').forEach(el => {
-      el.addEventListener('click', () => {
-        this.settings.accent = (el as HTMLElement).dataset.accent as AccentColor;
-        Storage.saveSettings(this.settings);
-        this.applySettings();
-        this.render();
-      });
-    });
-
-    const checkLotus = container.querySelector('#check-lotus') as HTMLInputElement;
-    checkLotus?.addEventListener('change', () => {
-      this.settings.holyDayMarkers = checkLotus.checked;
-      Storage.saveSettings(this.settings);
+    this.cleanupSettings = renderSettings(container, this.settings, settings => {
+      const scrollTop = container.scrollTop;
+      this.settings = settings;
+      if (!settings.showHolyDaysInEvents && this.eventsFilter === 3) this.eventsFilter = 0;
+      Storage.saveSettings(settings);
+      this.applySettings();
       this.render();
-    });
-
-    container.querySelector('.btn-push-toggle')?.addEventListener('click', async () => {
-      const ok = await WebPushManager.requestPermission();
-      if (ok) {
-        this.settings.notificationsEnabled = true;
-        Storage.saveSettings(this.settings);
-        WebPushManager.showLocalNotification(
-          k ? 'ប្រតិទិនចន្ទគតិ' : 'Khmer Calendar',
-          k ? 'ការជូនដំណឹងត្រូវបានបើកដំណើរការ' : 'Notifications enabled'
-        );
-        this.render();
-      } else {
-        alert(k ? 'សូមអនុញ្ញាតការជូនដំណឹងនៅក្នុងការកំណត់កម្មវិធីរុករករបស់អ្នក' : 'Please allow notifications in your browser settings.');
-      }
+      document.getElementById('screen-container')!.scrollTop = scrollTop;
     });
   }
+
 }
 
 document.addEventListener('DOMContentLoaded', () => {

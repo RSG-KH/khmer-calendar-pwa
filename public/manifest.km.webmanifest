@@ -1,8 +1,8 @@
 {
-  "name": "Khmer Calendar",
-  "short_name": "Khmer Calendar",
-  "lang": "en",
-  "description": "Traditional Khmer Chhankitek Lunar Calendar, Buddhist holy days and Cambodian holidays",
+  "name": "ប្រតិទិនខ្មែរ",
+  "short_name": "ប្រតិទិនខ្មែរ",
+  "lang": "km",
+  "description": "ប្រតិទិនចន្ទគតិខ្មែរ ថ្ងៃសីល និងថ្ងៃឈប់សម្រាកនៅកម្ពុជា",
   "start_url": "./",
   "id": "./",
   "scope": "./",

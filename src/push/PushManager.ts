@@ -45,21 +45,21 @@ export class WebPushManager {
     }
   }
 
-  static async showLocalNotification(title: string, body: string, url: string = '/'): Promise<void> {
+  static async showLocalNotification(title: string, body: string, url: string = import.meta.env.BASE_URL): Promise<void> {
     if (!this.isSupported() || Notification.permission !== 'granted') return;
     try {
       const reg = await navigator.serviceWorker.ready;
       await reg.showNotification(title, {
         body,
-        icon: '/icons/app-logo.png',
-        badge: '/icons/apple-touch-icon.png',
+        icon: `${import.meta.env.BASE_URL}icons/app-logo.png`,
+        badge: `${import.meta.env.BASE_URL}icons/apple-touch-icon.png`,
         data: url,
         tag: 'khmer-calendar-alert',
         renotify: true
       } as any);
     } catch (e) {
       // Fallback
-      new Notification(title, { body, icon: '/icons/app-logo.png' } as any);
+      new Notification(title, { body, icon: `${import.meta.env.BASE_URL}icons/app-logo.png` } as any);
     }
   }
 

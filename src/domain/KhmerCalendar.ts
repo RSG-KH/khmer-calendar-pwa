@@ -126,6 +126,10 @@ export class KhmerCalendar {
 
   static fromGregorian(year: number, month: number, day: number): LunarDate {
     const epoch = toEpochDay(year, month, day);
+    const normalized = fromEpochDay(epoch);
+    if (year < this.minYear || year > this.maxYear || normalized.year !== year || normalized.month !== month || normalized.day !== day) {
+      throw new RangeError('Date must be a valid Gregorian date between 1800 and 2200.');
+    }
     const starts = this.monthStarts;
 
     let low = 0;

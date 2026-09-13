@@ -1,8 +1,10 @@
 // Copyright (c) 2026 RSG-KH | Apache-2.0 License
 
+import { dateTimeInZone, TodayTimeZone } from '../domain/DateTime';
+
 export type AccentColor = 'blue' | 'lavender' | 'rose' | 'amber' | 'lime';
 export type ThemeMode = 'system' | 'light' | 'dark';
-export type FontScale = 0.9 | 1.0 | 1.1 | 1.2;
+export type FontScale = 0.8 | 0.9 | 1.0 | 1.1 | 1.2;
 
 export interface AppSettings {
   language: 'km' | 'en';
@@ -11,6 +13,10 @@ export interface AppSettings {
   fontScale: FontScale;
   holyDayMarkers: boolean;
   showHolyDaysInEvents: boolean;
+  mondayFirst: boolean;
+  highlightSunday: boolean;
+  showLunar: boolean;
+  todayTimeZone: TodayTimeZone;
   notificationsEnabled: boolean;
   shavingDayReminder: boolean;
   holidayReminder: boolean;
@@ -22,7 +28,11 @@ export const DEFAULT_SETTINGS: AppSettings = {
   accent: 'blue',
   fontScale: 1.0,
   holyDayMarkers: true,
-  showHolyDaysInEvents: true,
+  showHolyDaysInEvents: false,
+  mondayFirst: false,
+  highlightSunday: true,
+  showLunar: true,
+  todayTimeZone: 'local',
   notificationsEnabled: false,
   shavingDayReminder: false,
   holidayReminder: true
@@ -35,6 +45,7 @@ export interface CustomEvent {
   time?: string; // 'HH:mm'
   notes?: string;
   remind?: boolean;
+  instant?: string;
 }
 
 const LOCAL_EVENTS_KEY = 'khmer_calendar_custom_events';
@@ -64,7 +75,13 @@ class StorageManager {
   getCustomEvents(): CustomEvent[] {
     try {
       const raw = localStorage.getItem(LOCAL_EVENTS_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const events: CustomEvent[] = JSON.parse(raw);
+        const zone = this.getSettings().todayTimeZone;
+        return events.map(event => event.instant
+          ? { ...event, ...dateTimeInZone(new Date(event.instant), zone) }
+          : event);
+      }
     } catch (e) {
       console.warn('Error reading custom events:', e);
     }

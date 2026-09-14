@@ -3,9 +3,10 @@ import { L } from '../data/i18n';
 import { TodayTimeZone } from '../domain/DateTime';
 import { settingsPicker, setupSettingsPickers } from './SettingsPicker';
 import { showCalendarSources } from './Sources';
-import { version } from '../../package.json';
+import { appVersion as version } from '../../package.json';
+import { AppUpdater, AppUpdateState } from './AppUpdater';
 
-export function renderSettings(container: HTMLElement, settings: AppSettings, onChange: (settings: AppSettings) => void) {
+export function renderSettings(container: HTMLElement, settings: AppSettings, onChange: (settings: AppSettings) => void, updater: AppUpdater) {
   const k = settings.language === 'km';
   const text = (key: string) => L.text(key, k);
   const installUrl = 'https://rsg-kh.github.io/khmer-calendar-pwa/';
@@ -68,14 +69,41 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
         <p class="settings-subtitle">${k ? `ដើម្បីដំឡើង សូមបើក ${installLink} ក្នុង Safari រួចជ្រើសរើស “Add to Home Screen” (iOS/iPadOS) ឬ “Add to Dock” (macOS 14+) ហើយជាចុងក្រោយ បើកកម្មវិធី ${text('app.name')} ពី Home Screen ឬ Dock។` : `To install, open ${installLink} in Safari and choose “Add to Home Screen” (iOS/iPadOS) or “Add to Dock” (macOS 14+), and finally, open ${text('app.name')} from the Home Screen or Dock.`}</p>
         <button class="about-sources">${text('ui.calendar_sources_licenses.c2bdb3')}</button>
         <div class="about-credits settings-subtitle">
-          <p>${L.text('about.version', k, { version })}</p>
-          <a href="https://github.com/RSG-KH/khmer-calendar-pwa" target="_blank" rel="noopener noreferrer">PWA · github.com/RSG-KH/khmer-calendar-pwa</a>
-          <a href="https://github.com/RSG-KH/khmer-calendar" target="_blank" rel="noopener noreferrer">Android · github.com/RSG-KH/khmer-calendar</a>
+          <p>RSG-KH · ${text('app.name')} (PWA)<br>${L.text('about.version', k, { version })}</p>
+          <a href="https://github.com/RSG-KH/khmer-calendar-pwa" target="_blank" rel="noopener noreferrer">PWA · RSG-KH/khmer-calendar-pwa</a>
+          <a href="https://github.com/RSG-KH/khmer-calendar" target="_blank" rel="noopener noreferrer">Android · RSG-KH/khmer-calendar</a>
+        </div>
+        <div class="app-update-controls">
+          <button type="button" class="about-update" aria-live="polite"></button>
+          <p class="app-update-status settings-subtitle" role="status"></p>
         </div>
       </section>
     </div>`;
 
   const update = (patch: Partial<AppSettings>) => onChange({ ...settings, ...patch });
+  const updateButton = container.querySelector<HTMLButtonElement>('.about-update')!;
+  const updateStatus = container.querySelector<HTMLElement>('.app-update-status')!;
+  const messages: Record<AppUpdateState, string> = {
+    idle: '',
+    checking: k ? 'កំពុងពិនិត្យរកកំណែថ្មី…' : 'Checking for updates…',
+    downloading: k ? 'កំពុងទាញយកកំណែថ្មី…' : 'Downloading the latest version…',
+    current: '',
+    updated: '',
+    offline: k ? 'សូមភ្ជាប់អ៊ីនធឺណិតដើម្បីពិនិត្យរកកំណែថ្មី។' : 'Connect to the internet to check for updates.',
+    error: k ? 'មិនអាចធ្វើបច្ចុប្បន្នភាពបានទេ។ សូមព្យាយាមម្ដងទៀត។' : 'Could not update the app. Please try again.',
+    updating: k ? 'កំពុងធ្វើបច្ចុប្បន្នភាព និងបើកកម្មវិធីឡើងវិញ…' : 'Updating and reloading…',
+    unavailable: k ? 'មិនអាចពិនិត្យរកកំណែថ្មីក្នុងការមើលសាកល្បង ឬកម្មវិធីរុករកនេះបានទេ។' : 'Update checks are unavailable in this preview or browser.'
+  };
+  const unsubscribeUpdate = updater.subscribe(state => {
+    updateButton.textContent = state === 'updated' ? (k ? 'បានធ្វើបច្ចុប្បន្នភាព' : 'Updated')
+      : state === 'current' ? (k ? 'គ្មានកំណែថ្មី' : 'No update available')
+      : k ? 'ពិនិត្យរកកំណែថ្មី' : 'Check for update';
+    updateButton.disabled = ['checking', 'downloading', 'updating', 'updated', 'current', 'unavailable'].includes(state);
+    updateButton.setAttribute('aria-busy', String(['checking', 'downloading', 'updating'].includes(state)));
+    updateStatus.textContent = messages[state];
+    updateStatus.hidden = !messages[state];
+  });
+  updateButton.addEventListener('click', () => { void updater.check(); });
   container.querySelectorAll<HTMLButtonElement>('[data-lang]').forEach(button => button.addEventListener('click', () => update({ language: button.dataset.lang as AppSettings['language'] })));
   container.querySelectorAll<HTMLButtonElement>('[data-accent]').forEach(button => button.addEventListener('click', () => update({ accent: button.dataset.accent as AppSettings['accent'] })));
   container.querySelectorAll<HTMLInputElement>('[data-setting]').forEach(input => input.addEventListener('change', () => update({ [input.dataset.setting!]: input.checked })));
@@ -89,5 +117,5 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
     if (id === 'theme-mode') update({ theme: value as AppSettings['theme'] });
     if (id === 'today-zone') update({ todayTimeZone: value as TodayTimeZone });
   });
-  return () => { cleanupPickers(); closeSources?.(); };
+  return () => { unsubscribeUpdate(); cleanupPickers(); closeSources?.(); };
 }

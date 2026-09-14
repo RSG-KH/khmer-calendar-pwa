@@ -18,6 +18,19 @@ import { escapeHtml } from './ui/html';
 import { renderSettings } from './ui/Settings';
 import { isWindows } from './ui/Platform';
 import { adjacentMonth, bindMonthSwipe, MonthDirection } from './ui/MonthSwipe';
+import { AppUpdater } from './ui/AppUpdater';
+
+const updateReceiptKey = `khmer-calendar:update:${import.meta.env.BASE_URL}`;
+function consumeUpdateReceipt(): number | undefined {
+  try {
+    const raw = sessionStorage.getItem(updateReceiptKey);
+    sessionStorage.removeItem(updateReceiptKey);
+    if (!raw) return;
+    const { at, scrollTop } = JSON.parse(raw);
+    if (Number.isFinite(at) && Date.now() - at >= 0 && Date.now() - at < 60_000
+      && Number.isFinite(scrollTop) && scrollTop >= 0) return scrollTop;
+  } catch { /* Session storage may be unavailable; updating still works. */ }
+}
 
 class KhmerCalendarApp {
   private settings: AppSettings;
@@ -29,6 +42,18 @@ class KhmerCalendarApp {
   private eventsFilter: number = 0; // 0 = All, 1 = Holidays, 2 = Observances, 3 = Holy Days, 4 = Custom
   private eventsSearchQuery: string = '';
   private cleanupSettings?: () => void;
+  private updateScrollTop = consumeUpdateReceipt();
+  private updater = new AppUpdater(
+    import.meta.env.PROD && 'serviceWorker' in navigator ? navigator.serviceWorker : undefined,
+    `${import.meta.env.BASE_URL}sw.js`, () => {
+      try {
+        sessionStorage.setItem(updateReceiptKey, JSON.stringify({
+          at: Date.now(), scrollTop: document.getElementById('screen-container')?.scrollTop ?? 0
+        }));
+      } catch { /* Do not block the update if session storage is unavailable. */ }
+      window.location.reload();
+    }, () => navigator.onLine, this.updateScrollTop !== undefined
+  );
 
   private monthPicker: MonthPickerModal;
   private eventsYearPicker: MonthPickerModal;
@@ -92,9 +117,13 @@ class KhmerCalendarApp {
     );
 
     this.applySettings();
+    if (this.updateScrollTop !== undefined) this.activePage = 2;
     this.render();
+    if (this.updateScrollTop !== undefined) {
+      document.getElementById('screen-container')!.scrollTop = this.updateScrollTop;
+    }
     bindMonthSwipe(document.getElementById('app')!, direction => this.changeMonth(direction));
-    this.initServiceWorker();
+    this.updater.start();
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => this.applySettings());
     // Refresh today after midnight or returning from another app.
     let lastToday = todayInZone(this.settings.todayTimeZone);
@@ -136,14 +165,6 @@ class KhmerCalendarApp {
     root.style.colorScheme = root.getAttribute('data-theme')!;
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content',
       root.getAttribute('data-theme') === 'dark' ? '#000000' : '#F2F2F7');
-  }
-
-  private initServiceWorker() {
-    if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-      navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(err => {
-        console.warn('Offline setup failed:', err);
-      });
-    }
   }
 
   private render() {
@@ -625,7 +646,7 @@ class KhmerCalendarApp {
       this.applySettings();
       this.render();
       document.getElementById('screen-container')!.scrollTop = scrollTop;
-    });
+    }, this.updater);
   }
 
 }

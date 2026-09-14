@@ -10,10 +10,19 @@ const ASSETS_TO_CACHE = /* __PRECACHE_ASSETS__ */ [];
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE.map(asset => new URL(asset, APP_URL).href));
+      // Revalidate stable URLs such as index.html instead of copying stale HTTP cache entries.
+      return cache.addAll(ASSETS_TO_CACHE.map(asset => new Request(new URL(asset, APP_URL).href, { cache: 'reload' })));
     })
   );
-  // Updates wait for existing tabs to close so HTML and assets stay together.
+  // Updates wait for existing tabs to close, or a user-initiated update check.
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data?.type !== 'SKIP_WAITING' || !event.source?.url) return;
+  const source = new URL(event.source.url);
+  if (source.origin === self.location.origin && source.pathname.startsWith(APP_PATH)) {
+    event.waitUntil(self.skipWaiting());
+  }
 });
 
 self.addEventListener('activate', (event) => {

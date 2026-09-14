@@ -33,6 +33,7 @@ Need help? See Apple's guides for [iPhone](https://support.apple.com/en-mide/gui
 
 - Works offline after the first full online load in your browser or installed app.
 - Your events and settings stay on your device. No account or sync; clearing app/site data removes them.
+- To update, tap **Check for update** in Settings. Available updates download and reload automatically; saved events and settings are kept.
 - Swipe left or right on the calendar to change months.
 - Scheduled reminders are not available in PWA mode.
 

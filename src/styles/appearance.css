@@ -1,4 +1,4 @@
-/* iOS surfaces and controls around the Android calendar's content and artwork. */
+/* Shared visual refinements for every platform, after the base component/layout rules. */
 @font-face { font-family: 'Kantumruy Pro'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/kantumruy-pro-400.ttf') format('truetype'); }
 @font-face { font-family: 'Kantumruy Pro'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/kantumruy-pro-500.ttf') format('truetype'); }
 @font-face { font-family: 'Kantumruy Pro'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/kantumruy-pro-600.ttf') format('truetype'); }
@@ -166,10 +166,10 @@ svg { flex-shrink: 0; }
 .accent-btn::before { content: ''; width: 22px; height: 22px; border-radius: 50%; background: var(--swatch); }
 .accent-btn.active { transform: none; }
 .accent-btn.active::before { outline: 2px solid var(--swatch); outline-offset: 3px; }
-.ios-switch { appearance: none; -webkit-appearance: none; width: 50px; height: 30px; flex-shrink: 0; border-radius: 20px; background: var(--outline-variant); position: relative; cursor: pointer; transition: background 0.2s; }
-.ios-switch::before { content: ''; position: absolute; width: 26px; height: 26px; left: 2px; top: 2px; border-radius: 50%; background: white; box-shadow: 0 2px 4px #0003; transition: transform 0.2s; }
-.ios-switch:checked { background: var(--accent); }
-.ios-switch:checked::before { transform: translateX(20px); }
+.settings-switch { appearance: none; -webkit-appearance: none; width: 50px; height: 30px; flex-shrink: 0; border-radius: 20px; background: var(--outline-variant); position: relative; cursor: pointer; transition: background 0.2s; }
+.settings-switch::before { content: ''; position: absolute; width: 26px; height: 26px; left: 2px; top: 2px; border-radius: 50%; background: white; box-shadow: 0 2px 4px #0003; transition: transform 0.2s; }
+.settings-switch:checked { background: var(--accent); }
+.settings-switch:checked::before { transform: translateX(20px); }
 .modal-overlay { display: none; position: fixed; top: var(--modal-top, 0px); left: var(--modal-left, 0px); width: var(--modal-width, 100%); height: var(--modal-height, 100%); z-index: 100; align-items: center; justify-content: center; padding: max(20px, var(--sat)) max(16px, var(--sar)) max(20px, var(--sab)) max(16px, var(--sal)); background: rgba(0,0,0,0.3); }
 .modal-overlay.open { display: flex; }
 .modal-dialog-surface { max-height: 100%; overflow-y: auto !important; overscroll-behavior: contain; padding: 24px; border: 0; border-radius: 24px; box-shadow: 0 20px 80px #0003; }
@@ -212,50 +212,6 @@ svg { flex-shrink: 0; }
 .custom-time-field .settings-select { justify-content: space-between; min-width: 62px; padding: 4px 6px; border-radius: 6px; font-variant-numeric: tabular-nums; }
 .time-field-separator { color: var(--on-surface-variant); }
 .full-lunar-date, .date-summary-lunar { white-space: pre-line; }
-/* Keep native overlay scrollbars on mobile; explicit widths reserve a gutter. */
-[data-auto-hide-scrollbars] ::-webkit-scrollbar { width: 5px; height: 5px; }
-[data-auto-hide-scrollbars] ::-webkit-scrollbar-thumb { background: var(--outline-variant); border-radius: 5px; }
-[data-auto-hide-scrollbars] ::-webkit-scrollbar-button { display: none; }
-/* Balance classic scrollbar space so content stays centered, even while idle. */
-[data-auto-hide-scrollbars] :is(.screen-container, .calendar-col-left, .calendar-col-right, .modal-dialog-surface, .date-details-content, .sources-content, .month-picker-grid, .settings-picker-menu, textarea) {
-  scrollbar-gutter: stable both-edges;
-}
-/* These shells delegate scrolling to an inner element; avoid a second gutter. */
-[data-auto-hide-scrollbars] :is(.date-details-dialog, .sources-dialog, .month-picker-dialog) { scrollbar-gutter: auto; }
-@media (min-width: 740px) and (orientation: landscape) {
-  [data-auto-hide-scrollbars] .screen-container:has(> .calendar-two-columns) { scrollbar-gutter: auto; }
-}
-/* Animate the thumb without changing scrollbar width or shifting the content. */
-@property --scrollbar-thumb-color {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: transparent;
-}
-@media (forced-colors: none) {
-  [data-auto-hide-scrollbars] :is(.screen-container, .calendar-col-left, .calendar-col-right, .modal-dialog-surface, .date-details-content, .sources-content, .month-picker-grid, .settings-picker-menu, textarea) {
-    --scrollbar-thumb-color: transparent;
-    scrollbar-width: thin;
-    scrollbar-color: var(--scrollbar-thumb-color) transparent;
-    transition: --scrollbar-thumb-color 200ms ease, transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-  [data-auto-hide-scrollbars] .is-scrolling {
-    --scrollbar-thumb-color: var(--on-surface-variant);
-    transition-duration: 0s, 0.2s;
-  }
-  @supports selector(::-webkit-scrollbar) {
-    /* Non-auto standard properties override Chromium's pseudo-element styles. */
-    [data-auto-hide-scrollbars] :is(.screen-container, .calendar-col-left, .calendar-col-right, .modal-dialog-surface, .date-details-content, .sources-content, .month-picker-grid, .settings-picker-menu, textarea) {
-      scrollbar-width: auto;
-      scrollbar-color: auto;
-    }
-    [data-auto-hide-scrollbars] ::-webkit-scrollbar { width: 10px; height: 10px; }
-    [data-auto-hide-scrollbars] ::-webkit-scrollbar-track { background: transparent; margin-block: 12px; }
-    [data-auto-hide-scrollbars] ::-webkit-scrollbar-thumb { background-color: var(--scrollbar-thumb-color); background-clip: padding-box; border: 2px solid transparent; border-radius: 10px; }
-    [data-auto-hide-scrollbars] ::-webkit-scrollbar-thumb:hover { background-color: var(--text-primary); }
-    [data-auto-hide-scrollbars] ::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
-    [data-auto-hide-scrollbars] ::-webkit-scrollbar-corner { background: transparent; }
-  }
-}
 @media (max-width: 599px) and (orientation: portrait) {
   .modal-overlay { align-items: flex-end; padding: var(--sat) 0 0; }
   .modal-dialog-surface { width: 100% !important; max-width: none !important; border-radius: 24px 24px 0 0; padding: 26px 20px max(24px, var(--sab)); max-height: 94%; }

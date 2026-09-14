@@ -1,3 +1,4 @@
+/* Layout follows viewport size/orientation, not the operating system. */
 .left-nav-rail { display: none; }
 .bottom-bar { display: flex; }
 .calendar-two-columns { width: 100%; max-width: 640px; }

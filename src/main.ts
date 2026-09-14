@@ -1,9 +1,6 @@
 // Copyright (c) 2026 RSG-KH | Apache-2.0 License
 
-import './styles/theme.css';
-import './styles/components.css';
-import './styles/responsive.css';
-import './styles/ios.css';
+import './styles/index.css';
 
 import { KhmerCalendar, toEpochDay, khmerNumber } from './domain/KhmerCalendar';
 import { KhmerDateDetails } from './domain/KhmerDateDetails';
@@ -176,7 +173,7 @@ class KhmerCalendarApp {
 
     const k = this.settings.language === 'km';
 
-    // Exact Material 3 Scaffold matching Android CalendarApp.kt lines 190-240
+    // Shared app shell; responsive styles choose bottom tabs or a navigation rail.
     appEl.innerHTML = `
       <div class="scaffold">
         <div class="scaffold-body">

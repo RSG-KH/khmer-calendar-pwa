@@ -1,0 +1,7 @@
+/* Shared cascade: base tokens/components, responsive layout, then visual refinements.
+   Scrollbar overrides come last and are gated by a platform-selected attribute. */
+@import './theme.css';
+@import './components.css';
+@import './responsive.css';
+@import './appearance.css';
+@import './scrollbars.css';

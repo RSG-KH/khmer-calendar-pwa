@@ -1,4 +1,4 @@
-/* Material 3 Components matching Android CalendarApp.kt exactly */
+/* Base component structure shared across platforms; appearance.css refines the visuals. */
 
 /* Top level Scaffold layout */
 .scaffold {
@@ -706,7 +706,7 @@
   transform: scale(0.92);
 }
 
-/* Dialog modal surface matching Android RoundedCornerShape(28.dp) */
+/* Base dialog surface; shared appearance rules provide the final shape and spacing. */
 .modal-dialog-surface {
   background: var(--bg-surface);
   border-radius: 28px;

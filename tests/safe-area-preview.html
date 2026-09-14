@@ -24,8 +24,8 @@
   <script type="module">
     const profiles = [
       { name: 'Desktop', width: 1366, height: 900, native: false },
-      { name: 'Android tablet portrait', width: 800, height: 1280 },
-      { name: 'Android tablet landscape', width: 1280, height: 800 },
+      { name: 'Android tablet portrait', width: 800, height: 1280, android: true },
+      { name: 'Android tablet landscape', width: 1280, height: 800, android: true },
       { name: 'iPad Pro M4 portrait', width: 834, height: 1210, top: 32, bottom: 20, font: 1.5 },
       { name: 'iPad portrait · default text', width: 834, height: 1194, top: 24, bottom: 20 },
       { name: 'iPad Pro M4 landscape', width: 1210, height: 834, top: 32, bottom: 20, font: 1.5 },
@@ -37,10 +37,10 @@
       { name: 'iPhone portrait · large text', width: 390, height: 844, top: 47, bottom: 34, font: 1.2 },
       { name: 'iPhone portrait · light theme', width: 390, height: 844, top: 59, bottom: 34, light: true },
       { name: 'iPhone landscape', width: 844, height: 390, left: 47, right: 47, bottom: 21 },
-      { name: 'Android phone portrait · system bars outside web viewport', width: 393, height: 873 },
-      { name: 'Android phone portrait · edge to edge', width: 393, height: 873, top: 32, bottom: 24 },
-      { name: 'Android phone landscape · left cutout', width: 873, height: 393, left: 44 },
-      { name: 'Android phone landscape · right cutout', width: 873, height: 393, right: 44 },
+      { name: 'Android phone portrait · system bars outside web viewport', width: 393, height: 873, android: true },
+      { name: 'Android phone portrait · edge to edge', width: 393, height: 873, top: 32, bottom: 24, android: true },
+      { name: 'Android phone landscape · left cutout', width: 873, height: 393, left: 44, android: true },
+      { name: 'Android phone landscape · right cutout', width: 873, height: 393, right: 44, android: true },
       { name: 'Narrow landscape · bottom navigation', width: 700, height: 360, left: 32, right: 16, bottom: 16 }
     ];
     const frame = document.querySelector('iframe');
@@ -70,6 +70,7 @@
       await new Promise(resolve => { frame.onload = resolve; frame.src = '/'; });
       const win = frame.contentWindow;
       const doc = win.document;
+      doc.documentElement.toggleAttribute('data-android', Boolean(profile.android));
       if (profile.native !== false) doc.documentElement.removeAttribute('data-auto-hide-scrollbars');
       for (const [property, edge] of [['--sat', 'top'], ['--sab', 'bottom'], ['--sal', 'left'], ['--sar', 'right']]) {
         doc.documentElement.style.setProperty(property, `${profile[edge] || 0}px`);
@@ -91,6 +92,9 @@
       check('App fills the available viewport', near(app.top, 0) && near(app.left, 0) && near(app.bottom, availableHeight) && near(app.right, win.innerWidth));
       check('Content clears top/right safe areas', content.top >= (profile.top || 0) - 1 && content.right <= win.innerWidth - (profile.right || 0) + 1);
       check('No horizontal page overflow', doc.documentElement.scrollWidth <= win.innerWidth + 1);
+      if (profile.android && profile.height >= profile.width) {
+        check('Android header has no extra top gutter', near(rect('.calendar-header').top, content.top));
+      }
       if (footer.height) {
         const tab = rect('.nav-tab');
         const pill = rect('.bottom-bar .nav-tab-pill');

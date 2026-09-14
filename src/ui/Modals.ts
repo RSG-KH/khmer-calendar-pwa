@@ -10,10 +10,10 @@ import { eventInstant, isSupportedDate, todayInZone } from '../domain/DateTime';
 import { escapeHtml } from './html';
 import { setupModal, showModal, hideModal } from './Modal';
 import { prefersNativeTimePicker } from './Platform';
-import { setupDesktopTimeField } from './TimeField';
+import { setupTimeField } from './TimeField';
 
 /* ==========================================================================
-   1. MONTH PICKER MODAL (3x4 grid)
+   1. MONTH / YEAR PICKER MODAL
    ========================================================================== */
 export class MonthPickerModal {
   private overlay: HTMLElement;
@@ -23,23 +23,27 @@ export class MonthPickerModal {
   private isKhmer: boolean = true;
   private selectedYear: number = this.currentYear;
 
-  constructor(onSelect: (year: number, month: number) => void) {
+  constructor(onSelect: (year: number, month: number) => void, private mode: 'month' | 'year' = 'month') {
     this.onSelect = onSelect;
     this.overlay = document.createElement('div');
     this.overlay.className = 'modal-overlay';
     setupModal(this.overlay, () => this.close());
     this.overlay.innerHTML = `
       <div class="modal-dialog-surface month-picker-dialog" style="max-width: 360px;">
+        ${mode === 'year' ? `<div class="year-picker-title-row">
+          <span class="year-picker-title"></span>
+          <button class="btn-today-pill btn-this-year"></button>
+        </div>` : ''}
         <div class="month-picker-header">
           <button class="arrow-btn btn-prev-year">${Icons.chevronLeft}</button>
           <input type="number" min="1800" max="2200" inputmode="numeric" enterkeyhint="done" class="year-display" style="width: 110px; border: 0; border-radius: 10px; background: var(--bg-surface-variant); text-align: center; font-size: calc(22px * var(--font-scale)); font-weight: 700; color: var(--text-primary);" />
           <button class="arrow-btn btn-next-year">${Icons.chevronRight}</button>
         </div>
-        <div class="month-picker-grid"></div>
+        ${mode === 'month' ? '<div class="month-picker-grid"></div>' : '<p class="year-picker-range">1800–2200</p>'}
         <div class="month-picker-footer">
-          <button class="btn-today-pill btn-close-modal" style="background: var(--accent); color: var(--on-accent); padding: 8px 20px; border-radius: 20px;">
+          ${mode === 'year' ? '<button class="btn-today-pill btn-close-modal"></button><button class="btn-today-pill btn-confirm-year" style="background: var(--accent); color: var(--on-accent);"></button>' : `<button class="btn-today-pill btn-close-modal" style="background: var(--accent); color: var(--on-accent); padding: 8px 20px; border-radius: 20px;">
             ${L.text('ui.close.7df7dc', true) || 'Close'}
-          </button>
+          </button>`}
         </div>
       </div>
     `;
@@ -57,13 +61,21 @@ export class MonthPickerModal {
     this.overlay.querySelector('.btn-close-modal')!.addEventListener('click', () => {
       this.close();
     });
+    this.overlay.querySelector('.btn-confirm-year')?.addEventListener('click', () => this.confirmYear());
+    this.overlay.querySelector('.btn-this-year')?.addEventListener('click', () => {
+      const year = Number(todayInZone(Storage.getSettings().todayTimeZone).slice(0, 4));
+      this.onSelect(year, this.currentMonth);
+      this.close();
+    });
 
     this.overlay.querySelector<HTMLInputElement>('.year-display')!.addEventListener('change', event => {
+      if (this.mode === 'year') { this.updateYearValidity(); return; }
       const value = (event.target as HTMLInputElement).valueAsNumber;
       if (Number.isInteger(value)) this.currentYear = Math.min(2200, Math.max(1800, value));
       this.render();
     });
     this.overlay.querySelector<HTMLInputElement>('.year-display')!.addEventListener('input', event => {
+      if (this.mode === 'year') { this.updateYearValidity(); return; }
       const value = (event.target as HTMLInputElement).valueAsNumber;
       if (Number.isInteger(value) && value >= 1800 && value <= 2200) {
         this.currentYear = value;
@@ -73,6 +85,7 @@ export class MonthPickerModal {
     this.overlay.querySelector<HTMLInputElement>('.year-display')!.addEventListener('keydown', event => {
       if (event.key === 'Enter') {
         event.preventDefault();
+        if (this.mode === 'year') { this.confirmYear(); return; }
         // Commit the year and dismiss the keyboard without closing the picker.
         this.overlay.focus({ preventScroll: true });
       }
@@ -91,11 +104,29 @@ export class MonthPickerModal {
     this.currentMonth = month;
     this.isKhmer = isKhmer;
     this.render();
-    showModal(this.overlay, isKhmer ? 'ជ្រើសរើសខែ' : 'Choose month');
+    showModal(this.overlay, this.mode === 'year' ? L.text('ui.choose_year.0853a0', isKhmer) : isKhmer ? 'ជ្រើសរើសខែ' : 'Choose month');
   }
 
   close() {
     hideModal(this.overlay);
+  }
+
+  private updateYearValidity(): boolean {
+    const input = this.overlay.querySelector<HTMLInputElement>('.year-display')!;
+    const value = input.valueAsNumber;
+    const valid = Number.isInteger(value) && value >= 1800 && value <= 2200;
+    input.setAttribute('aria-invalid', String(!valid));
+    this.overlay.querySelector<HTMLButtonElement>('.btn-confirm-year')!.disabled = !valid;
+    this.overlay.querySelector<HTMLButtonElement>('.btn-prev-year')!.disabled = !valid || value === 1800;
+    this.overlay.querySelector<HTMLButtonElement>('.btn-next-year')!.disabled = !valid || value === 2200;
+    if (valid) this.currentYear = value;
+    return valid;
+  }
+
+  private confirmYear() {
+    if (!this.updateYearValidity()) return;
+    this.onSelect(this.currentYear, this.currentMonth);
+    this.close();
   }
 
   private render() {
@@ -108,6 +139,14 @@ export class MonthPickerModal {
     next.disabled = this.currentYear === 2200;
     previous.setAttribute('aria-label', this.isKhmer ? 'ឆ្នាំមុន' : 'Previous year');
     next.setAttribute('aria-label', this.isKhmer ? 'ឆ្នាំបន្ទាប់' : 'Next year');
+    if (this.mode === 'year') {
+      this.overlay.querySelector('.year-picker-title')!.textContent = L.text('ui.choose_year.0853a0', this.isKhmer);
+      this.overlay.querySelector('.btn-this-year')!.textContent = L.text('ui.this_year.02e981', this.isKhmer);
+      this.overlay.querySelector('.btn-close-modal')!.textContent = L.text('ui.cancel.5bf834', this.isKhmer);
+      this.overlay.querySelector('.btn-confirm-year')!.textContent = L.text('ui.go.ba4f19', this.isKhmer);
+      this.updateYearValidity();
+      return;
+    }
     this.overlay.querySelector('.btn-close-modal')!.textContent = L.text('ui.close.7df7dc', this.isKhmer);
 
     const grid = this.overlay.querySelector('.month-picker-grid')!;
@@ -431,7 +470,7 @@ export class CustomEventModal {
     const nativeTimePicker = prefersNativeTimePicker();
 
     this.overlay.innerHTML = `
-      <div class="modal-dialog-surface ${nativeTimePicker ? '' : 'desktop-event-editor'}" style="max-width: 440px; width: 92%;">
+      <div class="modal-dialog-surface ${nativeTimePicker ? '' : 'custom-time-editor'}" style="max-width: 440px; width: 92%;">
         <div style="font-size: calc(18px * var(--font-scale)); font-weight: 600; color: var(--text-primary); margin-bottom: 16px;">
           ${isEdit ? L.text('ui.edit_event.c29d7a', isKhmer) : L.text('ui.add_event.bf2f10', isKhmer)}
         </div>
@@ -462,7 +501,7 @@ export class CustomEventModal {
               ${nativeTimePicker ? `<div class="event-native-field">
                 <input type="time" id="ev-time" step="60" value="${escapeHtml(initialTime)}" />
               </div>` : `<input type="hidden" id="ev-time" value="${escapeHtml(initialTime)}" />
-              <div class="desktop-time-field" role="group" aria-labelledby="ev-time-label"></div>`}
+              <div class="custom-time-field" role="group" aria-labelledby="ev-time-label"></div>`}
             </div>
           </div>
 
@@ -493,8 +532,8 @@ export class CustomEventModal {
 
     const form = this.overlay.querySelector('#custom-event-form') as HTMLFormElement;
     if (!nativeTimePicker) {
-      this.cleanupTimeField = setupDesktopTimeField(
-        form.querySelector('.desktop-time-field')!, form.querySelector<HTMLInputElement>('#ev-time')!, isKhmer
+      this.cleanupTimeField = setupTimeField(
+        form.querySelector('.custom-time-field')!, form.querySelector<HTMLInputElement>('#ev-time')!, isKhmer
       );
     }
     form.addEventListener('submit', (e) => {

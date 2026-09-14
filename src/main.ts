@@ -31,6 +31,7 @@ class KhmerCalendarApp {
   private cleanupSettings?: () => void;
 
   private monthPicker: MonthPickerModal;
+  private eventsYearPicker: MonthPickerModal;
   private dateDetailsModal: DateDetailsDialogModal;
   private eventDetailsModal: EventDetailsDialogModal;
   private customEventModal: CustomEventModal;
@@ -50,6 +51,11 @@ class KhmerCalendarApp {
       this.selectedDateStr = `${year}-${String(month).padStart(2, '0')}-01`;
       this.render();
     });
+
+    this.eventsYearPicker = new MonthPickerModal(year => {
+      this.eventsYear = year;
+      this.render();
+    }, 'year');
 
     this.customEventModal = new CustomEventModal(event => {
       this.eventsYear = Number(event.date.slice(0, 4));
@@ -541,9 +547,9 @@ class KhmerCalendarApp {
           <span class="events-title">${L.text('ui.events.11d867', k)}</span>
           <div class="events-year-nav">
             <button class="arrow-btn btn-prev-events-year" ${this.eventsYear === 1800 ? 'disabled' : ''} aria-label="${k ? 'ឆ្នាំមុន' : 'Previous year'}">${Icons.chevronLeft}</button>
-            <span style="font-size: 20px; font-weight: 700; color: var(--text-primary); min-width: 60px; text-align: center;">
+            <button class="btn-events-year" aria-haspopup="dialog" aria-label="${L.text('ui.choose_year.0853a0', k)}: ${CalendarWords.number(this.eventsYear, k)}">
               ${CalendarWords.number(this.eventsYear, k)}
-            </span>
+            </button>
             <button class="arrow-btn btn-next-events-year" ${this.eventsYear === 2200 ? 'disabled' : ''} aria-label="${k ? 'ឆ្នាំបន្ទាប់' : 'Next year'}">${Icons.chevronRight}</button>
           </div>
           <button class="add-event-button btn-fab-add" aria-label="${L.text('ui.add_event.bf2f10', k)}">${Icons.add}</button>
@@ -570,6 +576,9 @@ class KhmerCalendarApp {
     `;
 
     // Navigation
+    container.querySelector('.btn-events-year')?.addEventListener('click', () => {
+      this.eventsYearPicker.open(this.eventsYear, 1, k);
+    });
     container.querySelector('.btn-prev-events-year')?.addEventListener('click', () => {
       this.eventsYear--;
       this.render();

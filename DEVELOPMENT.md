@@ -63,7 +63,7 @@ If hosting at another address, update `installUrl` in [Settings.ts](src/ui/Setti
 - Calendar data, fonts, artwork and licenses are bundled for offline use after the first full online load in that browser or installed app. The service worker runs only in production; the development server and a plain HTTP LAN address do not provide offline installation on iPad.
 - Events and settings stay in local storage for that site and browser/app profile. There is no account or sync; changing the site address does not migrate data, and clearing site data removes it.
 - Deploy the complete build together. Cached updates activate after the old app windows/tabs close.
-- Time entry uses native pickers on iOS/iPadOS and Android, and themed 24-hour hour/minute menus on desktop browsers. The desktop menus support keyboard navigation and follow the app theme.
+- Time entry uses native pickers on iOS/iPadOS, and themed 24-hour hour/minute menus on Android and desktop browsers. The menus support touch and keyboard navigation and follow the app theme.
 - Month navigation supports swipes, mouse dragging and arrow buttons while preserving vertical scrolling and date taps.
 - Production builds include a Content Security Policy allowing local scripts/assets and the UI's inline styles. GitHub Actions are pinned to verified commits.
 - Scheduled reminders are not available in PWA mode. The unused [push prototype](worker/push-scheduler.js) is not part of the Pages deployment and does not send reminders.

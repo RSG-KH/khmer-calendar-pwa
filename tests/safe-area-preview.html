@@ -17,7 +17,7 @@
     <label for="profile">Safe-area profile</label>
     <select id="profile"></select>
     <button id="run" type="button">Run all checks</button>
-    <p>Layout simulation only. Cutout insets and viewport-unit shortfalls are simulated; browser/OS-owned screen regions still need testing on real devices.</p>
+    <p>Layout simulation only. Cutout insets are simulated; browser/OS-owned screen regions and WebKit viewport behavior still need testing on real devices.</p>
     <pre id="result" role="status">Loading…</pre>
   </header>
   <iframe title="Khmer Calendar safe-area preview"></iframe>
@@ -26,11 +26,11 @@
       { name: 'Desktop', width: 1366, height: 900, native: false },
       { name: 'Android tablet portrait', width: 800, height: 1280 },
       { name: 'Android tablet landscape', width: 1280, height: 800 },
-      { name: 'iPad portrait', width: 834, height: 1194, top: 24, bottom: 20, font: 1.5 },
-      { name: 'iPad portrait · short viewport units', width: 834, height: 1194, top: 24, bottom: 20, shortfall: 20, font: 1.5 },
-      { name: 'iPad landscape', width: 1194, height: 834, top: 24, bottom: 20, font: 1.5 },
+      { name: 'iPad Pro M4 portrait', width: 834, height: 1210, top: 32, bottom: 20, font: 1.5 },
+      { name: 'iPad portrait · default text', width: 834, height: 1194, top: 24, bottom: 20 },
+      { name: 'iPad Pro M4 landscape', width: 1210, height: 834, top: 32, bottom: 20, font: 1.5 },
       { name: 'iPhone portrait', width: 390, height: 844, top: 47, bottom: 34 },
-      { name: 'iPhone portrait · short viewport units', width: 390, height: 844, top: 47, bottom: 34, shortfall: 34 },
+      { name: 'iPhone portrait · large text', width: 390, height: 844, top: 47, bottom: 34, font: 1.2 },
       { name: 'iPhone portrait · light theme', width: 390, height: 844, top: 59, bottom: 34, light: true },
       { name: 'iPhone landscape', width: 844, height: 390, left: 47, right: 47, bottom: 21 },
       { name: 'Android phone portrait · system bars outside web viewport', width: 393, height: 873 },
@@ -44,13 +44,6 @@
     const result = document.querySelector('#result');
     const run = document.querySelector('#run');
     profiles.forEach((profile, index) => picker.add(new Option(profile.name, String(index))));
-
-    function simulateShortViewportUnits(rules, shortfall) {
-      for (const rule of rules) {
-        if (rule.style?.height === '100dvh') rule.style.height = `calc(100dvh - ${shortfall}px)`;
-        if (rule.cssRules) simulateShortViewportUnits(rule.cssRules, shortfall);
-      }
-    }
 
     async function inspect(index) {
       const profile = profiles[index];
@@ -66,9 +59,7 @@
       }
       doc.documentElement.style.setProperty('--font-scale', String(profile.font || 1));
       doc.documentElement.setAttribute('data-theme', profile.light ? 'light' : 'dark');
-      if (profile.shortfall) {
-        for (const sheet of doc.styleSheets) simulateShortViewportUnits(sheet.cssRules, profile.shortfall);
-      }
+      await doc.fonts.ready;
       await new Promise(resolve => win.requestAnimationFrame(() => win.requestAnimationFrame(resolve)));
       const rect = selector => doc.querySelector(selector).getBoundingClientRect();
       const app = rect('#app');
@@ -83,13 +74,18 @@
       check('No horizontal page overflow', doc.documentElement.scrollWidth <= win.innerWidth + 1);
       if (footer.height) {
         const tab = rect('.nav-tab');
+        const pill = rect('.bottom-bar .nav-tab-pill');
+        const label = rect('.nav-tab-label');
+        const bottomPadding = Math.max(4, profile.bottom || 0);
         check('Footer background reaches bottom and both sides', near(footer.bottom, win.innerHeight) && near(footer.left, 0) && near(footer.right, win.innerWidth));
-        check('Bottom inset is counted once', near(footer.height, 60 + (profile.bottom || 0)) && tab.height <= 60 && near(tab.bottom, win.innerHeight - (profile.bottom || 0)));
+        check('Controls clear the Home indicator', near(tab.bottom, win.innerHeight - bottomPadding) && label.bottom <= tab.bottom + 1);
+        check('Footer fits labels without a second bottom gap', footer.height >= 60 && footer.bottom - label.bottom <= bottomPadding + 8 && pill.top >= footer.top);
         check('Footer buttons clear side cutouts', tab.left >= (profile.left || 0) - 1 && doc.querySelector('.bottom-bar').lastElementChild.getBoundingClientRect().right <= win.innerWidth - (profile.right || 0) + 1);
       } else {
         const item = rect('.rail-item');
         const railWidth = win.innerHeight < 600 ? 69 : 77.4;
         check('Rail background reaches camera-side edge', near(rail.left, 0));
+        check('Rail and content reach the bottom edge', near(rail.bottom, win.innerHeight) && near(content.bottom, win.innerHeight));
         check('Rail controls keep their original width and clear cutout', near(rail.width, railWidth + (profile.left || 0)) && item.left >= (profile.left || 0) - 1);
       }
       return { profile: profile.name, passed: checks.every(check => check.passed), checks };

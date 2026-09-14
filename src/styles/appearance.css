@@ -28,10 +28,10 @@
   --nav-background: rgba(28, 28, 30, 0.88);
   --zodiac-watermark-opacity: 0.03;
 }
-/* Anchor the shell to the viewport, including the Home indicator area. Some
-   standalone browsers report viewport units shorter than this fixed area. */
+/* Keep the shell in normal flow. Fixed bottom anchoring left an extra strip
+   below the app in installed iPad apps; size the root directly instead. */
 html, body { height: 100%; }
-#app { position: fixed; inset: 0; width: auto; height: auto; }
+#app { position: relative; width: 100%; height: 100%; height: 100dvh; }
 body { font-size: calc(15px * var(--font-scale)); }
 button, input, textarea, select { font-family: inherit; }
 [hidden] { display: none !important; }
@@ -90,8 +90,10 @@ svg { flex-shrink: 0; }
 .event-row-bar { height: 32px; width: 2px; margin-inline: 9px 12px; }
 .event-row-kind { line-height: 1.5; }
 .event-row-chevron { opacity: 0.6; }
-.bottom-bar { height: calc(60px + var(--sab)); padding-left: var(--sal); padding-right: var(--sar); background: var(--nav-background); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
-.nav-tab { gap: 0; }
+/* Let the controls set the row height. The Home indicator inset replaces
+   ordinary bottom padding instead of adding a second empty row below it. */
+.bottom-bar { height: auto; min-height: 60px; align-items: stretch; padding-top: 4px; padding-bottom: max(4px, var(--sab)); padding-left: var(--sal); padding-right: var(--sar); background: var(--nav-background); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+.nav-tab { height: auto; gap: 0; }
 /* Give the icon vertical padding while keeping its label close. */
 .nav-tab-pill { background: transparent; width: 44px; height: 26px; }
 .nav-tab svg { width: 20.7px; height: 20.7px; }

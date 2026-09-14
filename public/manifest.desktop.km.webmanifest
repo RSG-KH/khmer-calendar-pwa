@@ -1,0 +1,21 @@
+{
+  "name": "ប្រតិទិនខ្មែរ",
+  "short_name": "ប្រតិទិនខ្មែរ",
+  "lang": "km",
+  "description": "ប្រតិទិនចន្ទគតិខ្មែរ ថ្ងៃសីល និងថ្ងៃឈប់សម្រាកនៅកម្ពុជា",
+  "start_url": "./",
+  "id": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0C0E12",
+  "theme_color": "#4564B5",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icons/app-icon-desktop-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

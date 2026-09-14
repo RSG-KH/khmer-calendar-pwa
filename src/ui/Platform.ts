@@ -12,7 +12,10 @@ export function isAndroid(client: ClientPlatform = navigator): boolean {
 
 export function appManifestFile(language: 'en' | 'km', client: ClientPlatform = navigator): string {
   // Preserve Android's original manifest URLs and artwork for existing installs.
-  const iconVariant = isAndroid(client) ? '' : '.white';
+  // Check Android first: its platform/user agent can also contain Linux.
+  const platform = client.userAgentData?.platform || client.platform || client.userAgent || '';
+  const iconVariant = isAndroid(client) ? ''
+    : !isApple(client) && /Win|Linux/i.test(platform) ? '.desktop' : '.white';
   return `manifest${iconVariant}${language === 'km' ? '.km' : ''}.webmanifest`;
 }
 

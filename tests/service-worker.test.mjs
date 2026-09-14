@@ -142,7 +142,7 @@ test('Home Screen metadata resolves inside the deployed app and its icons are av
   await app.lifecycle('install');
   app.state.offline = true;
   // Every language/platform variant must install the same app and work offline.
-  for (const file of ['manifest.webmanifest', 'manifest.km.webmanifest', 'manifest.white.webmanifest', 'manifest.white.km.webmanifest']) {
+  for (const file of ['manifest.webmanifest', 'manifest.km.webmanifest', 'manifest.white.webmanifest', 'manifest.white.km.webmanifest', 'manifest.desktop.webmanifest', 'manifest.desktop.km.webmanifest']) {
     const manifestUrl = new URL(file, appUrl);
     const manifest = await (await app.request(manifestUrl.href)).json();
     for (const field of ['start_url', 'scope', 'id']) {

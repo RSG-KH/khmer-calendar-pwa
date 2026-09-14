@@ -11,6 +11,13 @@ export function isApple(client: ClientPlatform = navigator): boolean {
     || /Macintosh|iPhone|iPad|iPod/i.test(client.userAgent ?? '');
 }
 
+// Android and Apple already hide overlay scrollbars without taking layout space.
+export function prefersNativeScrollbars(client: ClientPlatform = navigator): boolean {
+  return isApple(client)
+    || /Android/i.test(client.userAgentData?.platform ?? '')
+    || /Android/i.test(client.userAgent ?? '');
+}
+
 // Keep device-specific choices stable when rotating or resizing the app.
 export function isPhone(client: ClientPlatform = navigator): boolean {
   const agent = client.userAgent ?? '';

@@ -212,9 +212,10 @@ svg { flex-shrink: 0; }
 .custom-time-field .settings-select { justify-content: space-between; min-width: 62px; padding: 4px 6px; border-radius: 6px; font-variant-numeric: tabular-nums; }
 .time-field-separator { color: var(--on-surface-variant); }
 .full-lunar-date, .date-summary-lunar { white-space: pre-line; }
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-thumb { background: var(--outline-variant); border-radius: 5px; }
-::-webkit-scrollbar-button { display: none; }
+/* Keep native overlay scrollbars on mobile; explicit widths reserve a gutter. */
+[data-auto-hide-scrollbars] ::-webkit-scrollbar { width: 5px; height: 5px; }
+[data-auto-hide-scrollbars] ::-webkit-scrollbar-thumb { background: var(--outline-variant); border-radius: 5px; }
+[data-auto-hide-scrollbars] ::-webkit-scrollbar-button { display: none; }
 /* Animate the thumb without changing scrollbar width or shifting the content. */
 @property --scrollbar-thumb-color {
   syntax: '<color>';

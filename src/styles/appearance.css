@@ -51,6 +51,11 @@ svg { flex-shrink: 0; }
 /* Inset content and controls, so navigation backgrounds can reach the edges. */
 .scaffold-body { min-height: 0; padding-left: var(--sal); padding-right: var(--sar); }
 .screen-container { min-width: 0; min-height: 0; padding-bottom: 28px; overscroll-behavior-y: contain; scrollbar-width: thin; }
+/* The Android header has its own padding. Remove the extra portrait gutter;
+   the scaffold still handles any safe-area inset reported by the browser. */
+@media (orientation: portrait) {
+  [data-android] .screen-container { padding-top: 0; }
+}
 .calendar-header { container: calendar-header / inline-size; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: auto; min-height: 60px; margin-bottom: 8px; }
 .header-year-btn { justify-self: start; }
 .header-month-nav { justify-self: center; }

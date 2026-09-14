@@ -17,6 +17,18 @@ Open [localhost:5173](http://localhost:5173/). The development server stays on p
 
 Open `/tests/device-preview.html` on that server to check phone/tablet layouts and simulate keyboard space. This is a layout aid, not a real keyboard or device emulator.
 
+## UI code and styles
+
+The PWA shares one visual design across platforms. `main.ts` imports [src/styles/index.css](src/styles/index.css), which defines the stylesheet order:
+
+- [theme.css](src/styles/theme.css): base colors, sizing tokens and resets.
+- [components.css](src/styles/components.css): base component structure.
+- [responsive.css](src/styles/responsive.css): layout changes for viewport size and orientation.
+- [appearance.css](src/styles/appearance.css): shared fonts, surface colors, controls and visual refinements on every platform.
+- [scrollbars.css](src/styles/scrollbars.css): custom scrollbar appearance, centering and column spacing, scoped to `[data-auto-hide-scrollbars]`.
+
+[Platform.ts](src/ui/Platform.ts) owns device-specific choices for native time pickers, native scrollbars and phone font-size limits. [Scrollbars.ts](src/ui/Scrollbars.ts) enables the scrollbar attribute and manages the idle fade on selected desktop platforms; Android and Apple devices keep native scrollbars. Keep platform exceptions explicit instead of naming shared controls after an OS.
+
 ## Build and test
 
 ```sh
@@ -72,4 +84,4 @@ If hosting at another address, update `installUrl` in [Settings.ts](src/ui/Setti
 - Production builds include a Content Security Policy allowing local scripts/assets and the UI's inline styles. GitHub Actions are pinned to verified commits.
 - Scheduled reminders are not available in PWA mode. The unused [push prototype](worker/push-scheduler.js) is not part of the Pages deployment and does not send reminders.
 
-After deployment, check installed launch, offline reopening and event persistence on physical target devices. Use the [README's Apple installation steps](README.md#install-on-iphone-or-ipad) for Home Screen and Dock testing.
+After deployment, check installed launch, offline reopening, **Check for update**, and event persistence on physical target devices. Follow the README's installation steps for [iPhone/iPad](README.md#install-on-iphone-or-ipad), [Mac](README.md#install-on-mac), [Android](README.md#install-on-android), [Windows](README.md#install-on-windows) and [Linux](README.md#install-on-linux).

@@ -18,7 +18,7 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
   const toggle = (key: 'mondayFirst' | 'highlightSunday' | 'showLunar' | 'holyDayMarkers' | 'showHolyDaysInEvents', title: string, subtitle: string) => `
     <label class="settings-row" for="setting-${key}">
       <span class="settings-text-col"><span class="settings-title">${text(title)}</span><span class="settings-subtitle">${text(subtitle)}</span></span>
-      <input class="ios-switch" type="checkbox" role="switch" id="setting-${key}" data-setting="${key}" ${settings[key] ? 'checked' : ''} />
+      <input class="settings-switch" type="checkbox" role="switch" id="setting-${key}" data-setting="${key}" ${settings[key] ? 'checked' : ''} />
     </label>`;
 
   container.innerHTML = `

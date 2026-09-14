@@ -1,4 +1,5 @@
-/* Material 3 Palette & Tokens matching Android Theme.kt exactly */
+/* Base palette, sizing tokens and resets shared across platforms.
+   appearance.css supplies the final surface colors and typography. */
 :root {
   --font-scale: 1;
   --font-family: 'Kantumruy Pro', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;

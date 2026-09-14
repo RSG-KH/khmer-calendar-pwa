@@ -4,6 +4,8 @@ const scrollContainers = '.screen-container, .calendar-col-left, .calendar-col-r
   + '.modal-dialog-surface, .date-details-content, .sources-content, '
   + '.month-picker-grid, .settings-picker-menu, textarea';
 
+// Call only when Platform.prefersNativeScrollbars() is false. The attribute opts
+// into styles/scrollbars.css, including its balanced gutters and column spacing.
 export function bindAutoHideScrollbars(doc: Document = document): () => void {
   const timers = new Map<HTMLElement, ReturnType<typeof setTimeout>>();
   doc.documentElement.setAttribute('data-auto-hide-scrollbars', '');

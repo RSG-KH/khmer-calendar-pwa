@@ -16,7 +16,7 @@ import { MonthPickerModal, CustomEventModal, DateDetailsDialogModal, EventDetail
 import { todayInZone } from './domain/DateTime';
 import { escapeHtml } from './ui/html';
 import { renderSettings } from './ui/Settings';
-import { isApple } from './ui/Platform';
+import { prefersNativeScrollbars } from './ui/Platform';
 import { bindAutoHideScrollbars } from './ui/Scrollbars';
 import { adjacentMonth, bindMonthSwipe, MonthDirection } from './ui/MonthSwipe';
 import { AppUpdater } from './ui/AppUpdater';
@@ -63,7 +63,7 @@ class KhmerCalendarApp {
   private customEventModal: CustomEventModal;
 
   constructor() {
-    if (!isApple()) bindAutoHideScrollbars();
+    if (!prefersNativeScrollbars()) bindAutoHideScrollbars();
     this.settings = Storage.getSettings();
     this.selectedDateStr = todayInZone(this.settings.todayTimeZone);
     const [year, month] = this.selectedDateStr.split('-').map(Number);

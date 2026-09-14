@@ -4,7 +4,7 @@ import { createServer } from 'vite';
 
 const server = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom' });
 after(() => server.close());
-const { isApple, isPhone, prefersNativeTimePicker } = await server.ssrLoadModule('/src/ui/Platform.ts');
+const { isApple, isPhone, prefersNativeScrollbars, prefersNativeTimePicker } = await server.ssrLoadModule('/src/ui/Platform.ts');
 
 test('phone font-size choices stay limited on iPhone and Android phone browsers', () => {
   for (const client of [
@@ -50,6 +50,24 @@ test('iPhone and iPad retain native time pickers, including desktop-mode iPadOS'
   assert.equal(prefersNativeTimePicker({ userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)', platform: 'iPhone' }), true);
   assert.equal(prefersNativeTimePicker({ userAgent: 'Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS X)', platform: 'iPad' }), true);
   assert.equal(prefersNativeTimePicker({ userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)', platform: 'MacIntel', maxTouchPoints: 5 }), true);
+});
+
+test('Android and Apple retain overlay scrollbars while desktop platforms use auto-hide styling', () => {
+  for (const client of [
+    { userAgent: 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36' },
+    { userAgent: 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Safari/537.36', maxTouchPoints: 5 },
+    // Android desktop mode can remove Android from the legacy user agent.
+    { userAgent: 'Mozilla/5.0 (X11; Linux x86_64)', userAgentData: { platform: 'Android', mobile: false } },
+    { platform: 'iPhone' },
+    { platform: 'MacIntel', maxTouchPoints: 5 },
+    { userAgentData: { platform: 'macOS' } }
+  ]) assert.equal(prefersNativeScrollbars(client), true);
+  for (const client of [
+    { platform: 'Win32', maxTouchPoints: 10 },
+    { userAgentData: { platform: 'Windows' } },
+    { platform: 'Linux x86_64' },
+    { userAgentData: { platform: 'Chrome OS' } }
+  ]) assert.equal(prefersNativeScrollbars(client), false);
 });
 
 test('Android phones and tablets use themed 24-hour controls regardless of native clock format', () => {

@@ -6,11 +6,12 @@ const server = await createServer({ server: { middlewareMode: true, ws: false },
 after(() => server.close());
 const { adjacentMonth, bindMonthSwipe } = await server.ssrLoadModule('/src/ui/MonthSwipe.ts');
 
-function fixture() {
+function fixture(width = 640) {
   const host = new EventTarget();
   const doc = Object.assign(new EventTarget(), { defaultView: host });
   const captures = new Set();
-  let card = {};
+  const createCard = () => ({ getBoundingClientRect: () => ({ width }) });
+  let card = createCard();
   const cell = { closest: () => card };
   const root = Object.assign(new EventTarget(), {
     ownerDocument: doc,
@@ -22,7 +23,7 @@ function fixture() {
   const months = [];
   const cleanup = bindMonthSwipe(root, direction => {
     months.push(direction);
-    card = {}; // Rendering replaces the month card, but keeps the app root.
+    card = createCard(); // Rendering replaces the month card, but keeps the app root.
   });
   function emit(type, props = {}) {
     const event = new Event(type, { cancelable: true });
@@ -69,9 +70,9 @@ test('date taps and keyboard activation still work after a swipe', () => {
   f.cleanup();
 });
 
-test('short, vertical and diagonal drags do not change the month or click a date', () => {
+test('short, vertical and undecided diagonal drags do not change the month or click a date', () => {
   const f = fixture();
-  for (const [dx, dy] of [[60, 0], [10, 180], [100, 100], [140, 110]]) {
+  for (const [dx, dy] of [[60, 0], [10, 180], [100, 100], [140, 125]]) {
     f.drag(dx, dy);
     assert.ok(f.emit('click', { detail: 1 }).defaultPrevented);
   }
@@ -82,6 +83,41 @@ test('short, vertical and diagonal drags do not change the month or click a date
   f.emit('pointermove', { clientX: 40, clientY: 136 });
   f.emit('pointerup', { clientX: 40, clientY: 136 });
   assert.deepEqual(f.months, [], 'a vertical start cannot turn into a month swipe');
+  f.cleanup();
+});
+
+test('portrait grids accept shorter swipes in both directions without opening dates', () => {
+  const f = fixture(350);
+  f.drag(-50, 15);
+  assert.deepEqual(f.months, [1]);
+  assert.ok(f.emit('click', { detail: 1 }).defaultPrevented);
+  f.drag(50, 15);
+  assert.deepEqual(f.months, [1, -1]);
+  assert.ok(f.emit('click', { detail: 1 }).defaultPrevented);
+  f.drag(20, 2);
+  assert.deepEqual(f.months, [1, -1], 'small finger movements must not turn the page');
+  f.cleanup();
+});
+
+test('a diagonal start can settle into a horizontal swipe without an early vertical lock', () => {
+  const f = fixture(350);
+  f.emit('pointerdown');
+  f.emit('pointermove', { clientX: 214, clientY: 113 });
+  assert.equal(f.captures.size, 0, 'wait until the direction is clear');
+  f.emit('pointermove', { clientX: 240, clientY: 120 });
+  assert.ok(f.captures.has(1));
+  f.emit('pointerup', { clientX: 255, clientY: 125 });
+  assert.deepEqual(f.months, [-1]);
+  f.cleanup();
+});
+
+test('short swipes still work when movement events are sparse', () => {
+  const f = fixture(350);
+  f.emit('pointerdown');
+  f.emit('pointermove', { clientX: 205, clientY: 102 });
+  f.emit('pointerup', { clientX: 250, clientY: 110 });
+  assert.deepEqual(f.months, [-1]);
+  assert.ok(f.emit('click', { detail: 1 }).defaultPrevented);
   f.cleanup();
 });
 

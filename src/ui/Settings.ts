@@ -70,8 +70,10 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
         <button class="about-sources">${text('ui.calendar_sources_licenses.c2bdb3')}</button>
         <div class="about-credits settings-subtitle">
           <p>RSG-KH · ${text('app.name')} (PWA)<br>${L.text('about.version', k, { version })}</p>
-          <a href="https://github.com/RSG-KH/khmer-calendar-pwa" target="_blank" rel="noopener noreferrer">PWA · RSG-KH/khmer-calendar-pwa</a>
-          <a href="https://github.com/RSG-KH/khmer-calendar" target="_blank" rel="noopener noreferrer">Android · RSG-KH/khmer-calendar</a>
+          <div class="about-repo-links">
+            <a href="https://github.com/RSG-KH/khmer-calendar-pwa" target="_blank" rel="noopener noreferrer">PWA · RSG-KH/khmer-calendar-pwa</a>
+            <a href="https://github.com/RSG-KH/khmer-calendar" target="_blank" rel="noopener noreferrer">Android · RSG-KH/khmer-calendar</a>
+          </div>
         </div>
         <div class="app-update-controls">
           <button type="button" class="about-update" aria-live="polite"></button>
@@ -95,8 +97,8 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
     unavailable: k ? 'មិនអាចពិនិត្យរកកំណែថ្មីក្នុងការមើលសាកល្បង ឬកម្មវិធីរុករកនេះបានទេ។' : 'Update checks are unavailable in this preview or browser.'
   };
   const unsubscribeUpdate = updater.subscribe(state => {
-    updateButton.textContent = state === 'updated' ? (k ? 'បានធ្វើបច្ចុប្បន្នភាព' : 'Updated')
-      : state === 'current' ? (k ? 'គ្មានកំណែថ្មី' : 'No update available')
+    updateButton.textContent = state === 'updated' ? (k ? 'បានដំឡើងកំណែថ្មីហើយ' : 'Updated')
+      : state === 'current' ? (k ? 'គ្មានកំណែថ្មីទេ' : 'No update available')
       : k ? 'ពិនិត្យរកកំណែថ្មី' : 'Check for update';
     updateButton.disabled = ['checking', 'downloading', 'updating', 'updated', 'current', 'unavailable'].includes(state);
     updateButton.setAttribute('aria-busy', String(['checking', 'downloading', 'updating'].includes(state)));

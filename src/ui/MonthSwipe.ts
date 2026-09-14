@@ -2,6 +2,15 @@ import { KhmerCalendar } from '../domain/KhmerCalendar';
 
 export type MonthDirection = -1 | 1;
 
+const axisBias = 1.25;
+
+function gestureAxis(dx: number, dy: number): 'x' | 'y' | undefined {
+  if (Math.max(dx, dy) < 12) return;
+  if (dx > dy * axisBias) return 'x';
+  if (dy > dx * axisBias) return 'y';
+  // A diagonal start needs more movement before choosing an axis.
+}
+
 export function adjacentMonth(year: number, month: number, direction: MonthDirection) {
   const index = year * 12 + month - 1 + direction;
   const nextYear = Math.floor(index / 12);
@@ -13,7 +22,7 @@ export function adjacentMonth(year: number, month: number, direction: MonthDirec
 export function bindMonthSwipe(root: HTMLElement, onSwipe: (direction: MonthDirection) => void): () => void {
   const doc = root.ownerDocument;
   const host = doc.defaultView;
-  let gesture: { id: number; x: number; y: number; card: Element; axis?: 'x' | 'y' } | undefined;
+  let gesture: { id: number; x: number; y: number; card: Element; threshold: number; axis?: 'x' | 'y' } | undefined;
   let suppressClick = false;
 
   const cancel = () => {
@@ -34,7 +43,9 @@ export function bindMonthSwipe(root: HTMLElement, onSwipe: (direction: MonthDire
     suppressClick = false;
     const card = (event.target as Element | null)?.closest?.('.calendar-month-card');
     if (card && root.contains(card)) {
-      gesture = { id: event.pointerId, x: event.clientX, y: event.clientY, card };
+      // Shorter travel on phone-sized grids, with enough distance to reject tap jitter.
+      const threshold = Math.min(64, Math.max(36, card.getBoundingClientRect().width * 0.12));
+      gesture = { id: event.pointerId, x: event.clientX, y: event.clientY, card, threshold };
     }
   };
 
@@ -49,8 +60,8 @@ export function bindMonthSwipe(root: HTMLElement, onSwipe: (direction: MonthDire
     if (Math.max(dx, dy) < 10) return;
     suppressClick = true;
     if (!gesture.axis) {
-      // Lock vertical/diagonal movement out of month navigation for the whole gesture.
-      gesture.axis = dx > dy * 1.5 ? 'x' : 'y';
+      // Once clearly vertical, leave the entire gesture to scrolling.
+      gesture.axis = gestureAxis(dx, dy);
       if (gesture.axis === 'x') root.setPointerCapture(event.pointerId);
     }
   };
@@ -62,9 +73,10 @@ export function bindMonthSwipe(root: HTMLElement, onSwipe: (direction: MonthDire
     const dx = event.clientX - completed.x;
     const dy = event.clientY - completed.y;
     if (Math.max(Math.abs(dx), Math.abs(dy)) >= 10) suppressClick = true;
-    // Match Android's 80 dp travel, and require a clearly horizontal release.
-    if (root.contains(completed.card) && completed.axis === 'x'
-      && Math.abs(dx) > 80 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+    // Resolve a short swipe even if the browser delivered few intermediate moves.
+    const axis = completed.axis ?? gestureAxis(Math.abs(dx), Math.abs(dy));
+    if (root.contains(completed.card) && axis === 'x'
+      && Math.abs(dx) >= completed.threshold && Math.abs(dx) > Math.abs(dy) * axisBias) {
       onSwipe(dx < 0 ? 1 : -1);
     }
     // The browser releases capture after pointerup; its ensuing click targets the root.

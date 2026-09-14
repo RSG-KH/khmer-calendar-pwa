@@ -6,8 +6,8 @@ import { runInNewContext } from 'node:vm';
 const origin = 'https://calendar.test';
 const source = await readFile(new URL('../dist/sw.js', import.meta.url), 'utf8');
 const builtHtml = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
-const manifestPath = builtHtml.match(/rel="manifest" href="([^"]+)"/)[1];
-const basePath = new URL('.', new URL(manifestPath, origin)).pathname;
+const scriptPath = builtHtml.match(/<script[^>]+src="([^"]+)"/)[1];
+const basePath = new URL('../', new URL(scriptPath, origin)).pathname;
 const appUrl = `${origin}${basePath}`;
 const oldCache = `khmer-cal:${appUrl}:old-version`;
 const siblingCache = `khmer-cal:${origin}/another-project/:old-version`;
@@ -141,6 +141,7 @@ test('Home Screen metadata resolves inside the deployed app and its icons are av
   const app = worker();
   await app.lifecycle('install');
   app.state.offline = true;
+  assert.ok((await app.request(`${basePath}icons/apple-touch-icon-white.png`)).ok);
   // Every language/platform variant must install the same app and work offline.
   for (const file of ['manifest.webmanifest', 'manifest.km.webmanifest', 'manifest.white.webmanifest', 'manifest.white.km.webmanifest', 'manifest.desktop.webmanifest', 'manifest.desktop.km.webmanifest']) {
     const manifestUrl = new URL(file, appUrl);

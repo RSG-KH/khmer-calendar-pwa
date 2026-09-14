@@ -35,6 +35,8 @@ The app shell uses fixed viewport edges instead of a `100dvh` height chain. Safe
 
 `Platform.ts` selects installation icons through the manifest: Android keeps the original `manifest.webmanifest` / `manifest.km.webmanifest` URLs and transparent artwork; Apple uses `manifest.white.webmanifest` / `manifest.white.km.webmanifest`; Windows and Linux use `manifest.desktop.webmanifest` / `manifest.desktop.km.webmanifest`. Other platforms keep the white fallback. All six manifests share the same app ID, scope and start URL.
 
+`InstallMetadata.ts` inserts the selected manifest URL before exposing the link to the browser, and only adds the white Apple touch icon on Apple devices. Do not put a platform-specific fallback manifest or Apple touch icon in `index.html`: desktop installers must never discover Apple's icon before platform selection finishes. Language changes update the existing manifest link.
+
 The white variants in `public/icons/` are `apple-touch-icon-white.png` (180 px) for Apple's touch icon and `app-icon-white-192.png` / `app-icon-white-512.png` for the white manifests. Center the visible artwork at 88% of the tile height, preserving its proportions and opaque white padding. Keep the original transparent artwork for Android, the README and favicon.
 
 Windows/Linux use `app-icon-desktop-512.png`, an unchanged copy of the supplied `khmer_calendar_app_transparent_ios_pwa_512.png`, with its transparent background preserved.

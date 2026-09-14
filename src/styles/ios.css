@@ -83,6 +83,8 @@ svg { flex-shrink: 0; }
 .events-header { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); column-gap: 4px; min-height: 70px; }
 .events-title { font-size: 22px; font-weight: 700; color: var(--text-primary); }
 .events-year-nav { display: flex; align-items: center; justify-self: center; gap: 4px; }
+.btn-events-year { border: 0; background: transparent; color: var(--text-primary); font-size: 20px; font-weight: 700; min-width: 60px; min-height: 44px; padding: 4px 0; border-radius: 8px; text-align: center; cursor: pointer; }
+.btn-events-year:active { background: var(--bg-surface-variant); }
 .events-header .add-event-button { justify-self: end; }
 .events-search-bar input { border: 0; border-radius: 12px; background: var(--bg-surface-variant); min-height: 44px; font-size: max(16px, calc(16px * var(--font-scale))); }
 .events-filter-chips { gap: 6px; }
@@ -152,7 +154,11 @@ svg { flex-shrink: 0; }
 .date-details-content { min-height: 0; }
 .month-picker-dialog { display: flex; flex-direction: column; min-height: 0; overflow: hidden !important; }
 .month-picker-header { display: flex; flex-shrink: 0; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.month-picker-footer { display: flex; flex-shrink: 0; justify-content: flex-end; margin-top: 18px; }
+.month-picker-footer { display: flex; flex-shrink: 0; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+.year-picker-title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.year-picker-title { font-size: calc(18px * var(--font-scale)); font-weight: 600; }
+.year-picker-range { margin: 0; text-align: center; font-size: calc(13px * var(--font-scale)); color: var(--on-surface-variant); }
+.year-display[aria-invalid="true"] { outline: 2px solid var(--tertiary); }
 .month-picker-dialog .month-picker-grid { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .month-picker-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .month-picker-cell { min-height: 52px; border: 0; border-radius: 12px; background: var(--bg-surface-variant); color: var(--text-primary); text-align: center; font-size: calc(14px * var(--font-scale)); cursor: pointer; }
@@ -170,13 +176,13 @@ svg { flex-shrink: 0; }
 .event-native-field input { display: block; appearance: none; -webkit-appearance: none; width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; margin: 0; padding: 10px 0; border: 0; border-radius: 0; background: transparent; color: var(--text-primary); }
 .event-native-field:focus-within { outline: 2px solid var(--accent); outline-offset: 3px; }
 .event-native-field input:focus-visible { outline: none; }
-/* Fixed picker menus must sit above the scrolling desktop editor. */
-.modal-overlay.open .desktop-event-editor { transform: none; }
-.desktop-time-field { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 6px 12px; border: 1px solid var(--outline); border-radius: 8px; }
+/* Fixed picker menus must sit above the scrolling event editor. */
+.modal-overlay.open .custom-time-editor { transform: none; }
+.custom-time-field { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 6px 12px; border: 1px solid var(--outline); border-radius: 8px; }
 .time-field-part { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
 .time-field-label { font-size: calc(12px * var(--font-scale)); color: var(--on-surface-variant); }
-.desktop-time-field .settings-picker { flex: 1; max-width: none; }
-.desktop-time-field .settings-select { justify-content: space-between; min-width: 62px; padding: 4px 6px; border-radius: 6px; font-variant-numeric: tabular-nums; }
+.custom-time-field .settings-picker { flex: 1; max-width: none; }
+.custom-time-field .settings-select { justify-content: space-between; min-width: 62px; padding: 4px 6px; border-radius: 6px; font-variant-numeric: tabular-nums; }
 .time-field-separator { color: var(--on-surface-variant); }
 .full-lunar-date, .date-summary-left > div { white-space: pre-line; }
 ::-webkit-scrollbar { width: 5px; height: 5px; }

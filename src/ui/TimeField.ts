@@ -5,7 +5,7 @@ const options = (count: number): string[][] => Array.from({ length: count }, (_,
   return [digits, digits];
 });
 
-export function setupDesktopTimeField(container: HTMLElement, input: HTMLInputElement, khmer: boolean): () => void {
+export function setupTimeField(container: HTMLElement, input: HTMLInputElement, khmer: boolean): () => void {
   let [hour, minute] = /^([01]\d|2[0-3]):[0-5]\d$/.test(input.value) ? input.value.split(':') : ['', ''];
   let closePickers: (() => void) | undefined;
   const render = () => {

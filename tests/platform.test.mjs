@@ -25,9 +25,10 @@ test('iPhone and iPad retain native time pickers, including desktop-mode iPadOS'
   assert.equal(prefersNativeTimePicker({ userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)', platform: 'MacIntel', maxTouchPoints: 5 }), true);
 });
 
-test('Android phones and tablets retain native time pickers', () => {
-  assert.equal(prefersNativeTimePicker({ userAgent: 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36' }), true);
-  assert.equal(prefersNativeTimePicker({ userAgentData: { platform: 'Android' } }), true);
+test('Android phones and tablets use themed 24-hour controls regardless of native clock format', () => {
+  assert.equal(prefersNativeTimePicker({ userAgent: 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36' }), false);
+  assert.equal(prefersNativeTimePicker({ userAgent: 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Safari/537.36', maxTouchPoints: 5 }), false);
+  assert.equal(prefersNativeTimePicker({ userAgentData: { platform: 'Android' } }), false);
 });
 
 test('desktop browsers use themed 24-hour controls even on touch-enabled Windows', () => {

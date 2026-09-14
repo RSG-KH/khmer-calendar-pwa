@@ -4,7 +4,7 @@ import { dateTimeInZone, TodayTimeZone } from '../domain/DateTime';
 
 export type AccentColor = 'blue' | 'lavender' | 'rose' | 'amber' | 'lime';
 export type ThemeMode = 'system' | 'light' | 'dark';
-export type FontScale = 0.8 | 0.9 | 1.0 | 1.1 | 1.2;
+export type FontScale = 0.8 | 0.9 | 1.0 | 1.1 | 1.2 | 1.3 | 1.4 | 1.5;
 
 export interface AppSettings {
   language: 'km' | 'en';

@@ -16,7 +16,8 @@ import { MonthPickerModal, CustomEventModal, DateDetailsDialogModal, EventDetail
 import { todayInZone } from './domain/DateTime';
 import { escapeHtml } from './ui/html';
 import { renderSettings } from './ui/Settings';
-import { isWindows } from './ui/Platform';
+import { isApple } from './ui/Platform';
+import { bindAutoHideScrollbars } from './ui/Scrollbars';
 import { adjacentMonth, bindMonthSwipe, MonthDirection } from './ui/MonthSwipe';
 import { AppUpdater } from './ui/AppUpdater';
 
@@ -62,7 +63,7 @@ class KhmerCalendarApp {
   private customEventModal: CustomEventModal;
 
   constructor() {
-    document.documentElement.toggleAttribute('data-windows', isWindows());
+    if (!isApple()) bindAutoHideScrollbars();
     this.settings = Storage.getSettings();
     this.selectedDateStr = todayInZone(this.settings.todayTimeZone);
     const [year, month] = this.selectedDateStr.split('-').map(Number);
@@ -270,8 +271,11 @@ class KhmerCalendarApp {
           <button class="arrow-btn btn-prev-month" ${this.currentYear === 1800 && this.currentMonth === 1 ? 'disabled' : ''} aria-label="${L.text('ui.previous_month.c03e1f', k)}">
             ${Icons.chevronLeft}
           </button>
-          <button class="month-name-btn btn-jump-month">
-            ${CalendarWords.month(this.currentMonth, k)}
+          <button class="month-name-btn btn-jump-month" aria-label="${CalendarWords.month(this.currentMonth, k)}">
+            ${k ? CalendarWords.month(this.currentMonth, k) : `
+              <span class="header-month-full" aria-hidden="true">${CalendarWords.month(this.currentMonth, false)}</span>
+              <span class="header-month-short" aria-hidden="true">${CalendarWords.month(this.currentMonth, false, true)}</span>
+            `}
           </button>
           <button class="arrow-btn btn-next-month" ${this.currentYear === 2200 && this.currentMonth === 12 ? 'disabled' : ''} aria-label="${L.text('ui.next_month.d2d40f', k)}">
             ${Icons.chevronRight}
@@ -308,13 +312,13 @@ class KhmerCalendarApp {
     const dateSummaryHtml = `
       <button class="date-summary-card" title="${L.text('ui.date_details.e26d78', k)}">
         <div class="date-summary-left">
-          <div style="font-size: calc(13px * var(--font-scale)); font-weight: 500; color: var(--text-primary); line-height: 1.3;">${k ? CalendarWords.fullKhmerDate(selectedDetails) : CalendarWords.fullEnglishDate(selectedDetails)}</div>
+          <div class="date-summary-lunar">${k ? CalendarWords.fullKhmerDate(selectedDetails) : CalendarWords.fullEnglishDate(selectedDetails)}</div>
         </div>
         <div class="date-summary-right">
-          <div style="font-size: calc(12px * var(--font-scale)); color: var(--on-surface-variant);">
+          <div class="date-summary-gregorian">
             ${CalendarWords.month(selectedDetails.month, false)} ${selectedDetails.day}, ${selectedDetails.year}
           </div>
-          <div style="font-size: calc(12px * var(--font-scale)); font-weight: 500; color: var(--accent); margin-top: 2px;">
+          <div class="date-summary-zodiac">
             ${Zodiac.label(selectedDetails.zodiac, false)}
           </div>
         </div>

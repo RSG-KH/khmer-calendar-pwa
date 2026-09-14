@@ -5,10 +5,14 @@ import { settingsPicker, setupSettingsPickers } from './SettingsPicker';
 import { showCalendarSources } from './Sources';
 import { appVersion as version } from '../../package.json';
 import { AppUpdater, AppUpdateState } from './AppUpdater';
+import { isPhone } from './Platform';
 
 export function renderSettings(container: HTMLElement, settings: AppSettings, onChange: (settings: AppSettings) => void, updater: AppUpdater) {
   const k = settings.language === 'km';
   const text = (key: string) => L.text(key, k);
+  const fontScales: FontScale[] = isPhone() ? [0.8, 0.9, 1, 1.1, 1.2] : [0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5];
+  // Preserve a saved larger selection if the browser switches out of desktop mode.
+  if (!fontScales.includes(settings.fontScale)) fontScales.push(settings.fontScale);
   const installUrl = 'https://rsg-kh.github.io/khmer-calendar-pwa/';
   const installLink = `<a class="about-install-link" href="${installUrl}" target="_blank" rel="noopener noreferrer">${text('app.name')}</a>`;
   const toggle = (key: 'mondayFirst' | 'highlightSunday' | 'showLunar' | 'holyDayMarkers' | 'showHolyDaysInEvents', title: string, subtitle: string) => `
@@ -30,7 +34,7 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
         </div>
         <div class="settings-row">
           <label class="settings-title" id="font-scale-label" for="font-scale">${k ? 'ទំហំអក្សរ' : 'Font size'}</label>
-          ${settingsPicker('font-scale', String(settings.fontScale), [0.8, 0.9, 1, 1.1, 1.2].map(scale => [String(scale), `${Math.round(scale * 100)}%`]))}
+          ${settingsPicker('font-scale', String(settings.fontScale), fontScales.map(scale => [String(scale), `${Math.round(scale * 100)}%`]))}
         </div>
         <div class="settings-row">
           <label class="settings-title" id="theme-mode-label" for="theme-mode">${text('ui.theme.99ca72')}</label>

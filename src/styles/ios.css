@@ -40,28 +40,42 @@ svg { flex-shrink: 0; }
 .scaffold { padding-top: var(--sat); padding-left: var(--sal); padding-right: var(--sar); }
 .scaffold-body { min-height: 0; }
 .screen-container { min-width: 0; min-height: 0; padding-bottom: 28px; overscroll-behavior-y: contain; scrollbar-width: thin; }
-.calendar-header { height: 60px; margin-bottom: 8px; }
+.calendar-header { container: calendar-header / inline-size; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: auto; min-height: 60px; margin-bottom: 8px; }
+.header-year-btn { justify-self: start; }
+.header-month-nav { justify-self: center; }
+.btn-go-today { justify-self: end; }
 .year-num { font-size: calc(25px * var(--font-scale)); letter-spacing: -0.5px; line-height: 1.3; }
 .be-num { line-height: 1.5; }
 .month-name-btn { font-size: calc(18px * var(--font-scale)); padding-inline: 4px; }
-.arrow-btn { width: 36px; min-height: 44px; color: var(--accent); }
+.header-month-short { display: none; }
+/* Use the calendar's width, including a narrow column in landscape. */
+@container calendar-header (max-width: 400px) {
+  .header-month-full { display: none; }
+  .header-month-short { display: inline; }
+}
+.arrow-btn { width: 32px; height: 32px; min-height: 32px; flex-shrink: 0; align-self: center; padding: 0; color: var(--accent); }
+.arrow-btn svg { width: 20px; height: 20px; }
 .btn-today-pill { min-height: 44px; font-size: calc(14px * var(--font-scale)); }
 .calendar-month-card { border: 0; border-radius: 22px; box-shadow: none; padding: 14px 10px 10px; touch-action: pan-y pinch-zoom; }
 .weekdays-row { font-size: calc(12px * var(--font-scale)); padding-block: 2px 8px; }
 .cal-cell { border: 0; background: transparent; padding: 0; font-family: inherit; min-width: 0; }
 .cell-day-num { line-height: 1.4; font-size: calc(17px * var(--font-scale)); }
-.cell-lunar-label { line-height: 1.5; }
+/* Halve the extra leading and gap between date labels; keep cell heights intact. */
+.cal-cell:has(.cell-lunar-label) .cell-day-num { line-height: 1.2; }
+.cell-lunar-label { line-height: 1.25; margin-top: 0.5px; }
 .cell-day-num, .cell-lunar-label, .cell-event-marks { position: relative; z-index: 1; }
 .cell-lotus-img { width: 100%; height: 100%; }
 .card-watermark-zodiac { width: 90%; height: 90%; }
 .tinted-watermark { background: var(--accent); -webkit-mask: var(--watermark-image) center / contain no-repeat; mask: var(--watermark-image) center / contain no-repeat; }
-/* Match Android's zodiacAlpha() in both the calendar and date details. */
+/* Match Android's zodiacAlpha() in the calendar and detail dialogs. */
 :root :is(.card-watermark-zodiac, .dialog-watermark-animal, .dialog-watermark-western) { opacity: var(--zodiac-watermark-opacity); }
 .card-legend-row { flex-wrap: wrap; gap: 6px 14px; }
 .cal-cell.active-day .mark-shape.holy_day { background: transparent !important; border-bottom-color: var(--on-accent); }
 .date-summary-card { text-align: left; gap: 18px; border: 0; border-radius: 16px; padding: 16px; }
-.date-summary-left, .date-summary-right { min-width: 0; line-height: 1.7; }
-.date-summary-left > div { line-height: 1.8 !important; }
+.date-summary-left, .date-summary-right { min-width: 0; gap: 0; line-height: calc(20px * var(--font-scale)); }
+.date-summary-lunar { font-size: calc(13px * var(--font-scale)); font-weight: 500; color: var(--text-primary); }
+.date-summary-gregorian { font-size: calc(13px * var(--font-scale)); color: var(--on-surface-variant); }
+.date-summary-zodiac { font-size: calc(12px * var(--font-scale)); font-weight: 500; color: var(--accent); }
 .date-summary-right { flex: 0 1 40%; }
 .events-list-container { gap: 0; background: var(--bg-surface); border-radius: 18px; overflow: hidden; }
 .event-row-card { border: 0; border-radius: 0; margin: 0; padding: 13px 14px; min-height: 68px; text-align: left; }
@@ -72,12 +86,18 @@ svg { flex-shrink: 0; }
 .event-row-bar { height: 32px; width: 2px; margin-inline: 9px 12px; }
 .event-row-kind { line-height: 1.5; }
 .event-row-chevron { opacity: 0.6; }
-.bottom-bar { height: calc(66px + var(--sab)); background: var(--nav-background); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
-.nav-tab-pill, .nav-tab.active .nav-tab-pill { background: transparent; width: 44px; height: 28px; }
-.nav-tab svg { width: 23px; height: 23px; }
+.bottom-bar { height: calc(60px + var(--sab)); background: var(--nav-background); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+.nav-tab { gap: 0; }
+/* Give the icon vertical padding while keeping its label close. */
+.nav-tab-pill { background: transparent; width: 44px; height: 26px; }
+.nav-tab svg { width: 20.7px; height: 20.7px; }
 .nav-tab-label { font-size: calc(10px * var(--font-scale)); line-height: 1.5; }
-.left-nav-rail { width: 86px; background: var(--nav-background); gap: 12px; padding-bottom: var(--sab); }
+.left-nav-rail { width: 77.4px; background: var(--nav-background); gap: 12px; padding-bottom: var(--sab); }
+@media (orientation: landscape) and (max-height: 599px) {
+  .left-nav-rail { width: 69px; }
+}
 .rail-item { min-height: 66px; }
+.rail-item svg { width: 21.6px; height: 21.6px; }
 .rail-label { font-size: calc(10px * var(--font-scale)); }
 .events-screen-container { max-width: 720px; }
 .events-header { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); column-gap: 4px; min-height: 70px; }
@@ -121,7 +141,7 @@ svg { flex-shrink: 0; }
 .sources-content > * + * { margin-top: 14px; }
 .sources-update { color: var(--secondary); }
 .sources-links { padding-left: 20px; }
-.sources-links a { display: inline-block; padding-block: 6px; color: var(--accent); text-underline-offset: 3px; }
+.sources-links a { display: inline-block; padding-block: 2px; color: var(--accent); text-underline-offset: 3px; }
 .sources-content h3 { font-size: inherit; font-weight: 600; }
 .source-license + .source-license { margin-top: 4px; }
 .source-license summary { min-height: 44px; padding-block: 8px; color: var(--accent); cursor: pointer; }
@@ -170,8 +190,9 @@ svg { flex-shrink: 0; }
 .month-picker-cell { min-height: 52px; border: 0; border-radius: 12px; background: var(--bg-surface-variant); color: var(--text-primary); text-align: center; font-size: calc(14px * var(--font-scale)); cursor: pointer; }
 .month-picker-cell.active { background: var(--accent); color: var(--on-accent); }
 .dialog-event-item { border: 0; font-family: inherit; text-align: left; }
-.dialog-watermark-star { position: absolute; width: 60%; height: 60%; bottom: 0; right: 0; object-fit: contain; opacity: 0.045; pointer-events: none; }
 .form-error { color: var(--tertiary); font-size: calc(13px * var(--font-scale)); line-height: 1.7; }
+.event-delete-confirmation { margin-top: 24px; }
+.event-delete-confirmation .form-error { font-size: calc(14px * var(--font-scale)); font-weight: 500; }
 .empty-events { padding: 40px 16px; text-align: center; color: var(--on-surface-variant); }
 .modal-dialog-surface { scrollbar-width: thin; }
 .modal-dialog-surface input { min-width: 0; }
@@ -190,28 +211,39 @@ svg { flex-shrink: 0; }
 .custom-time-field .settings-picker { flex: 1; max-width: none; }
 .custom-time-field .settings-select { justify-content: space-between; min-width: 62px; padding: 4px 6px; border-radius: 6px; font-variant-numeric: tabular-nums; }
 .time-field-separator { color: var(--on-surface-variant); }
-.full-lunar-date, .date-summary-left > div { white-space: pre-line; }
+.full-lunar-date, .date-summary-lunar { white-space: pre-line; }
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-thumb { background: var(--outline-variant); border-radius: 5px; }
 ::-webkit-scrollbar-button { display: none; }
-/* Windows classic scrollbars need explicit styling; keep native touch indicators. */
+/* Animate the thumb without changing scrollbar width or shifting the content. */
+@property --scrollbar-thumb-color {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
 @media (forced-colors: none) {
-  [data-windows] :is(.screen-container, .calendar-col-left, .calendar-col-right, .modal-dialog-surface, .date-details-content, .sources-content, .month-picker-grid, .settings-picker-menu, textarea) {
+  [data-auto-hide-scrollbars] :is(.screen-container, .calendar-col-left, .calendar-col-right, .modal-dialog-surface, .date-details-content, .sources-content, .month-picker-grid, .settings-picker-menu, textarea) {
+    --scrollbar-thumb-color: transparent;
     scrollbar-width: thin;
-    scrollbar-color: var(--on-surface-variant) transparent;
+    scrollbar-color: var(--scrollbar-thumb-color) transparent;
+    transition: --scrollbar-thumb-color 200ms ease, transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  [data-auto-hide-scrollbars] .is-scrolling {
+    --scrollbar-thumb-color: var(--on-surface-variant);
+    transition-duration: 0s, 0.2s;
   }
   @supports selector(::-webkit-scrollbar) {
     /* Non-auto standard properties override Chromium's pseudo-element styles. */
-    [data-windows] :is(.screen-container, .calendar-col-left, .calendar-col-right, .modal-dialog-surface, .date-details-content, .sources-content, .month-picker-grid, .settings-picker-menu, textarea) {
+    [data-auto-hide-scrollbars] :is(.screen-container, .calendar-col-left, .calendar-col-right, .modal-dialog-surface, .date-details-content, .sources-content, .month-picker-grid, .settings-picker-menu, textarea) {
       scrollbar-width: auto;
       scrollbar-color: auto;
     }
-    [data-windows] ::-webkit-scrollbar { width: 10px; height: 10px; }
-    [data-windows] ::-webkit-scrollbar-track { background: transparent; margin-block: 12px; }
-    [data-windows] ::-webkit-scrollbar-thumb { background-color: var(--on-surface-variant); background-clip: padding-box; border: 2px solid transparent; border-radius: 10px; }
-    [data-windows] ::-webkit-scrollbar-thumb:hover { background-color: var(--text-primary); }
-    [data-windows] ::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
-    [data-windows] ::-webkit-scrollbar-corner { background: transparent; }
+    [data-auto-hide-scrollbars] ::-webkit-scrollbar { width: 10px; height: 10px; }
+    [data-auto-hide-scrollbars] ::-webkit-scrollbar-track { background: transparent; margin-block: 12px; }
+    [data-auto-hide-scrollbars] ::-webkit-scrollbar-thumb { background-color: var(--scrollbar-thumb-color); background-clip: padding-box; border: 2px solid transparent; border-radius: 10px; }
+    [data-auto-hide-scrollbars] ::-webkit-scrollbar-thumb:hover { background-color: var(--text-primary); }
+    [data-auto-hide-scrollbars] ::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+    [data-auto-hide-scrollbars] ::-webkit-scrollbar-corner { background: transparent; }
   }
 }
 @media (max-width: 599px) and (orientation: portrait) {
@@ -232,7 +264,7 @@ svg { flex-shrink: 0; }
   .header-year-btn { padding-inline: 2px; }
   .year-num { font-size: calc(21px * var(--font-scale)); }
   .month-name-btn { font-size: calc(16px * var(--font-scale)); }
-  .arrow-btn { width: 28px; }
+  .arrow-btn { width: 28px; height: 28px; min-height: 28px; }
   .btn-go-today { padding-inline: 3px; font-size: calc(12px * var(--font-scale)); }
   .settings-row { padding-inline: 12px; gap: 8px; }
   .settings-row:has(.accent-circles-row) { flex-wrap: wrap; }

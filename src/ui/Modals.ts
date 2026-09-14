@@ -318,6 +318,8 @@ export class EventDetailsDialogModal {
     const parts = event.date.split('-').map(Number);
     const info = KhmerDateDetails.fromGregorian(parts[0], parts[1], parts[2]);
     const isCustom = event.kind === 'CUSTOM';
+    const animalImg = Zodiac.getAnimalDrawable(info.animalYear, true);
+    const westernImg = Zodiac.getWesternDrawable(info.zodiac);
 
     let categoryDesc = '';
     if (isCustom) {
@@ -330,7 +332,8 @@ export class EventDetailsDialogModal {
 
     this.overlay.innerHTML = `
       <div class="modal-dialog-surface" style="position: relative; overflow: hidden; max-width: 480px; width: 92%;">
-        ${isCustom ? `<span class="dialog-watermark-star tinted-watermark" style="--watermark-image: url('${import.meta.env.BASE_URL}assets/drawables/custom_event_star.png')" aria-hidden="true"></span>` : ''}
+        <span class="dialog-watermark-animal tinted-watermark" style="--watermark-image: url('${animalImg}')" aria-hidden="true"></span>
+        <span class="dialog-watermark-western tinted-watermark" style="--watermark-image: url('${westernImg}')" aria-hidden="true"></span>
 
         <div style="position: relative; z-index: 1;">
           <div style="font-size: calc(18px * var(--font-scale)); font-weight: 600; color: var(--text-primary); line-height: 1.4; margin-bottom: 12px;">

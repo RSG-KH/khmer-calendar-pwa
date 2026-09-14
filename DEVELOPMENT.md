@@ -29,6 +29,8 @@ The PWA shares one visual design across platforms. `main.ts` imports [src/styles
 
 [Platform.ts](src/ui/Platform.ts) owns device-specific choices for native time pickers, native scrollbars and phone font-size limits. [Scrollbars.ts](src/ui/Scrollbars.ts) enables the scrollbar attribute and manages the idle fade on selected desktop platforms; Android and Apple devices keep native scrollbars. Keep platform exceptions explicit instead of naming shared controls after an OS.
 
+Home Screen icons in `public/icons/` use opaque white backgrounds: `apple-touch-icon-white.png` (180 px) for Apple devices and `app-icon-white-192.png` / `app-icon-white-512.png` for both language manifests. Center the visible artwork at 88% of the tile height, preserving its proportions and white padding. Keep these opaque when replacing the artwork; the transparent `app-logo.png` is used separately by the README and favicon.
+
 ## Build and test
 
 ```sh

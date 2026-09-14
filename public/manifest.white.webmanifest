@@ -12,15 +12,16 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "icons/app-logo.png",
-      "sizes": "1254x1254",
+      "src": "icons/app-icon-white-192.png",
+      "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/apple-touch-icon.png",
-      "sizes": "1254x1254",
-      "type": "image/png"
+      "src": "icons/app-icon-white-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }

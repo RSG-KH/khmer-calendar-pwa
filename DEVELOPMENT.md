@@ -17,7 +17,7 @@ Open [localhost:5173](http://localhost:5173/). The development server stays on p
 
 Open `/tests/device-preview.html` on that server to check phone/tablet layouts and simulate keyboard space. This is a layout aid, not a real keyboard or device emulator.
 
-Use `/tests/safe-area-preview.html` to check cutout and Home indicator spacing in portrait and landscape. **Run all checks** includes desktop/tablet baselines, large text and navigation clearance. Confirm the result in installed apps on physical devices; this page cannot reproduce OS-owned status/gesture bars or WebKit viewport behavior.
+Use `/tests/safe-area-preview.html` to check cutout and Home indicator spacing in portrait and landscape. **Run all checks** includes desktop/tablet baselines, large text, navigation clearance, installed apps with short dynamic viewport units, and browser tabs with expanded toolbars. It also checks that landscape calendar scrollers reach the top safe edge. Confirm the result in installed apps on physical devices; this page simulates CSS metrics and display mode, not OS-owned status/gesture bars or WebKit rendering.
 
 ## UI code and styles
 
@@ -31,7 +31,9 @@ The PWA shares one visual design across platforms. `main.ts` imports [src/styles
 
 [Platform.ts](src/ui/Platform.ts) owns device-specific choices for native time pickers, native scrollbars and phone font-size limits. [Scrollbars.ts](src/ui/Scrollbars.ts) enables the scrollbar attribute and manages the idle fade on selected desktop platforms; Android and Apple devices keep native scrollbars. Keep platform exceptions explicit instead of naming shared controls after an OS.
 
-The app root stays in normal flow and is sized directly to `100dvh` (with a `100%` fallback). Do not switch it to fixed bottom anchoring: that introduced a blank strip on installed iPads in both orientations. Safe-area insets protect content and navigation controls; navigation backgrounds extend to the available screen edges. The bottom bar sizes itself from the controls, with a 60 px minimum, and uses the Home indicator inset as bottom padding instead of adding it to a fixed-height row. Keep these insets out of font scaling and leave OS-reserved screen regions to the browser.
+The app root stays in normal flow. Browser tabs use `100dvh` (with a `100%` fallback) to follow browser toolbars; installed apps use `100vh` on `html`, `body` and `#app`. With the `black-translucent` status bar, WebKit can undercount `dvh` by the status bar height while still starting the page behind that bar. Fixed bottom anchoring also left a blank strip on installed iPads. Do not add a hardcoded screen height or add safe-area insets to the viewport height.
+
+Safe-area insets protect content and navigation controls; navigation backgrounds extend to the available screen edges. The bottom bar sizes itself from the controls, with a 60 px minimum, and uses the Home indicator inset as bottom padding instead of adding it to a fixed-height row. Keep these insets out of font scaling and leave OS-reserved screen regions to the browser. Landscape calendar top padding belongs inside the two scrolling columns so it scrolls away with their content, instead of creating a fixed empty gutter.
 
 `Platform.ts` selects installation icons through the manifest: Android keeps the original `manifest.webmanifest` / `manifest.km.webmanifest` URLs and transparent artwork; Apple uses `manifest.white.webmanifest` / `manifest.white.km.webmanifest`; Windows and Linux use `manifest.desktop.webmanifest` / `manifest.desktop.km.webmanifest`. Other platforms keep the white fallback. All six manifests share the same app ID, scope and start URL.
 

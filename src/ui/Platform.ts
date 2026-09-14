@@ -1,4 +1,4 @@
-interface ClientPlatform {
+export interface ClientPlatform {
   userAgent?: string;
   platform?: string;
   maxTouchPoints?: number;

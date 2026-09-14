@@ -13,7 +13,8 @@ import { MonthPickerModal, CustomEventModal, DateDetailsDialogModal, EventDetail
 import { todayInZone } from './domain/DateTime';
 import { escapeHtml } from './ui/html';
 import { renderSettings } from './ui/Settings';
-import { appManifestFile, prefersNativeScrollbars } from './ui/Platform';
+import { prefersNativeScrollbars } from './ui/Platform';
+import { applyInstallMetadata } from './ui/InstallMetadata';
 import { bindAutoHideScrollbars } from './ui/Scrollbars';
 import { adjacentMonth, bindMonthSwipe, MonthDirection } from './ui/MonthSwipe';
 import { AppUpdater } from './ui/AppUpdater';
@@ -146,11 +147,7 @@ class KhmerCalendarApp {
     const appName = L.text('app.name', this.settings.language === 'km');
     document.title = appName;
     document.querySelector('meta[name="apple-mobile-web-app-title"]')?.setAttribute('content', appName);
-    const manifestPath = `${import.meta.env.BASE_URL}${appManifestFile(this.settings.language)}`;
-    const manifestLink = document.querySelector('link[rel="manifest"]');
-    if (manifestLink?.getAttribute('href') !== manifestPath) {
-      manifestLink?.setAttribute('href', manifestPath);
-    }
+    applyInstallMetadata(this.settings.language);
     root.setAttribute('data-accent', this.settings.accent);
     root.style.setProperty('--font-scale', String(this.settings.fontScale));
 

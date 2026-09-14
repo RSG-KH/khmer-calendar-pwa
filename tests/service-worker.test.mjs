@@ -15,7 +15,7 @@ const siblingCache = `khmer-cal:${origin}/another-project/:old-version`;
 function worker() {
   const listeners = {};
   const stores = new Map([['another-app-cache', new Map()], [oldCache, new Map()], [siblingCache, new Map()]]);
-  const state = { offline: false, fail: undefined, claimed: false, notification: undefined, opened: undefined, clientList: [] };
+  const state = { offline: false, fail: undefined, claimed: false, skipped: false, notification: undefined, opened: undefined, clientList: [] };
   const key = request => new URL(typeof request === 'string' ? request : request.url, origin).href;
   const fetch = async request => {
     const url = new URL(key(request));
@@ -33,6 +33,7 @@ function worker() {
       const entries = stores.get(name);
       return {
         addAll: async paths => {
+          for (const request of paths) assert.equal(request.cache, 'reload', 'stable URLs must bypass stale HTTP cache entries');
           const responses = await Promise.all(paths.map(fetch));
           paths.forEach((path, index) => entries.set(key(path), responses[index]));
         },
@@ -51,9 +52,10 @@ function worker() {
     openWindow: async url => { state.opened = url; }
   };
   runInNewContext(source, {
-    URL, caches, fetch, clients,
+    URL, Request, caches, fetch, clients,
     self: {
       location: { origin }, clients,
+      skipWaiting: async () => { state.skipped = true; },
       registration: { scope: appUrl, showNotification: async (title, options) => { state.notification = { title, options }; } },
       addEventListener: (name, handler) => { listeners[name] = handler; }
     }
@@ -104,6 +106,25 @@ test('a failed install does not claim clients or remove the working version', as
   await assert.rejects(app.lifecycle('install'), /Offline/);
   assert.equal(app.state.claimed, false);
   assert.ok(app.stores.has(oldCache));
+});
+
+test('updates wait until the app explicitly asks the downloaded worker to activate', async () => {
+  const app = worker();
+  await app.lifecycle('install');
+  assert.equal(app.state.skipped, false);
+  for (const event of [
+    { data: null },
+    { data: { type: 'UNKNOWN' }, source: { url: appUrl } },
+    { data: { type: 'SKIP_WAITING' } },
+    { data: { type: 'SKIP_WAITING' }, source: { url: 'https://other.test/' } },
+    ...(basePath === '/' ? [] : [{ data: { type: 'SKIP_WAITING' }, source: { url: `${origin}/another-project/` } }])
+  ]) {
+    await app.lifecycle('message', event);
+    assert.equal(app.state.skipped, false);
+  }
+  await app.lifecycle('message', { data: { type: 'SKIP_WAITING' }, source: { url: appUrl } });
+  assert.equal(app.state.skipped, true);
+  assert.ok(app.stores.has(oldCache), 'activation cleanup must happen after the user request');
 });
 
 test('offline module requests still match when browser CORS headers differ from precaching', async () => {

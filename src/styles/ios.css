@@ -107,6 +107,11 @@ svg { flex-shrink: 0; }
 .about-card a { color: inherit; overflow-wrap: anywhere; text-underline-offset: 3px; }
 .about-card .about-install-link { color: var(--accent); }
 .about-sources { align-self: flex-start; min-height: 44px; border: 0; background: transparent; color: var(--accent); font-size: calc(14px * var(--font-scale)); line-height: 1.7; cursor: pointer; }
+.app-update-controls { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.about-update { min-height: 44px; padding: 6px 14px; border: 1px solid var(--outline); border-radius: 12px; background: transparent; color: var(--accent); font-size: calc(14px * var(--font-scale)); cursor: pointer; }
+.app-update-status { margin: 0; }
+.about-update:disabled { opacity: 1; cursor: default; }
+.about-update:disabled:not([aria-busy="true"]) { color: var(--text-secondary); }
 .about-credits { display: flex; flex-direction: column; gap: 4px; }
 .about-credits a { display: block; padding-block: 6px; }
 .sources-dialog { display: flex; flex-direction: column; min-height: 0; max-width: 600px; overflow: hidden !important; }

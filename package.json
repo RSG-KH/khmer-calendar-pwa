@@ -2,6 +2,7 @@
   "name": "khmer-calendar-pwa",
   "private": true,
   "version": "0.1.6",
+  "appVersion": "0.1.6.2",
   "type": "module",
   "scripts": {
     "dev": "vite",

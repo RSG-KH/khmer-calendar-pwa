@@ -1,5 +1,12 @@
 export type TodayTimeZone = 'local' | 'cambodia';
 
+export function localOffsetLabel(now = new Date()): string {
+  const offset = -now.getTimezoneOffset();
+  const hours = Math.floor(Math.abs(offset) / 60);
+  const minutes = Math.abs(offset) % 60;
+  return `UTC${offset >= 0 ? '+' : '-'}${hours}${minutes ? `:${String(minutes).padStart(2, '0')}` : ''}`;
+}
+
 export function dateTimeInZone(now: Date, zone: TodayTimeZone): { date: string; time: string } {
   const parts = new Intl.DateTimeFormat('en-CA', {
     ...(zone === 'cambodia' ? { timeZone: 'Asia/Phnom_Penh' } : {}),

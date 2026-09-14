@@ -1,6 +1,6 @@
 import { AppSettings, FontScale } from '../data/Storage';
 import { L } from '../data/i18n';
-import { TodayTimeZone } from '../domain/DateTime';
+import { TodayTimeZone, localOffsetLabel } from '../domain/DateTime';
 import { settingsPicker, setupSettingsPickers } from './SettingsPicker';
 import { showCalendarSources } from './Sources';
 import { appVersion as version } from '../../package.json';
@@ -51,7 +51,7 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
       <section class="settings-card">
         <div class="settings-row">
           <span class="settings-text-col"><label class="settings-title" id="today-zone-label" for="today-zone">${text('ui.today_follows.b52168')}</label><span class="settings-subtitle">${k ? 'កាលបរិច្ឆេទ និងពេលវេលាព្រឹត្តិការណ៍' : 'Dates and event times'}</span></span>
-          ${settingsPicker('today-zone', settings.todayTimeZone, [['local', text('ui.local_time.541b44')], ['cambodia', text('ui.cambodia_utc_7.458037')]])}
+          ${settingsPicker('today-zone', settings.todayTimeZone, [['local', `${text('ui.local_time.541b44')} (${localOffsetLabel()})`], ['cambodia', text('ui.cambodia_utc_7.458037')]])}
         </div>
       </section>
       <h2 class="section-label">${text('ui.calendar.beb873')}</h2>

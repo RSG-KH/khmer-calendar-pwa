@@ -1,0 +1,21 @@
+{
+  "name": "Khmer Calendar",
+  "short_name": "Khmer Calendar",
+  "lang": "en",
+  "description": "Traditional Khmer Chhankitek Lunar Calendar, Buddhist holy days and Cambodian holidays",
+  "start_url": "./",
+  "id": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0C0E12",
+  "theme_color": "#4564B5",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icons/app-icon-desktop-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

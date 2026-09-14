@@ -7,7 +7,7 @@ const server = await createServer({ server: { middlewareMode: true, ws: false },
 after(() => server.close());
 const { appManifestFile, isApple, isPhone, prefersNativeScrollbars, prefersNativeTimePicker } = await server.ssrLoadModule('/src/ui/Platform.ts');
 
-test('Android keeps original install icons while Apple and desktop use white icons in both languages', async () => {
+test('installation icons match Android, Apple and Windows/Linux in both languages', async () => {
   const androidClients = [
     { userAgent: 'Mozilla/5.0 (Linux; Android 14) Chrome/130.0 Mobile Safari/537.36' },
     { userAgent: 'Mozilla/5.0 (Linux; Android 14) Chrome/130.0 Safari/537.36' },
@@ -17,13 +17,22 @@ test('Android keeps original install icons while Apple and desktop use white ico
     { platform: 'iPhone' },
     { platform: 'MacIntel', maxTouchPoints: 5 },
     { userAgentData: { platform: 'macOS' } },
+    { userAgentData: { platform: 'Chrome OS' }, platform: 'Linux x86_64' },
+    {}
+  ];
+  const desktopIconClients = [
     { userAgentData: { platform: 'Windows' }, maxTouchPoints: 10 },
-    { platform: 'Linux x86_64' }
+    { platform: 'Win32' },
+    { userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+    { platform: 'Linux x86_64' },
+    { userAgentData: { platform: 'Linux' } },
+    { userAgent: 'Mozilla/5.0 (X11; Linux x86_64)' }
   ];
   for (const language of ['en', 'km']) {
     for (const [clients, variant, icons] of [
       [androidClients, '', ['icons/app-logo.png', 'icons/apple-touch-icon.png']],
-      [whiteIconClients, '.white', ['icons/app-icon-white-192.png', 'icons/app-icon-white-512.png']]
+      [whiteIconClients, '.white', ['icons/app-icon-white-192.png', 'icons/app-icon-white-512.png']],
+      [desktopIconClients, '.desktop', ['icons/app-icon-desktop-512.png']]
     ]) {
       for (const client of clients) {
         const file = appManifestFile(language, client);

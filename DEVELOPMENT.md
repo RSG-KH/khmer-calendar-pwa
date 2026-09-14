@@ -33,9 +33,11 @@ The PWA shares one visual design across platforms. `main.ts` imports [src/styles
 
 The app shell uses fixed viewport edges instead of a `100dvh` height chain. Safe-area insets protect content and navigation controls; navigation backgrounds extend to the available screen edges. The bottom bar includes the Home indicator inset once. Keep these insets out of font scaling and leave OS-reserved screen regions to the browser.
 
-`Platform.ts` selects installation icons through the manifest: Android keeps the original `manifest.webmanifest` / `manifest.km.webmanifest` URLs and transparent artwork; Apple and desktop use `manifest.white.webmanifest` / `manifest.white.km.webmanifest`. All four manifests share the same app ID, scope and start URL.
+`Platform.ts` selects installation icons through the manifest: Android keeps the original `manifest.webmanifest` / `manifest.km.webmanifest` URLs and transparent artwork; Apple uses `manifest.white.webmanifest` / `manifest.white.km.webmanifest`; Windows and Linux use `manifest.desktop.webmanifest` / `manifest.desktop.km.webmanifest`. Other platforms keep the white fallback. All six manifests share the same app ID, scope and start URL.
 
 The white variants in `public/icons/` are `apple-touch-icon-white.png` (180 px) for Apple's touch icon and `app-icon-white-192.png` / `app-icon-white-512.png` for the white manifests. Center the visible artwork at 88% of the tile height, preserving its proportions and opaque white padding. Keep the original transparent artwork for Android, the README and favicon.
+
+Windows/Linux use `app-icon-desktop-512.png`, an unchanged copy of the supplied `khmer_calendar_app_transparent_ios_pwa_512.png`, with its transparent background preserved.
 
 ## Build and test
 

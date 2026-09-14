@@ -5,7 +5,7 @@ import { createServer } from 'vite';
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' });
 after(() => server.close());
 const { KhmerCalendar, toEpochDay, fromEpochDay } = await server.ssrLoadModule('/src/domain/KhmerCalendar.ts');
-const { todayInZone, eventInstant, dateTimeInZone, isSupportedDate } = await server.ssrLoadModule('/src/domain/DateTime.ts');
+const { todayInZone, eventInstant, dateTimeInZone, isSupportedDate, localOffsetLabel } = await server.ssrLoadModule('/src/domain/DateTime.ts');
 const { CalendarWords } = await server.ssrLoadModule('/src/data/i18n.ts');
 const { Storage, DEFAULT_SETTINGS } = await server.ssrLoadModule('/src/data/Storage.ts');
 const { EventRepository } = await server.ssrLoadModule('/src/data/EventRepository.ts');
@@ -69,6 +69,27 @@ test('Cambodia midnight and local DST event times match Android semantics', () =
     assert.equal(eventInstant('2026-03-29', '02:30', 'local'), undefined);
     assert.equal(eventInstant('2026-03-29', '02:30', 'cambodia'), '2026-03-28T19:30:00.000Z');
     assert.deepEqual(dateTimeInZone(new Date('2026-09-13T18:00:00Z'), 'cambodia'), { date: '2026-09-14', time: '01:00' });
+  } finally {
+    if (priorZone === undefined) delete process.env.TZ; else process.env.TZ = priorZone;
+  }
+});
+
+test('local UTC labels match Android across DST, zero and fractional offsets', () => {
+  const priorZone = process.env.TZ;
+  try {
+    for (const [zone, date, expected] of [
+      ['Europe/Brussels', '2026-01-15', 'UTC+1'],
+      ['Europe/Brussels', '2026-07-15', 'UTC+2'],
+      ['Asia/Phnom_Penh', '2026-07-15', 'UTC+7'],
+      ['Asia/Kolkata', '2026-07-15', 'UTC+5:30'],
+      ['Asia/Kathmandu', '2026-07-15', 'UTC+5:45'],
+      ['America/St_Johns', '2026-01-15', 'UTC-3:30'],
+      ['America/New_York', '2026-01-15', 'UTC-5'],
+      ['UTC', '2026-07-15', 'UTC+0']
+    ]) {
+      process.env.TZ = zone;
+      assert.equal(localOffsetLabel(new Date(`${date}T12:00:00Z`)), expected, zone);
+    }
   } finally {
     if (priorZone === undefined) delete process.env.TZ; else process.env.TZ = priorZone;
   }

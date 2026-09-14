@@ -311,6 +311,8 @@
   height: 7px;
   background: #E53935;
   clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  /* Match the solid markers visually without increasing the marker row height. */
+  transform: scale(1.4);
 }
 
 .cal-cell.active-day .mark-shape {

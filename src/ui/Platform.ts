@@ -2,12 +2,22 @@ interface ClientPlatform {
   userAgent?: string;
   platform?: string;
   maxTouchPoints?: number;
-  userAgentData?: { platform?: string };
+  userAgentData?: { platform?: string; mobile?: boolean };
 }
 
-export function isWindows(client: ClientPlatform = navigator): boolean {
+export function isApple(client: ClientPlatform = navigator): boolean {
   const platform = client.userAgentData?.platform || client.platform || '';
-  return /^Win/i.test(platform) || /Windows/i.test(client.userAgent ?? '');
+  return /Mac|iPhone|iPad|iPod|iOS/i.test(platform)
+    || /Macintosh|iPhone|iPad|iPod/i.test(client.userAgent ?? '');
+}
+
+// Keep device-specific choices stable when rotating or resizing the app.
+export function isPhone(client: ClientPlatform = navigator): boolean {
+  const agent = client.userAgent ?? '';
+  const platform = client.userAgentData?.platform || client.platform || '';
+  if (/iPhone|iPod|Windows Phone/i.test(agent)) return true;
+  if (/iPad/i.test(agent) || (/Mac/i.test(platform) && (client.maxTouchPoints ?? 0) > 1)) return false;
+  return client.userAgentData?.mobile ?? /Android.*Mobile/i.test(agent);
 }
 
 // Keep the native iOS/iPadOS picker. Android and desktop popups can use AM/PM

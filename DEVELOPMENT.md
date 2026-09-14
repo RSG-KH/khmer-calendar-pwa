@@ -2,6 +2,8 @@
 
 This TypeScript/Vite project is the web port of [Khmer Calendar for Android](https://github.com/RSG-KH/khmer-calendar). See the [README](README.md) for installation, and the [Android documentation](https://github.com/RSG-KH/khmer-calendar/tree/main/docs) for calendar rules, event data, source research and shared behavior.
 
+The app increments the Buddhist Era year on 1 Roach of Pisakh (១រោច ខែពិសាខ), as implemented in [KhmerCalendar.ts](src/domain/KhmerCalendar.ts).
+
 ## Local development
 
 Use Node.js 24, matching the deployment workflow.

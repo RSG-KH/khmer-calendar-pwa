@@ -4,13 +4,17 @@
 .calendar-col-left, .calendar-col-right { min-width: 0; }
 .date-summary-card, .selected-day-events { display: none; }
 .calendar-col-right { margin-top: 16px; }
+@media (orientation: landscape) {
+  .cal-cell { height: calc(62px * var(--font-scale)); }
+}
 @media (min-width: 740px) and (orientation: landscape) {
   .bottom-bar { display: none; }
   .left-nav-rail { display: flex; }
   .screen-container { padding: 16px 20px 20px; }
+  .screen-container:has(> .calendar-two-columns) { padding-bottom: 0; }
   .calendar-two-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; max-width: 1440px; height: 100%; min-height: 0; }
   .calendar-col-left, .calendar-col-right { height: 100%; overflow-y: auto; overscroll-behavior: contain; padding-bottom: 20px; scrollbar-width: thin; }
-  .calendar-col-right { margin-top: 0; padding-top: 14px; }
+  .calendar-col-right { margin-top: 0; padding-top: 14px; padding-bottom: var(--sab); }
   .month-picker-dialog { max-width: 600px !important; }
 }
 @media (min-width: 960px) and (min-height: 600px) and (orientation: landscape) {
@@ -20,6 +24,7 @@
 @media (orientation: landscape) and (max-height: 599px) {
   .left-nav-rail { padding-top: 0; }
   .rail-item { flex: 1; }
-  .cal-cell { height: calc(43px * var(--font-scale)); }
+  .calendar-two-columns { column-gap: 10px; }
+  .cal-cell { height: calc(47px * var(--font-scale)); }
   .screen-container { padding: 4px 12px; }
 }

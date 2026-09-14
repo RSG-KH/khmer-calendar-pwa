@@ -2,8 +2,11 @@ import { L } from '../data/i18n';
 import { escapeHtml } from './html';
 import { setupModal, showModal, hideModal } from './Modal';
 import appLicense from '../../LICENSE?raw';
-import calendarNotice from '../../public/NOTICE.txt?raw';
+import attributionNotice from '../../public/NOTICE.txt?raw';
 import fontLicense from '../../public/fonts/OFL.txt?raw';
+
+// The first NOTICE paragraph credits the app; the rest covers MIT calendar code.
+const [appNotice, ...calendarNotices] = attributionNotice.trim().split(/\r?\n\r?\n/);
 
 export function showCalendarSources(k: boolean): () => void {
   const text = (key: string) => escapeHtml(L.text(key, k));
@@ -26,8 +29,8 @@ export function showCalendarSources(k: boolean): () => void {
         <p>${text('rules.source_summary')}</p>
         <p>${text('ui.lunar_calendar_1900_2100_based_on_work_by_phylypo_tum_t.d8396b')}</p>
         <h3>${text('ui.open_source_license.ab00af')}</h3>
-        ${license(`${L.text('app.name', k)} · Apache-2.0`, appLicense)}
-        ${license(k ? 'ការគណនាប្រតិទិន · MIT' : 'Calendar calculations · MIT', calendarNotice)}
+        ${license(`${L.text('app.name', k)} · Apache-2.0`, `${appNotice}\n\n${appLicense}`)}
+        ${license(k ? 'ការគណនាប្រតិទិន · MIT' : 'Calendar calculations · MIT', calendarNotices.join('\n\n'))}
         ${license('Kantumruy Pro · SIL Open Font License 1.1', fontLicense)}
       </div>
       <div class="sources-footer"><button class="btn-today-pill sources-close">${text('ui.close.7df7dc')}</button></div>

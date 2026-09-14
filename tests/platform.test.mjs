@@ -4,19 +4,46 @@ import { createServer } from 'vite';
 
 const server = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom' });
 after(() => server.close());
-const { isWindows, prefersNativeTimePicker } = await server.ssrLoadModule('/src/ui/Platform.ts');
+const { isApple, isPhone, prefersNativeTimePicker } = await server.ssrLoadModule('/src/ui/Platform.ts');
 
-test('Windows scrollbar styling excludes iPad desktop mode and other platforms', () => {
-  assert.equal(isWindows({ userAgentData: { platform: 'Windows' }, maxTouchPoints: 10 }), true);
-  assert.equal(isWindows({ platform: 'Win32' }), true);
-  assert.equal(isWindows({ userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }), true);
+test('phone font-size choices stay limited on iPhone and Android phone browsers', () => {
   for (const client of [
+    { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)', platform: 'iPhone' },
+    { userAgent: 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36' },
+    { userAgentData: { platform: 'Android', mobile: true } }
+  ]) assert.equal(isPhone(client), true);
+});
+
+test('tablet and desktop font sizes extend to 150%, including iPad desktop mode', () => {
+  for (const client of [
+    { userAgent: 'Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS X) Mobile Safari/604.1', platform: 'iPad' },
+    { userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)', platform: 'MacIntel', maxTouchPoints: 5 },
+    { userAgent: 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Safari/537.36' },
+    { userAgentData: { platform: 'Android', mobile: false }, maxTouchPoints: 5 },
+    { userAgentData: { platform: 'Windows', mobile: false }, maxTouchPoints: 10 },
+    { platform: 'MacIntel', maxTouchPoints: 0 },
+    { platform: 'Linux x86_64' }
+  ]) assert.equal(isPhone(client), false);
+});
+
+test('Apple devices keep native scrollbar behavior, including desktop-mode iPadOS', () => {
+  for (const client of [
+    { platform: 'iPhone' },
+    { userAgent: 'Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS X)' },
+    { userAgentData: { platform: 'iOS' } },
     { platform: 'MacIntel', maxTouchPoints: 5 },
     { platform: 'MacIntel', maxTouchPoints: 0 },
+    { userAgentData: { platform: 'macOS' } }
+  ]) assert.equal(isApple(client), true);
+  for (const client of [
+    { userAgentData: { platform: 'Windows' }, maxTouchPoints: 10 },
+    { platform: 'Win32' },
     { userAgentData: { platform: 'Android' } },
+    { userAgent: 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36' },
+    { userAgentData: { platform: 'Chrome OS' } },
     { platform: 'Linux x86_64' },
     {}
-  ]) assert.equal(isWindows(client), false);
+  ]) assert.equal(isApple(client), false);
 });
 
 test('iPhone and iPad retain native time pickers, including desktop-mode iPadOS', () => {

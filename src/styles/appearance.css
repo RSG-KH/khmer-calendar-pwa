@@ -28,10 +28,17 @@
   --nav-background: rgba(28, 28, 30, 0.88);
   --zodiac-watermark-opacity: 0.03;
 }
-/* Keep the shell in normal flow. Fixed bottom anchoring left an extra strip
-   below the app in installed iPad apps; size the root directly instead. */
-html, body { height: 100%; }
+/* Browser tabs follow the toolbar's dynamic viewport. Keep the shell in flow;
+   fixed bottom anchoring also underfills installed iPad viewports. */
+html, body { height: 100%; overscroll-behavior: none; }
 #app { position: relative; width: 100%; height: 100%; height: 100dvh; }
+/* With black-translucent status bars, WebKit can subtract the status bar from
+   dvh even though the page starts behind it. Installed apps have no browser
+   toolbar: use the full viewport, including on the overflow-clipping ancestors.
+   Safe-area padding below still protects controls once, inside that height. */
+@media (display-mode: standalone) {
+  html, body, #app { height: 100vh; }
+}
 body { font-size: calc(15px * var(--font-scale)); }
 button, input, textarea, select { font-family: inherit; }
 [hidden] { display: none !important; }

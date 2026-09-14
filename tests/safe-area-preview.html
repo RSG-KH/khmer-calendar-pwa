@@ -17,7 +17,7 @@
     <label for="profile">Safe-area profile</label>
     <select id="profile"></select>
     <button id="run" type="button">Run all checks</button>
-    <p>Layout simulation only. Cutout insets are simulated; browser/OS-owned screen regions and WebKit viewport behavior still need testing on real devices.</p>
+    <p>Layout simulation only. Insets, installed mode and short dynamic viewport units are simulated; browser/OS-owned screen regions still need testing on real devices.</p>
     <pre id="result" role="status">Loading…</pre>
   </header>
   <iframe title="Khmer Calendar safe-area preview"></iframe>
@@ -29,6 +29,10 @@
       { name: 'iPad Pro M4 portrait', width: 834, height: 1210, top: 32, bottom: 20, font: 1.5 },
       { name: 'iPad portrait · default text', width: 834, height: 1194, top: 24, bottom: 20 },
       { name: 'iPad Pro M4 landscape', width: 1210, height: 834, top: 32, bottom: 20, font: 1.5 },
+      { name: 'Installed iPad Pro M4 portrait · dvh excludes status bar', width: 834, height: 1210, top: 32, bottom: 20, font: 1.5, standalone: true, shortfall: 32 },
+      { name: 'Installed iPad Pro M4 landscape · dvh excludes status bar', width: 1210, height: 834, top: 32, bottom: 20, font: 1.5, standalone: true, shortfall: 32 },
+      { name: 'Installed iPhone · dvh excludes status bar', width: 390, height: 844, top: 47, bottom: 34, standalone: true, shortfall: 47 },
+      { name: 'Safari tab · expanded browser toolbar', width: 390, height: 844, shortfall: 80 },
       { name: 'iPhone portrait', width: 390, height: 844, top: 47, bottom: 34 },
       { name: 'iPhone portrait · large text', width: 390, height: 844, top: 47, bottom: 34, font: 1.2 },
       { name: 'iPhone portrait · light theme', width: 390, height: 844, top: 59, bottom: 34, light: true },
@@ -45,6 +49,19 @@
     const run = document.querySelector('#run');
     profiles.forEach((profile, index) => picker.add(new Option(profile.name, String(index))));
 
+    function simulateViewport(rules, profile) {
+      for (const rule of rules) {
+        // Change the real production declarations, not a replacement app layout.
+        if (rule.media?.mediaText === '(display-mode: standalone)') {
+          rule.media.mediaText = profile.standalone ? 'all' : 'not all';
+        }
+        if (profile.shortfall && rule.style?.height === '100dvh') {
+          rule.style.height = `calc(100dvh - ${profile.shortfall}px)`;
+        }
+        if (rule.cssRules) simulateViewport(rule.cssRules, profile);
+      }
+    }
+
     async function inspect(index) {
       const profile = profiles[index];
       picker.value = String(index);
@@ -59,6 +76,7 @@
       }
       doc.documentElement.style.setProperty('--font-scale', String(profile.font || 1));
       doc.documentElement.setAttribute('data-theme', profile.light ? 'light' : 'dark');
+      for (const sheet of doc.styleSheets) simulateViewport(sheet.cssRules, profile);
       await doc.fonts.ready;
       await new Promise(resolve => win.requestAnimationFrame(() => win.requestAnimationFrame(resolve)));
       const rect = selector => doc.querySelector(selector).getBoundingClientRect();
@@ -69,7 +87,8 @@
       const checks = [];
       const check = (name, passed) => checks.push({ name, passed });
       const near = (a, b) => Math.abs(a - b) < 1;
-      check('App fills the available viewport', near(app.top, 0) && near(app.left, 0) && near(app.bottom, win.innerHeight) && near(app.right, win.innerWidth));
+      const availableHeight = win.innerHeight - (profile.standalone ? 0 : profile.shortfall || 0);
+      check('App fills the available viewport', near(app.top, 0) && near(app.left, 0) && near(app.bottom, availableHeight) && near(app.right, win.innerWidth));
       check('Content clears top/right safe areas', content.top >= (profile.top || 0) - 1 && content.right <= win.innerWidth - (profile.right || 0) + 1);
       check('No horizontal page overflow', doc.documentElement.scrollWidth <= win.innerWidth + 1);
       if (footer.height) {
@@ -77,15 +96,16 @@
         const pill = rect('.bottom-bar .nav-tab-pill');
         const label = rect('.nav-tab-label');
         const bottomPadding = Math.max(4, profile.bottom || 0);
-        check('Footer background reaches bottom and both sides', near(footer.bottom, win.innerHeight) && near(footer.left, 0) && near(footer.right, win.innerWidth));
-        check('Controls clear the Home indicator', near(tab.bottom, win.innerHeight - bottomPadding) && label.bottom <= tab.bottom + 1);
+        check('Footer background reaches bottom and both sides', near(footer.bottom, availableHeight) && near(footer.left, 0) && near(footer.right, win.innerWidth));
+        check('Controls clear the Home indicator', near(tab.bottom, availableHeight - bottomPadding) && label.bottom <= tab.bottom + 1);
         check('Footer fits labels without a second bottom gap', footer.height >= 60 && footer.bottom - label.bottom <= bottomPadding + 8 && pill.top >= footer.top);
         check('Footer buttons clear side cutouts', tab.left >= (profile.left || 0) - 1 && doc.querySelector('.bottom-bar').lastElementChild.getBoundingClientRect().right <= win.innerWidth - (profile.right || 0) + 1);
       } else {
         const item = rect('.rail-item');
         const railWidth = win.innerHeight < 600 ? 69 : 77.4;
         check('Rail background reaches camera-side edge', near(rail.left, 0));
-        check('Rail and content reach the bottom edge', near(rail.bottom, win.innerHeight) && near(content.bottom, win.innerHeight));
+        check('Rail and content reach the bottom edge', near(rail.bottom, availableHeight) && near(content.bottom, availableHeight));
+        check('Scrolling columns reach the top safe edge without a fixed gutter', near(rect('.calendar-col-left').top, profile.top || 0) && near(rect('.calendar-col-right').top, profile.top || 0));
         check('Rail controls keep their original width and clear cutout', near(rail.width, railWidth + (profile.left || 0)) && item.left >= (profile.left || 0) - 1);
       }
       return { profile: profile.name, passed: checks.every(check => check.passed), checks };

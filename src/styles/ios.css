@@ -113,7 +113,8 @@ svg { flex-shrink: 0; }
 .about-update:disabled { opacity: 1; cursor: default; }
 .about-update:disabled:not([aria-busy="true"]) { color: var(--text-secondary); }
 .about-credits { display: flex; flex-direction: column; gap: 4px; }
-.about-credits a { display: block; padding-block: 6px; }
+.about-repo-links { display: flex; flex-direction: column; padding-block: 4px; }
+.about-repo-links a { display: block; padding-block: 2px; }
 .sources-dialog { display: flex; flex-direction: column; min-height: 0; max-width: 600px; overflow: hidden !important; }
 .sources-dialog h2 { flex-shrink: 0; margin-bottom: 16px; font-size: calc(20px * var(--font-scale)); line-height: 1.6; }
 .sources-content { min-height: 0; overflow-y: auto; overscroll-behavior: contain; font-size: calc(14px * var(--font-scale)); line-height: 1.8; overflow-wrap: anywhere; }

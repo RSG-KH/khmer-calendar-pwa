@@ -1,10 +1,40 @@
 import assert from 'node:assert/strict';
 import { test, after } from 'node:test';
+import { readFile } from 'node:fs/promises';
 import { createServer } from 'vite';
 
 const server = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom' });
 after(() => server.close());
-const { isApple, isPhone, prefersNativeScrollbars, prefersNativeTimePicker } = await server.ssrLoadModule('/src/ui/Platform.ts');
+const { appManifestFile, isApple, isPhone, prefersNativeScrollbars, prefersNativeTimePicker } = await server.ssrLoadModule('/src/ui/Platform.ts');
+
+test('Android keeps original install icons while Apple and desktop use white icons in both languages', async () => {
+  const androidClients = [
+    { userAgent: 'Mozilla/5.0 (Linux; Android 14) Chrome/130.0 Mobile Safari/537.36' },
+    { userAgent: 'Mozilla/5.0 (Linux; Android 14) Chrome/130.0 Safari/537.36' },
+    { userAgent: 'Mozilla/5.0 (X11; Linux x86_64)', userAgentData: { platform: 'Android', mobile: false } }
+  ];
+  const whiteIconClients = [
+    { platform: 'iPhone' },
+    { platform: 'MacIntel', maxTouchPoints: 5 },
+    { userAgentData: { platform: 'macOS' } },
+    { userAgentData: { platform: 'Windows' }, maxTouchPoints: 10 },
+    { platform: 'Linux x86_64' }
+  ];
+  for (const language of ['en', 'km']) {
+    for (const [clients, variant, icons] of [
+      [androidClients, '', ['icons/app-logo.png', 'icons/apple-touch-icon.png']],
+      [whiteIconClients, '.white', ['icons/app-icon-white-192.png', 'icons/app-icon-white-512.png']]
+    ]) {
+      for (const client of clients) {
+        const file = appManifestFile(language, client);
+        assert.equal(file, `manifest${variant}${language === 'km' ? '.km' : ''}.webmanifest`);
+        const manifest = JSON.parse(await readFile(new URL(`../public/${file}`, import.meta.url), 'utf8'));
+        assert.equal(manifest.lang, language);
+        assert.deepEqual(manifest.icons.map(icon => icon.src), icons);
+      }
+    }
+  }
+});
 
 test('phone font-size choices stay limited on iPhone and Android phone browsers', () => {
   for (const client of [

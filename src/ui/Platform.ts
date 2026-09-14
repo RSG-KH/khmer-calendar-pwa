@@ -5,6 +5,17 @@ interface ClientPlatform {
   userAgentData?: { platform?: string; mobile?: boolean };
 }
 
+export function isAndroid(client: ClientPlatform = navigator): boolean {
+  return /Android/i.test(client.userAgentData?.platform ?? '')
+    || /Android/i.test(client.userAgent ?? '');
+}
+
+export function appManifestFile(language: 'en' | 'km', client: ClientPlatform = navigator): string {
+  // Preserve Android's original manifest URLs and artwork for existing installs.
+  const iconVariant = isAndroid(client) ? '' : '.white';
+  return `manifest${iconVariant}${language === 'km' ? '.km' : ''}.webmanifest`;
+}
+
 export function isApple(client: ClientPlatform = navigator): boolean {
   const platform = client.userAgentData?.platform || client.platform || '';
   return /Mac|iPhone|iPad|iPod|iOS/i.test(platform)
@@ -13,9 +24,7 @@ export function isApple(client: ClientPlatform = navigator): boolean {
 
 // Android and Apple already hide overlay scrollbars without taking layout space.
 export function prefersNativeScrollbars(client: ClientPlatform = navigator): boolean {
-  return isApple(client)
-    || /Android/i.test(client.userAgentData?.platform ?? '')
-    || /Android/i.test(client.userAgent ?? '');
+  return isApple(client) || isAndroid(client);
 }
 
 // Keep device-specific choices stable when rotating or resizing the app.

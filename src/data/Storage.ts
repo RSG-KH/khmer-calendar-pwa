@@ -31,7 +31,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   holyDayMarkers: true,
   showHolyDaysInEvents: false,
   mondayFirst: false,
-  showCopyButtons: true,
+  showCopyButtons: false,
   highlightSunday: true,
   showLunar: true,
   todayTimeZone: 'local',

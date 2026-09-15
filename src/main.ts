@@ -151,6 +151,7 @@ class KhmerCalendarApp {
     applyInstallMetadata(this.settings.language);
     root.setAttribute('data-accent', this.settings.accent);
     root.style.setProperty('--font-scale', String(this.settings.fontScale));
+    root.toggleAttribute('data-hide-copy-buttons', !this.settings.showCopyButtons);
 
     if (this.settings.theme === 'system') {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;

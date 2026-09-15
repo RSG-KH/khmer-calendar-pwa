@@ -208,6 +208,7 @@ svg { flex-shrink: 0; }
 .btn-copy-text:active { background: var(--bg-surface-variant); }
 .btn-copy-text:focus-visible { outline-offset: -2px; }
 .btn-copy-text.copied { color: var(--accent); }
+:root[data-hide-copy-buttons] :is(.btn-copy-text, .copy-status) { display: none; }
 /* Announce success without adding a row; keep failures visible for manual copying. */
 .copy-status:not(.copy-error) { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .copy-status.copy-error { margin-top: 8px; color: var(--tertiary); font-size: calc(13px * var(--font-scale)); line-height: 1.7; }

@@ -15,7 +15,7 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
   if (!fontScales.includes(settings.fontScale)) fontScales.push(settings.fontScale);
   const installUrl = 'https://rsg-kh.github.io/khmer-calendar-pwa/';
   const installLink = `<a class="about-install-link" href="${installUrl}" target="_blank" rel="noopener noreferrer">${text('app.name')}</a>`;
-  const toggle = (key: 'mondayFirst' | 'highlightSunday' | 'showLunar' | 'holyDayMarkers' | 'showHolyDaysInEvents', title: string, subtitle: string) => `
+  const toggle = (key: 'mondayFirst' | 'showCopyButtons' | 'highlightSunday' | 'showLunar' | 'holyDayMarkers' | 'showHolyDaysInEvents', title: string, subtitle: string) => `
     <label class="settings-row" for="setting-${key}">
       <span class="settings-text-col"><span class="settings-title">${text(title)}</span><span class="settings-subtitle">${text(subtitle)}</span></span>
       <input class="settings-switch" type="checkbox" role="switch" id="setting-${key}" data-setting="${key}" ${settings[key] ? 'checked' : ''} />
@@ -57,6 +57,7 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
       <h2 class="section-label">${text('ui.calendar.beb873')}</h2>
       <section class="settings-card">
         ${toggle('mondayFirst', 'ui.start_week_on_monday.5578c3', 'ui.sunday_when_turned_off.e40816')}
+        ${toggle('showCopyButtons', 'ui.show_copy_buttons', 'ui.show_copy_buttons_subtitle')}
         ${toggle('highlightSunday', 'ui.highlight_sunday_column.549462', 'ui.show_sundays_in_red_like_holidays.245681')}
         ${toggle('showLunar', 'ui.lunar_dates_in_calendar.4dffed', 'ui.koeut_and_roach_under_each_date.f23bd7')}
         ${toggle('holyDayMarkers', 'ui.buddhist_holy_days_in_calendar.d1e9b6', 'ui.show_lotus_markers_and_holy_days.c9d0bc')}

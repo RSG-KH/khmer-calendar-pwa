@@ -14,6 +14,7 @@ export interface AppSettings {
   holyDayMarkers: boolean;
   showHolyDaysInEvents: boolean;
   mondayFirst: boolean;
+  showCopyButtons: boolean;
   highlightSunday: boolean;
   showLunar: boolean;
   todayTimeZone: TodayTimeZone;
@@ -30,6 +31,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   holyDayMarkers: true,
   showHolyDaysInEvents: false,
   mondayFirst: false,
+  showCopyButtons: true,
   highlightSunday: true,
   showLunar: true,
   todayTimeZone: 'local',

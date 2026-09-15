@@ -199,6 +199,22 @@ svg { flex-shrink: 0; }
 /* Scroll the date content, keeping actions visible and clipping the watermarks. */
 .date-details-dialog { display: flex; flex-direction: column; overflow: hidden !important; }
 .date-details-content { min-height: 0; }
+.date-description { position: relative; }
+.date-description-row { display: flex; align-items: flex-start; gap: 8px; }
+.full-lunar-date { flex: 1; min-width: 0; font-size: calc(17px * var(--font-scale)); line-height: 1.8; color: var(--text-primary); white-space: pre-line; overflow-wrap: anywhere; user-select: text; -webkit-user-select: text; }
+.btn-copy-text { display: inline-grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: var(--on-surface-variant); cursor: pointer; }
+.btn-copy-text span { display: flex; }
+.btn-copy-text svg { width: 20px; height: 20px; fill: currentColor; }
+.btn-copy-text:active { background: var(--bg-surface-variant); }
+.btn-copy-text:focus-visible { outline-offset: -2px; }
+.btn-copy-text.copied { color: var(--accent); }
+/* Announce success without adding a row; keep failures visible for manual copying. */
+.copy-status:not(.copy-error) { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.copy-status.copy-error { margin-top: 8px; color: var(--tertiary); font-size: calc(13px * var(--font-scale)); line-height: 1.7; }
+.event-title-copy { position: relative; margin-bottom: 12px; }
+.event-title-row { font-size: calc(18px * var(--font-scale)); font-weight: 600; color: var(--text-primary); line-height: 1.4; overflow-wrap: anywhere; }
+.event-detail-title { white-space: pre-wrap; user-select: text; -webkit-user-select: text; }
+.btn-copy-title { margin-inline-start: 4px; vertical-align: middle; }
 .month-picker-dialog { display: flex; flex-direction: column; min-height: 0; overflow: hidden !important; }
 .month-picker-header { display: flex; flex-shrink: 0; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .month-picker-footer { display: flex; flex-shrink: 0; justify-content: flex-end; gap: 10px; margin-top: 18px; }

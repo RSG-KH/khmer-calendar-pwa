@@ -11,6 +11,7 @@ import { escapeHtml } from './html';
 import { setupModal, showModal, hideModal } from './Modal';
 import { prefersNativeTimePicker } from './Platform';
 import { setupTimeField } from './TimeField';
+import { setupCopyButton } from './CopyButton';
 
 /* ==========================================================================
    1. MONTH / YEAR PICKER MODAL
@@ -176,6 +177,7 @@ export class DateDetailsDialogModal {
   private overlay: HTMLElement;
   private onOpenEvent: (event: CalendarEvent) => void;
   private onAddEvent: (dateStr: string) => void;
+  private cleanupDateCopy?: () => void;
 
   constructor(onOpenEvent: (event: CalendarEvent) => void, onAddEvent: (dateStr: string) => void) {
     this.onOpenEvent = onOpenEvent;
@@ -189,8 +191,10 @@ export class DateDetailsDialogModal {
   }
 
   open(dateStr: string, events: CalendarEvent[], isKhmer: boolean) {
+    this.cleanupDateCopy?.();
     const parts = dateStr.split('-').map(Number);
     const info = KhmerDateDetails.fromGregorian(parts[0], parts[1], parts[2]);
+    const fullDate = isKhmer ? CalendarWords.fullKhmerDate(info) : CalendarWords.fullEnglishDate(info);
     const todayStr = todayInZone(Storage.getSettings().todayTimeZone);
     const isToday = dateStr === todayStr;
 
@@ -214,7 +218,15 @@ export class DateDetailsDialogModal {
 
         <div class="date-details-content" style="position: relative; z-index: 1; display: flex; flex-direction: column; gap: 14px; max-height: 60vh; overflow-y: auto;">
           <!-- Full Khmer Date -->
-          <div class="full-lunar-date" style="font-size: calc(17px * var(--font-scale)); line-height: 1.8; color: var(--text-primary);">${isKhmer ? CalendarWords.fullKhmerDate(info) : CalendarWords.fullEnglishDate(info)}</div>
+          <div class="date-description">
+            <div class="date-description-row">
+              <div class="full-lunar-date">${escapeHtml(fullDate)}</div>
+              <button type="button" class="btn-copy-text btn-copy-date" aria-label="${L.text('ui.copy_full_date', isKhmer)}">
+                <span aria-hidden="true">${Icons.copy}</span>
+              </button>
+            </div>
+            <p class="copy-status date-copy-status" role="status" aria-atomic="true"></p>
+          </div>
 
           <!-- Holy Day or Shaving Day label -->
           ${info.lunar.isHolyDay ? `
@@ -270,6 +282,16 @@ export class DateDetailsDialogModal {
       </div>
     `;
 
+    this.cleanupDateCopy = setupCopyButton(
+      this.overlay.querySelector<HTMLButtonElement>('.btn-copy-date')!,
+      this.overlay.querySelector<HTMLElement>('.date-copy-status')!,
+      fullDate,
+      {
+        copied: L.text('ui.full_date_copied', isKhmer),
+        failed: L.text('ui.could_not_copy_date', isKhmer)
+      }
+    );
+
     this.overlay.querySelector('.btn-dialog-close')!.addEventListener('click', () => this.close());
     this.overlay.querySelector('.btn-dialog-add')!.addEventListener('click', () => {
       this.close();
@@ -291,6 +313,8 @@ export class DateDetailsDialogModal {
   }
 
   close() {
+    this.cleanupDateCopy?.();
+    this.cleanupDateCopy = undefined;
     hideModal(this.overlay);
   }
 }
@@ -302,6 +326,7 @@ export class EventDetailsDialogModal {
   private overlay: HTMLElement;
   private onEdit: (event: CalendarEvent) => void;
   private onDelete: (id: string) => void;
+  private cleanupTitleCopy?: () => void;
 
   constructor(onEdit: (event: CalendarEvent) => void, onDelete: (id: string) => void) {
     this.onEdit = onEdit;
@@ -315,6 +340,8 @@ export class EventDetailsDialogModal {
   }
 
   open(event: CalendarEvent, isKhmer: boolean) {
+    this.cleanupTitleCopy?.();
+    const title = isKhmer ? event.titleKm : event.titleEn;
     const parts = event.date.split('-').map(Number);
     const info = KhmerDateDetails.fromGregorian(parts[0], parts[1], parts[2]);
     const isCustom = event.kind === 'CUSTOM';
@@ -336,8 +363,13 @@ export class EventDetailsDialogModal {
         <span class="dialog-watermark-western tinted-watermark" style="--watermark-image: url('${westernImg}')" aria-hidden="true"></span>
 
         <div style="position: relative; z-index: 1;">
-          <div style="font-size: calc(18px * var(--font-scale)); font-weight: 600; color: var(--text-primary); line-height: 1.4; margin-bottom: 12px;">
-            ${escapeHtml(isKhmer ? event.titleKm : event.titleEn)}
+          <div class="event-title-copy">
+            <div class="event-title-row">
+              <span class="event-detail-title">${escapeHtml(title)}</span><button type="button" class="btn-copy-text btn-copy-title" aria-label="${L.text('ui.copy_event_title', isKhmer)}">
+                <span aria-hidden="true">${Icons.copy}</span>
+              </button>
+            </div>
+            <p class="copy-status event-title-copy-status" role="status" aria-atomic="true"></p>
           </div>
 
           <div class="card-divider" style="margin: 0 0 14px 0;"></div>
@@ -407,6 +439,15 @@ export class EventDetailsDialogModal {
       </div>
     `;
 
+    this.cleanupTitleCopy = setupCopyButton(
+      this.overlay.querySelector<HTMLButtonElement>('.btn-copy-title')!,
+      this.overlay.querySelector<HTMLElement>('.event-title-copy-status')!,
+      title,
+      {
+        copied: L.text('ui.event_title_copied', isKhmer),
+        failed: L.text('ui.could_not_copy_event_title', isKhmer)
+      }
+    );
     this.overlay.querySelector('.btn-ev-close')!.addEventListener('click', () => this.close());
 
     if (isCustom) {
@@ -435,10 +476,12 @@ export class EventDetailsDialogModal {
       });
     }
 
-    showModal(this.overlay, isKhmer ? event.titleKm : event.titleEn);
+    showModal(this.overlay, title);
   }
 
   close() {
+    this.cleanupTitleCopy?.();
+    this.cleanupTitleCopy = undefined;
     hideModal(this.overlay);
   }
 }

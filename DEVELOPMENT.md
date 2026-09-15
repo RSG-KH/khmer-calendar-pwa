@@ -56,7 +56,7 @@ For a build without tests, run `npm run build`. Output is in `dist/`. The produc
 
 The tests cover calendar continuity and boundaries, time zones, saved events, input escaping, modal viewport behavior, month swipes, platform controls and offline caching.
 
-The four-part version shown in Settings comes from `appVersion` in `package.json`. Update it for each release; if its first three parts change, also update npm's three-part `version` and the lockfile with `npm version X.Y.Z --no-git-tag-version`. The service worker cache hash is generated automatically for every build.
+The four-part version shown in Settings comes from `appVersion` in `package.json`. Change it only when a version bump is explicitly requested; committing or pushing changes does not finalize a release. The last component is for bug fixes only (for example, `0.1.8.1`). Feature releases advance the feature version and reset the last component to zero (for example, `0.1.7.5` → `0.1.8.0`). If the first three parts change, also update npm's three-part `version` and the lockfile with `npm version X.Y.Z --no-git-tag-version`. The service worker cache hash is generated automatically for every build.
 
 ## GitHub Pages
 

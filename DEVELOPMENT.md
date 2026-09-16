@@ -100,7 +100,7 @@ If hosting at another address, update `installUrl` in [Settings.ts](src/ui/Setti
 - Time entry uses native pickers on iOS/iPadOS, and themed 24-hour hour/minute menus on Android and desktop browsers. The menus support touch and keyboard navigation and follow the app theme.
 - Month navigation supports swipes, mouse dragging and arrow buttons while preserving vertical scrolling and date taps.
 - Month selection uses a draft: **This year** follows the selected Today time zone and preserves the month; **Go** selects day one; Cancel/Escape commits nothing.
-- The initial theme follows the system. Tapping Light or Dark saves an explicit choice, including when that chip is already highlighted. Background tint defaults on; longer and colored weekday headings default off. Colors follow weekday identity when Monday-first is enabled.
+- The initial theme follows the system. Tapping Light or Dark saves an explicit choice, including when that chip is already highlighted. Background tint and colored weekday headings default on; longer weekday headings default off. Existing saved choices are preserved. Colors follow weekday identity when Monday-first is enabled.
 - Today checks run every 30 seconds while visible and immediately on return. Hidden pages stop this polling. A time-zone/offset change also refreshes displayed event times. Open modals defer refresh until closing; historical date selection remains in place.
 - Production builds include a Content Security Policy allowing local scripts/assets and the UI's inline styles. GitHub Actions are pinned to verified commits.
 - Scheduled reminders are not available in PWA mode. The unused [push prototype](worker/push-scheduler.js) is not part of the Pages deployment and does not send reminders.

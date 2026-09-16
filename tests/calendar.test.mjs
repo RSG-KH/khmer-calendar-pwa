@@ -119,7 +119,7 @@ test('legacy events and preferences remain readable', () => {
   assert.equal(Storage.getSettings().mondayFirst, false);
   assert.equal(Storage.getSettings().backgroundAccent, true);
   assert.equal(Storage.getSettings().showLongerWeekdayNames, false);
-  assert.equal(Storage.getSettings().highlightWeekdayNames, false);
+  assert.equal(Storage.getSettings().highlightWeekdayNames, true);
   assert.equal(Storage.getCustomEvents()[0].date, '2026-09-13');
   values.clear();
 });
@@ -136,12 +136,12 @@ test('weekday labels resolve in both languages and user text is rendered literal
 test('new appearance preferences round-trip while preserving existing explicit theme choices', () => {
   values.clear();
   for (const theme of ['system', 'light', 'dark']) {
-    Storage.saveSettings({ ...DEFAULT_SETTINGS, theme, backgroundAccent: false, showLongerWeekdayNames: true, highlightWeekdayNames: true });
+    Storage.saveSettings({ ...DEFAULT_SETTINGS, theme, backgroundAccent: false, showLongerWeekdayNames: true, highlightWeekdayNames: false });
     const settings = Storage.getSettings();
     assert.equal(settings.theme, theme);
     assert.equal(settings.backgroundAccent, false);
     assert.equal(settings.showLongerWeekdayNames, true);
-    assert.equal(settings.highlightWeekdayNames, true);
+    assert.equal(settings.highlightWeekdayNames, false);
     for (const dark of [false, true]) assert.equal(effectiveTheme(theme, dark), theme === 'system' ? (dark ? 'dark' : 'light') : theme);
   }
   assert.equal(appearanceBackground({ accent: 'rose', backgroundAccent: false }, true, '#A84465'), '#000000');

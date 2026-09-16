@@ -213,13 +213,13 @@
   pointer-events: none;
 }
 
-.cal-cell.active-day {
+.cal-cell.today {
   background: var(--accent);
   color: var(--on-accent);
 }
 
-.cal-cell.today:not(.active-day) {
-  border: 1.5px solid var(--accent);
+.cal-cell.active-day:not(.today) {
+  box-shadow: inset 0 0 0 1.5px var(--accent);
 }
 
 .cell-day-num {
@@ -229,7 +229,7 @@
   color: var(--text-primary);
 }
 
-.cal-cell.active-day .cell-day-num {
+.cal-cell.today .cell-day-num {
   color: var(--on-accent);
   font-weight: 700;
 }
@@ -238,7 +238,7 @@
   color: var(--tertiary);
 }
 
-.cal-cell.active-day.is-holiday .cell-day-num {
+.cal-cell.today.is-holiday .cell-day-num {
   color: var(--on-accent);
 }
 
@@ -250,7 +250,7 @@
   white-space: nowrap;
 }
 
-.cal-cell.active-day .cell-lunar-label {
+.cal-cell.today .cell-lunar-label {
   color: var(--on-accent);
   opacity: 0.85;
 }
@@ -267,7 +267,7 @@
   fill: var(--secondary);
 }
 
-.cal-cell.active-day .cell-lotus-icon {
+.cal-cell.today .cell-lotus-icon {
   fill: var(--on-accent);
 }
 
@@ -315,7 +315,7 @@
   transform: scale(1.4);
 }
 
-.cal-cell.active-day .mark-shape {
+.cal-cell.today .mark-shape {
   background: var(--on-accent) !important;
 }
 

@@ -1,14 +1,13 @@
 // Copyright (c) 2026 RSG-KH | Apache-2.0 License
 
+import { createRule, type RuleInput } from 'khmer-calendar-engine';
 import rawRules from './recurrence-rules.json';
-import { KhmerCalendar, LunarDate, toEpochDay, fromEpochDay, khmerNumber } from '../domain/KhmerCalendar';
-import { KhmerNewYear } from '../domain/KhmerNewYear';
+import { calendarEngine, KhmerCalendar, khmerNumber } from '../domain/KhmerCalendar';
 import { L } from './i18n';
 
 export interface RecurrenceRule {
   id: string;
   titleKey: string;
-  comparisonKey: string;
   type: 'khmer_lunar' | 'solar' | 'new_year_first' | 'new_year_middle' | 'new_year_last' | 'solar_nth_weekday';
   month: number;
   day: number;
@@ -18,98 +17,62 @@ export interface RecurrenceRule {
   fromYear: number;
   throughYear: number;
   anniversaryBase: number | null;
-  secondAsadh?: boolean;
+  monthPolicy?: 'exact' | 'ordinary_or_second_asadh';
 }
 
-const rules: RecurrenceRule[] = rawRules as any;
+export const recurrenceRules = rawRules as RecurrenceRule[];
+
+/** App JSON includes labels and legacy fields that are not engine inputs. */
+export function engineRuleInput(rule: RecurrenceRule): RuleInput {
+  const base = {
+    id: rule.id, offset: rule.offset, duration: rule.duration,
+    fromYear: rule.fromYear, throughYear: rule.throughYear
+  };
+  switch (rule.type) {
+    case 'solar': return { ...base, type: rule.type, month: rule.month, day: rule.day };
+    case 'solar_nth_weekday': return {
+      ...base, type: rule.type, month: rule.month, day: rule.day, offset: 0, occurrence: rule.offset
+    };
+    case 'khmer_lunar': return {
+      ...base, type: rule.type, month: rule.month, day: rule.day, waxing: rule.waxing,
+      monthPolicy: rule.monthPolicy ?? 'exact'
+    };
+    default: return { ...base, type: rule.type };
+  }
+}
+
+const calculations = new Map(recurrenceRules.map(rule => [rule, createRule(engineRuleInput(rule))]));
+export type RuleDates = { rule: RecurrenceRule; dates: string[] };
 
 export class RecurringEvents {
-  private static matches(rule: RecurrenceRule, lunar: LunarDate): boolean {
-    return lunar.day === rule.day &&
-      lunar.waxing === rule.waxing &&
-      (lunar.month === rule.month || (Boolean(rule.secondAsadh) && lunar.month === 13));
-  }
-
-  static dates(year: number): { rule: RecurrenceRule; dates: string[] }[] {
-    const active = rules.filter(r => year >= r.fromYear && year <= r.throughYear);
-    const lunarRules = active.filter(r => r.type === 'khmer_lunar');
-    const anchors = new Map<string, number>();
-
-    let startDay = toEpochDay(year, 1, 1);
-    const endDay = toEpochDay(year, 12, 31);
-
-    for (let epoch = startDay; epoch <= endDay; epoch++) {
-      const { year: dy, month: dm, day: dd } = fromEpochDay(epoch);
-      const lunar = KhmerCalendar.fromGregorian(dy, dm, dd);
-      for (const rule of lunarRules) {
-        if (this.matches(rule, lunar)) {
-          anchors.set(rule.id, epoch);
-        }
-      }
+  static dates(year: number): RuleDates[] {
+    if (!Number.isInteger(year) || year < KhmerCalendar.minYear || year > KhmerCalendar.maxYear) {
+      throw new RangeError('Supported years: 1800–2200.');
     }
-
-    const newYear = KhmerNewYear.forYear(year);
-
-    return active.map(rule => {
-      const resultDates: string[] = [];
-      if (rule.type === 'new_year_first') {
-        resultDates.push(newYear.dates[0]);
-      } else if (rule.type === 'new_year_middle') {
-        for (let i = 1; i < newYear.dates.length - 1; i++) {
-          resultDates.push(newYear.dates[i]);
-        }
-      } else if (rule.type === 'new_year_last') {
-        resultDates.push(newYear.dates[newYear.dates.length - 1]);
-      } else if (rule.type === 'solar_nth_weekday') {
-        const firstDayEpoch = toEpochDay(year, rule.month, 1);
-        const dayOfWeek = (new Date(firstDayEpoch * 86400000).getUTCDay() + 6) % 7 + 1; // 1 = Monday..7 = Sunday
-        const daysToAdd = ((rule.day - dayOfWeek + 7) % 7) + (rule.offset - 1) * 7;
-        const anchorEpoch = firstDayEpoch + daysToAdd;
-        for (let i = 0; i < rule.duration; i++) {
-          const { year: y, month: m, day: d } = fromEpochDay(anchorEpoch + i);
-          resultDates.push(`${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`);
-        }
-      } else if (rule.type === 'solar') {
-        const anchorEpoch = toEpochDay(year, rule.month, rule.day);
-        for (let i = 0; i < rule.duration; i++) {
-          const { year: y, month: m, day: d } = fromEpochDay(anchorEpoch + rule.offset + i);
-          resultDates.push(`${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`);
-        }
-      } else {
-        const anchorEpoch = anchors.get(rule.id);
-        if (anchorEpoch !== undefined) {
-          for (let i = 0; i < rule.duration; i++) {
-            const { year: y, month: m, day: d } = fromEpochDay(anchorEpoch + rule.offset + i);
-            resultDates.push(`${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`);
-          }
-        }
+    return recurrenceRules.filter(rule => year >= rule.fromYear && year <= rule.throughYear).map(rule => {
+      const dates = calendarEngine.evaluateRule(year, calculations.get(rule)!).map(event => event.date.iso);
+      // Current definitions stay within their anchor year. Future cross-year rules
+      // must explicitly extend the repository's Gregorian-year view contract.
+      if (!dates.length || dates.some(date => !date.startsWith(`${year}-`))) {
+        throw new Error(`Unexpected recurrence dates: ${rule.id}, ${year}`);
       }
-      return { rule, dates: resultDates };
+      return { rule, dates };
     });
   }
 
-  static forYear(year: number): { id: string; date: string; km: string; en: string; kind: 'OBSERVANCE' }[] {
-    const list = this.dates(year);
-    const result: { id: string; date: string; km: string; en: string; kind: 'OBSERVANCE' }[] = [];
-    for (const { rule, dates } of list) {
-      const anniversary = rule.anniversaryBase !== null ? year - rule.anniversaryBase : null;
-      const titleKm = anniversary === null
-        ? L.text(rule.titleKey, true)
-        : L.text(rule.titleKey, true, { anniversary: khmerNumber(anniversary) });
-      const titleEn = anniversary === null
-        ? L.text(rule.titleKey, false)
-        : L.text(rule.titleKey, false, { anniversary: String(anniversary) });
+  static forYear(year: number) {
+    return this.fromDates(year, this.dates(year));
+  }
 
-      for (const d of dates) {
-        result.push({
-          id: `calculated:${rule.id}`,
-          date: d,
-          km: titleKm,
-          en: titleEn,
-          kind: 'OBSERVANCE'
-        });
-      }
-    }
-    return result;
+  static fromDates(year: number, list: RuleDates[]) {
+    return list.flatMap(({ rule, dates }) => {
+      const anniversary = rule.anniversaryBase === null ? null : year - rule.anniversaryBase;
+      const title = (khmer: boolean) => L.text(rule.titleKey, khmer, anniversary === null ? {} : {
+        anniversary: khmer ? khmerNumber(anniversary) : String(anniversary)
+      });
+      return dates.map(date => ({
+        id: `calculated:${rule.id}`, date, km: title(true), en: title(false), kind: 'OBSERVANCE' as const
+      }));
+    });
   }
 }

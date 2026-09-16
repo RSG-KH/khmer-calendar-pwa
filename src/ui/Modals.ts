@@ -12,163 +12,12 @@ import { setupModal, showModal, hideModal } from './Modal';
 import { prefersNativeTimePicker } from './Platform';
 import { setupTimeField } from './TimeField';
 import { setupCopyButton } from './CopyButton';
+import { holyDayLotus } from './HolyDayLotus';
 
 /* ==========================================================================
    1. MONTH / YEAR PICKER MODAL
    ========================================================================== */
-export class MonthPickerModal {
-  private overlay: HTMLElement;
-  private onSelect: (year: number, month: number) => void;
-  private currentYear: number = new Date().getFullYear();
-  private currentMonth: number = new Date().getMonth() + 1;
-  private isKhmer: boolean = true;
-  private selectedYear: number = this.currentYear;
-
-  constructor(onSelect: (year: number, month: number) => void, private mode: 'month' | 'year' = 'month') {
-    this.onSelect = onSelect;
-    this.overlay = document.createElement('div');
-    this.overlay.className = 'modal-overlay';
-    setupModal(this.overlay, () => this.close());
-    this.overlay.innerHTML = `
-      <div class="modal-dialog-surface month-picker-dialog" style="max-width: 360px;">
-        ${mode === 'year' ? `<div class="year-picker-title-row">
-          <span class="year-picker-title"></span>
-          <button class="btn-today-pill btn-this-year"></button>
-        </div>` : ''}
-        <div class="month-picker-header">
-          <button class="arrow-btn btn-prev-year">${Icons.chevronLeft}</button>
-          <input type="number" min="1800" max="2200" inputmode="numeric" enterkeyhint="done" class="year-display" style="width: 110px; border: 0; border-radius: 10px; background: var(--bg-surface-variant); text-align: center; font-size: calc(22px * var(--font-scale)); font-weight: 700; color: var(--text-primary);" />
-          <button class="arrow-btn btn-next-year">${Icons.chevronRight}</button>
-        </div>
-        ${mode === 'month' ? '<div class="month-picker-grid"></div>' : '<p class="year-picker-range">1800–2200</p>'}
-        <div class="month-picker-footer">
-          ${mode === 'year' ? '<button class="btn-today-pill btn-close-modal"></button><button class="btn-today-pill btn-confirm-year" style="background: var(--accent); color: var(--on-accent);"></button>' : `<button class="btn-today-pill btn-close-modal" style="background: var(--accent); color: var(--on-accent); padding: 8px 20px; border-radius: 20px;">
-            ${L.text('ui.close.7df7dc', true) || 'Close'}
-          </button>`}
-        </div>
-      </div>
-    `;
-
-    this.overlay.querySelector('.btn-prev-year')!.addEventListener('click', () => {
-      this.currentYear = Math.max(1800, this.currentYear - 1);
-      this.render();
-    });
-
-    this.overlay.querySelector('.btn-next-year')!.addEventListener('click', () => {
-      this.currentYear = Math.min(2200, this.currentYear + 1);
-      this.render();
-    });
-
-    this.overlay.querySelector('.btn-close-modal')!.addEventListener('click', () => {
-      this.close();
-    });
-    this.overlay.querySelector('.btn-confirm-year')?.addEventListener('click', () => this.confirmYear());
-    this.overlay.querySelector('.btn-this-year')?.addEventListener('click', () => {
-      const year = Number(todayInZone(Storage.getSettings().todayTimeZone).slice(0, 4));
-      this.onSelect(year, this.currentMonth);
-      this.close();
-    });
-
-    this.overlay.querySelector<HTMLInputElement>('.year-display')!.addEventListener('change', event => {
-      if (this.mode === 'year') { this.updateYearValidity(); return; }
-      const value = (event.target as HTMLInputElement).valueAsNumber;
-      if (Number.isInteger(value)) this.currentYear = Math.min(2200, Math.max(1800, value));
-      this.render();
-    });
-    this.overlay.querySelector<HTMLInputElement>('.year-display')!.addEventListener('input', event => {
-      if (this.mode === 'year') { this.updateYearValidity(); return; }
-      const value = (event.target as HTMLInputElement).valueAsNumber;
-      if (Number.isInteger(value) && value >= 1800 && value <= 2200) {
-        this.currentYear = value;
-        this.render();
-      }
-    });
-    this.overlay.querySelector<HTMLInputElement>('.year-display')!.addEventListener('keydown', event => {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        if (this.mode === 'year') { this.confirmYear(); return; }
-        // Commit the year and dismiss the keyboard without closing the picker.
-        this.overlay.focus({ preventScroll: true });
-      }
-    });
-
-    this.overlay.addEventListener('click', (e) => {
-      if (e.target === this.overlay) this.close();
-    });
-
-    document.body.appendChild(this.overlay);
-  }
-
-  open(year: number, month: number, isKhmer: boolean) {
-    this.currentYear = year;
-    this.selectedYear = year;
-    this.currentMonth = month;
-    this.isKhmer = isKhmer;
-    this.render();
-    showModal(this.overlay, this.mode === 'year' ? L.text('ui.choose_year.0853a0', isKhmer) : isKhmer ? 'ជ្រើសរើសខែ' : 'Choose month');
-  }
-
-  close() {
-    hideModal(this.overlay);
-  }
-
-  private updateYearValidity(): boolean {
-    const input = this.overlay.querySelector<HTMLInputElement>('.year-display')!;
-    const value = input.valueAsNumber;
-    const valid = Number.isInteger(value) && value >= 1800 && value <= 2200;
-    input.setAttribute('aria-invalid', String(!valid));
-    this.overlay.querySelector<HTMLButtonElement>('.btn-confirm-year')!.disabled = !valid;
-    this.overlay.querySelector<HTMLButtonElement>('.btn-prev-year')!.disabled = !valid || value === 1800;
-    this.overlay.querySelector<HTMLButtonElement>('.btn-next-year')!.disabled = !valid || value === 2200;
-    if (valid) this.currentYear = value;
-    return valid;
-  }
-
-  private confirmYear() {
-    if (!this.updateYearValidity()) return;
-    this.onSelect(this.currentYear, this.currentMonth);
-    this.close();
-  }
-
-  private render() {
-    const yearDisplay = this.overlay.querySelector<HTMLInputElement>('.year-display')!;
-    yearDisplay.value = String(this.currentYear);
-    yearDisplay.setAttribute('aria-label', this.isKhmer ? 'ឆ្នាំ' : 'Year');
-    const previous = this.overlay.querySelector<HTMLButtonElement>('.btn-prev-year')!;
-    const next = this.overlay.querySelector<HTMLButtonElement>('.btn-next-year')!;
-    previous.disabled = this.currentYear === 1800;
-    next.disabled = this.currentYear === 2200;
-    previous.setAttribute('aria-label', this.isKhmer ? 'ឆ្នាំមុន' : 'Previous year');
-    next.setAttribute('aria-label', this.isKhmer ? 'ឆ្នាំបន្ទាប់' : 'Next year');
-    if (this.mode === 'year') {
-      this.overlay.querySelector('.year-picker-title')!.textContent = L.text('ui.choose_year.0853a0', this.isKhmer);
-      this.overlay.querySelector('.btn-this-year')!.textContent = L.text('ui.this_year.02e981', this.isKhmer);
-      this.overlay.querySelector('.btn-close-modal')!.textContent = L.text('ui.cancel.5bf834', this.isKhmer);
-      this.overlay.querySelector('.btn-confirm-year')!.textContent = L.text('ui.go.ba4f19', this.isKhmer);
-      this.updateYearValidity();
-      return;
-    }
-    this.overlay.querySelector('.btn-close-modal')!.textContent = L.text('ui.close.7df7dc', this.isKhmer);
-
-    const grid = this.overlay.querySelector('.month-picker-grid')!;
-
-    for (let m = 1; m <= 12; m++) {
-      const existing = grid.children[m - 1] as HTMLButtonElement | undefined;
-      const btn = existing || document.createElement('button');
-      const selected = m === this.currentMonth && this.currentYear === this.selectedYear;
-      btn.className = 'month-picker-cell' + (selected ? ' active' : '');
-      btn.setAttribute('aria-pressed', String(selected));
-      btn.textContent = CalendarWords.month(m, this.isKhmer, true);
-      if (!existing) {
-        btn.addEventListener('click', () => {
-          this.onSelect(this.currentYear, m);
-          this.close();
-        });
-        grid.appendChild(btn);
-      }
-    }
-  }
-}
+export { MonthPickerModal } from './MonthPicker';
 
 /* ==========================================================================
    2. DATE DETAILS DIALOG MODAL (matching DateDetailsDialog in CalendarApp.kt)
@@ -231,11 +80,12 @@ export class DateDetailsDialogModal {
           <!-- Holy Day or Shaving Day label -->
           ${info.lunar.isHolyDay ? `
             <div style="font-size: calc(15px * var(--font-scale)); font-weight: 500; color: var(--secondary); display: flex; align-items: center; gap: 8px;">
-              <img src="${import.meta.env.BASE_URL}assets/drawables/holy_day_lotus.png" style="width: 22px; height: 22px; object-fit: contain;" alt="" />
+              <img src="${holyDayLotus(info.lunar)}" style="width: 22px; height: 22px; object-fit: contain;" alt="" />
               ${L.text('ui.thngai_sil_buddhist_holy_day.89de73', isKhmer)}
             </div>
           ` : (info.lunar.isShavingDay ? `
-            <div style="font-size: calc(15px * var(--font-scale)); font-weight: 500; color: var(--secondary);">
+            <div style="font-size: calc(15px * var(--font-scale)); font-weight: 500; color: var(--secondary); display: flex; align-items: center; gap: 8px;">
+              <img src="${holyDayLotus(info.lunar)}" style="width: 22px; height: 22px; object-fit: contain;" alt="" />
               ${L.text('ui.thngai_kaor_before_a_holy_day.d02977', isKhmer)}
             </div>
           ` : '')}
@@ -348,14 +198,7 @@ export class EventDetailsDialogModal {
     const animalImg = Zodiac.getAnimalDrawable(info.animalYear, true);
     const westernImg = Zodiac.getWesternDrawable(info.zodiac);
 
-    let categoryDesc = '';
-    if (isCustom) {
-      categoryDesc = L.text('ui.a_custom_event_saved_on_your_device.96d6e7', isKhmer);
-    } else if (event.kind === 'HOLY_DAY') {
-      categoryDesc = L.text('ui.a_buddhist_observance_on_the_8th_and_15th_waxing_days_t.4bac2c', isKhmer);
-    } else if (event.officialSourceUrl) {
-      categoryDesc = L.text('ui.listed_in_cambodia_s_official_year_holiday_calendar.044398', isKhmer, { year: CalendarWords.number(parts[0], isKhmer) });
-    }
+    const categoryDesc = L.text(isCustom ? 'ui.a_custom_event_saved_on_your_device.96d6e7' : 'events.engine_calculations', isKhmer);
 
     this.overlay.innerHTML = `
       <div class="modal-dialog-surface" style="position: relative; overflow: hidden; max-width: 480px; width: 92%;">
@@ -396,7 +239,8 @@ export class EventDetailsDialogModal {
 
             <!-- Category & Description -->
             <div style="font-weight: 600; color: var(--accent);">
-              ${event.kind === 'HOLIDAY' ? L.text('ui.holiday.253332', isKhmer) :
+              ${event.basis === 'calculated' ? L.text('rules.calculated_label', isKhmer) :
+                event.kind === 'HOLIDAY' ? L.text('ui.holiday.253332', isKhmer) :
                 event.kind === 'HOLY_DAY' ? L.text('ui.holy_day.28786d', isKhmer) :
                 event.kind === 'OBSERVANCE' ? L.text('ui.observance.5b9a87', isKhmer) :
                 L.text('ui.custom.917053', isKhmer)}

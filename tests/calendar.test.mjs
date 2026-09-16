@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test, after } from 'node:test';
 import { createServer } from 'vite';
 
-const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' });
+const server = await createServer({ server: { middlewareMode: true }, appType: 'custom', optimizeDeps: { noDiscovery: true, include: [] } });
 after(() => server.close());
 const { KhmerCalendar, toEpochDay, fromEpochDay } = await server.ssrLoadModule('/src/domain/KhmerCalendar.ts');
 const { todayInZone, eventInstant, dateTimeInZone, isSupportedDate, localOffsetLabel } = await server.ssrLoadModule('/src/domain/DateTime.ts');
@@ -10,6 +10,8 @@ const { CalendarWords } = await server.ssrLoadModule('/src/data/i18n.ts');
 const { Storage, DEFAULT_SETTINGS } = await server.ssrLoadModule('/src/data/Storage.ts');
 const { EventRepository } = await server.ssrLoadModule('/src/data/EventRepository.ts');
 const { escapeHtml } = await server.ssrLoadModule('/src/ui/html.ts');
+const { MonthPickerDraft } = await server.ssrLoadModule('/src/ui/MonthPicker.ts');
+const { effectiveTheme, appearanceBackground } = await server.ssrLoadModule('/src/ui/Appearance.ts');
 const values = new Map();
 globalThis.localStorage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
 
@@ -115,6 +117,9 @@ test('legacy events and preferences remain readable', () => {
   localStorage.setItem('khmer_calendar_custom_events', JSON.stringify([{ id: 'legacy', title: 'Old event', date: '2026-09-13', time: '09:00' }]));
   assert.equal(Storage.getSettings().language, 'en');
   assert.equal(Storage.getSettings().mondayFirst, false);
+  assert.equal(Storage.getSettings().backgroundAccent, true);
+  assert.equal(Storage.getSettings().showLongerWeekdayNames, false);
+  assert.equal(Storage.getSettings().highlightWeekdayNames, false);
   assert.equal(Storage.getCustomEvents()[0].date, '2026-09-13');
   values.clear();
 });
@@ -122,8 +127,52 @@ test('legacy events and preferences remain readable', () => {
 test('weekday labels resolve in both languages and user text is rendered literally', () => {
   for (let day = 0; day < 7; day++) {
     for (const khmer of [true, false]) {
-      assert.ok(!CalendarWords.weekday(day, khmer, 'narrow').includes('calendar.'));
+      for (const style of ['narrow', 'grid_long']) assert.ok(!CalendarWords.weekday(day, khmer, style).includes('calendar.'));
     }
   }
   assert.equal(escapeHtml('<img src=x> "Family" & friends'), '&lt;img src=x&gt; &quot;Family&quot; &amp; friends');
+});
+
+test('new appearance preferences round-trip while preserving existing explicit theme choices', () => {
+  values.clear();
+  for (const theme of ['system', 'light', 'dark']) {
+    Storage.saveSettings({ ...DEFAULT_SETTINGS, theme, backgroundAccent: false, showLongerWeekdayNames: true, highlightWeekdayNames: true });
+    const settings = Storage.getSettings();
+    assert.equal(settings.theme, theme);
+    assert.equal(settings.backgroundAccent, false);
+    assert.equal(settings.showLongerWeekdayNames, true);
+    assert.equal(settings.highlightWeekdayNames, true);
+    for (const dark of [false, true]) assert.equal(effectiveTheme(theme, dark), theme === 'system' ? (dark ? 'dark' : 'light') : theme);
+  }
+  assert.equal(appearanceBackground({ accent: 'rose', backgroundAccent: false }, true, '#A84465'), '#000000');
+  assert.equal(appearanceBackground({ accent: 'rose', backgroundAccent: true }, true, '#A84465'), '#100C12');
+  assert.equal(appearanceBackground({ accent: 'blue', backgroundAccent: true }, false, '#4564B5'), '#e1e4f0');
+  values.clear();
+});
+
+test('month picker This year changes only the draft year and handles invalid intermediate input', () => {
+  const draft = new MonthPickerDraft();
+  draft.reset(2031, 8);
+  draft.thisYear('2026-12-31');
+  assert.equal(draft.year, 2026);
+  assert.equal(draft.month, 8);
+  for (const invalid of ['', '20', '1799', '2201', '2026.5', '2e3']) {
+    draft.yearText = invalid;
+    assert.equal(draft.valid, false, invalid);
+    draft.shiftYear(1);
+    assert.equal(draft.yearText, invalid);
+  }
+  draft.reset(1800, 1); draft.shiftYear(-1); assert.equal(draft.year, 1800);
+  draft.reset(2200, 12); draft.shiftYear(1); assert.equal(draft.year, 2200);
+  draft.reset(2031, 8); assert.equal(draft.month, 8); assert.ok(draft.valid);
+  const priorZone = process.env.TZ;
+  process.env.TZ = 'Europe/Brussels';
+  try {
+    const now = new Date('2026-12-31T18:00:00Z');
+    draft.thisYear(todayInZone('local', now)); assert.equal(draft.year, 2026);
+    draft.thisYear(todayInZone('cambodia', now)); assert.equal(draft.year, 2027);
+    assert.equal(draft.month, 8);
+  } finally {
+    if (priorZone === undefined) delete process.env.TZ; else process.env.TZ = priorZone;
+  }
 });

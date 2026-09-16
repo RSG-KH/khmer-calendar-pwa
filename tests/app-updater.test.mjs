@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test, after, beforeEach } from 'node:test';
 import { createServer } from 'vite';
 
-const server = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom' });
+const server = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom', optimizeDeps: { noDiscovery: true, include: [] } });
 after(() => server.close());
 const { AppUpdater } = await server.ssrLoadModule('/src/ui/AppUpdater.ts');
 beforeEach(t => t.mock.timers.enable({ apis: ['setTimeout'] }));

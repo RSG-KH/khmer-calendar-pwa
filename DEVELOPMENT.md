@@ -2,7 +2,9 @@
 
 This TypeScript/Vite project is the web port of [Khmer Calendar for Android](https://github.com/RSG-KH/khmer-calendar). See the [README](README.md) for installation, and the [Android documentation](https://github.com/RSG-KH/khmer-calendar/tree/main/docs) for calendar rules, event data, source research and shared behavior.
 
-The app increments the Buddhist Era year on 1 Roach of Pisakh (១រោច ខែពិសាខ), as implemented in [KhmerCalendar.ts](src/domain/KhmerCalendar.ts).
+The [Android 0.2.0 parity plan](docs/android-0.2.0-pwa-plan.md) records the reviewed changes and implementation scope. See the [engine and event data guide](docs/shared-engine.md) for dependency upgrades and cache generation, and the [verification report](docs/android-0.2.0-verification.md) for results and remaining physical-device checks.
+
+The shared engine increments the Buddhist Era year on 1 Roach of Pisakh (១រោច ខែពិសាខ). [KhmerCalendar.ts](src/domain/KhmerCalendar.ts) validates civil dates and adapts the engine result; it does not maintain a second calendar algorithm.
 
 ## Local development
 
@@ -48,13 +50,13 @@ Windows/Linux use `app-icon-desktop-512.png`, an unchanged copy of the supplied 
 ## Build and test
 
 ```sh
-npm test          # Build and run regression tests
+npm test          # Check generated dates, build and run regression tests
 npm run preview   # Serve the production build locally
 ```
 
 For a build without tests, run `npm run build`. Output is in `dist/`. The production preview serves that build on a separate port (normally 4173); use the address printed in the terminal. Source edits require a new build.
 
-The tests cover calendar continuity and boundaries, time zones, saved events, input escaping, modal viewport behavior, month swipes, platform controls and offline caching.
+The tests cover full-range calendar continuity and recurrence mapping, cached event integrity, time zones, saved events, appearance defaults, picker drafts, foreground refresh, input escaping, modal viewport behavior, month swipes, platform controls and offline caching.
 
 The four-part version shown in Settings comes from `appVersion` in `package.json`. Change it only when a version bump is explicitly requested; committing or pushing changes does not finalize a release. The last component is for bug fixes only (for example, `0.1.8.1`). Feature releases advance the feature version and reset the last component to zero (for example, `0.1.7.5` → `0.1.8.0`). If the first three parts change, also update npm's three-part `version` and the lockfile with `npm version X.Y.Z --no-git-tag-version`. The service worker cache hash is generated automatically for every build.
 
@@ -97,6 +99,9 @@ If hosting at another address, update `installUrl` in [Settings.ts](src/ui/Setti
 - Deploy the complete build together. **Settings → Check for update** checks the deployed worker with HTTP caching disabled, downloads all assets, then activates and reloads in one click. Settings shows **Updated** or **No update available** for three seconds before restoring the button. A short-lived session receipt restores Settings after the reload; saved events and settings are never cleared. Background updates wait for old windows to close; first installation and updates in other windows never force this window to reload.
 - Time entry uses native pickers on iOS/iPadOS, and themed 24-hour hour/minute menus on Android and desktop browsers. The menus support touch and keyboard navigation and follow the app theme.
 - Month navigation supports swipes, mouse dragging and arrow buttons while preserving vertical scrolling and date taps.
+- Month selection uses a draft: **This year** follows the selected Today time zone and preserves the month; **Go** selects day one; Cancel/Escape commits nothing.
+- The initial theme follows the system. Tapping Light or Dark saves an explicit choice, including when that chip is already highlighted. Background tint defaults on; longer and colored weekday headings default off. Colors follow weekday identity when Monday-first is enabled.
+- Today checks run every 30 seconds while visible and immediately on return. Hidden pages stop this polling. A time-zone/offset change also refreshes displayed event times. Open modals defer refresh until closing; historical date selection remains in place.
 - Production builds include a Content Security Policy allowing local scripts/assets and the UI's inline styles. GitHub Actions are pinned to verified commits.
 - Scheduled reminders are not available in PWA mode. The unused [push prototype](worker/push-scheduler.js) is not part of the Pages deployment and does not send reminders.
 

@@ -10,10 +10,13 @@ export interface AppSettings {
   language: 'km' | 'en';
   theme: ThemeMode;
   accent: AccentColor;
+  backgroundAccent: boolean;
   fontScale: FontScale;
   holyDayMarkers: boolean;
   showHolyDaysInEvents: boolean;
   mondayFirst: boolean;
+  showLongerWeekdayNames: boolean;
+  highlightWeekdayNames: boolean;
   showCopyButtons: boolean;
   highlightSunday: boolean;
   showLunar: boolean;
@@ -27,10 +30,13 @@ export const DEFAULT_SETTINGS: AppSettings = {
   language: 'km',
   theme: 'system',
   accent: 'blue',
+  backgroundAccent: true,
   fontScale: 1.0,
   holyDayMarkers: true,
   showHolyDaysInEvents: false,
   mondayFirst: false,
+  showLongerWeekdayNames: false,
+  highlightWeekdayNames: false,
   showCopyButtons: false,
   highlightSunday: true,
   showLunar: true,

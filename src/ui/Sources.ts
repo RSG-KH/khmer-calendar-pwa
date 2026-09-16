@@ -4,14 +4,15 @@ import { setupModal, showModal, hideModal } from './Modal';
 import appLicense from '../../LICENSE?raw';
 import attributionNotice from '../../public/NOTICE.txt?raw';
 import fontLicense from '../../public/fonts/OFL.txt?raw';
-
-// The first NOTICE paragraph credits the app; the rest covers MIT calendar code.
-const [appNotice, ...calendarNotices] = attributionNotice.trim().split(/\r?\n\r?\n/);
+import engineLicense from '../../public/engine-LICENSE.txt?raw';
+import engineNotice from '../../public/engine-NOTICE.txt?raw';
 
 export function showCalendarSources(k: boolean): () => void {
   const text = (key: string) => escapeHtml(L.text(key, k));
   const link = (url: string, label = url) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`;
-  const license = (title: string, content: string) => `<details class="source-license"><summary>${escapeHtml(title)}</summary><pre>${escapeHtml(content)}</pre></details>`;
+  const license = (title: string, content: string) => `<section class="source-license"><h3>${escapeHtml(title)}</h3><pre>${escapeHtml(content)}</pre></section>`;
+  const engineDescription = text('about.calendar_engine').replace('Khmer Calendar Engine',
+    link('https://github.com/RSG-KH/khmer-calendar-engine', 'Khmer Calendar Engine'));
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.innerHTML = `
@@ -19,19 +20,14 @@ export function showCalendarSources(k: boolean): () => void {
       <h2>${text('ui.calendar_sources.7f962e')}</h2>
       <div class="sources-content">
         <p class="sources-update">${text('ui.new_event_years_and_corrections_are_delivered_through_a.a6af2d')}</p>
-        <p>${text('ui.events_2000_2030_from_khmer_lunar_calendar_available_of.93ee10')}</p>
-        <ul class="sources-links">
-          <li>${link('https://library.ncdd.gov.kh/')}</li>
-          <li>${link('https://www.ocm.gov.kh/')}</li>
-          <li>${link('https://www.nbc.gov.kh/')}</li>
-          <li>${link('https://khmer-lunar-calendar.com/', k ? 'ប្រតិទិនចន្ទគតិខ្មែរ' : 'Khmer Chhankitek Calendar')}</li>
-        </ul>
         <p>${text('rules.source_summary')}</p>
-        <p>${text('ui.lunar_calendar_1900_2100_based_on_work_by_phylypo_tum_t.d8396b')}</p>
-        <h3>${text('ui.open_source_license.ab00af')}</h3>
-        ${license(`${L.text('app.name', k)} · Apache-2.0`, `${appNotice}\n\n${appLicense}`)}
-        ${license(k ? 'ការគណនាប្រតិទិន · MIT' : 'Calendar calculations · MIT', calendarNotices.join('\n\n'))}
-        ${license('Kantumruy Pro · SIL Open Font License 1.1', fontLicense)}
+        <p>${engineDescription}</p>
+        <details class="source-licenses">
+          <summary>${text('ui.open_source_license.ab00af')}</summary>
+          ${license(`${L.text('app.name', k)} · Apache-2.0`, `${attributionNotice}\n\n${appLicense}`)}
+          ${license('Khmer Calendar Engine · Apache-2.0 / MIT', `${engineLicense}\n\n${engineNotice}`)}
+          ${license('Kantumruy Pro · SIL Open Font License 1.1', fontLicense)}
+        </details>
       </div>
       <div class="sources-footer"><button class="btn-today-pill sources-close">${text('ui.close.7df7dc')}</button></div>
     </div>`;

@@ -18,6 +18,10 @@ import { applyInstallMetadata } from './ui/InstallMetadata';
 import { bindAutoHideScrollbars } from './ui/Scrollbars';
 import { adjacentMonth, bindMonthSwipe, MonthDirection } from './ui/MonthSwipe';
 import { AppUpdater } from './ui/AppUpdater';
+import { appearanceBackground, effectiveTheme } from './ui/Appearance';
+import { holyDayLotus } from './ui/HolyDayLotus';
+import { fitWeekdayHeadings } from './ui/WeekdayHeadings';
+import { startTodayRefresh } from './ui/TodayRefresh';
 
 const updateReceiptKey = `khmer-calendar:update:${import.meta.env.BASE_URL}`;
 function consumeUpdateReceipt(): number | undefined {
@@ -41,6 +45,8 @@ class KhmerCalendarApp {
   private eventsFilter: number = 0; // 0 = All, 1 = Holidays, 2 = Observances, 3 = Holy Days, 4 = Custom
   private eventsSearchQuery: string = '';
   private cleanupSettings?: () => void;
+  private cleanupWeekdays?: () => void;
+  private todayRefresh?: ReturnType<typeof startTodayRefresh>;
   private updateScrollTop = consumeUpdateReceipt();
   private updater = new AppUpdater(
     import.meta.env.PROD && 'serviceWorker' in navigator ? navigator.serviceWorker : undefined,
@@ -125,21 +131,21 @@ class KhmerCalendarApp {
     bindMonthSwipe(document.getElementById('app')!, direction => this.changeMonth(direction));
     this.updater.start();
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => this.applySettings());
-    // Refresh today after midnight or returning from another app.
-    let lastToday = todayInZone(this.settings.todayTimeZone);
-    const refreshToday = () => {
-      const today = todayInZone(this.settings.todayTimeZone);
-      if (today !== lastToday && !document.querySelector('.modal-overlay.open')) {
-        if (this.selectedDateStr === lastToday) {
-          this.selectedDateStr = today;
-          [this.currentYear, this.currentMonth] = today.split('-').map(Number);
-        }
-        lastToday = today;
-        this.render();
+    this.todayRefresh = startTodayRefresh(() => {
+      const now = new Date();
+      return {
+        date: todayInZone(this.settings.todayTimeZone, now),
+        zoneKey: `${this.settings.todayTimeZone}:${Intl.DateTimeFormat().resolvedOptions().timeZone}:${now.getTimezoneOffset()}`
+      };
+    }, (current, previous) => {
+      const scrollTop = document.getElementById('screen-container')?.scrollTop ?? 0;
+      if (this.selectedDateStr === previous.date) {
+        this.selectedDateStr = current.date;
+        [this.currentYear, this.currentMonth] = current.date.split('-').map(Number);
       }
-    };
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshToday(); });
-    window.setInterval(refreshToday, 60_000);
+      this.render();
+      document.getElementById('screen-container')!.scrollTop = scrollTop;
+    }, () => Boolean(document.querySelector('.modal-overlay.open')));
   }
 
   private applySettings() {
@@ -153,18 +159,20 @@ class KhmerCalendarApp {
     root.style.setProperty('--font-scale', String(this.settings.fontScale));
     root.toggleAttribute('data-hide-copy-buttons', !this.settings.showCopyButtons);
 
-    if (this.settings.theme === 'system') {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      root.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
-    } else {
-      root.setAttribute('data-theme', this.settings.theme);
-    }
-    root.style.colorScheme = root.getAttribute('data-theme')!;
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content',
-      root.getAttribute('data-theme') === 'dark' ? '#000000' : '#F2F2F7');
+    const theme = effectiveTheme(this.settings.theme, window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme', theme);
+    root.style.colorScheme = theme;
+    root.toggleAttribute('data-background-accent', this.settings.backgroundAccent);
+    root.toggleAttribute('data-colored-weekdays', this.settings.highlightWeekdayNames);
+    const background = appearanceBackground(this.settings, theme === 'dark',
+      getComputedStyle(root).getPropertyValue('--accent-' + this.settings.accent + '-light'));
+    root.style.setProperty('--bg-color', background);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', background);
   }
 
   private render() {
+    this.cleanupWeekdays?.();
+    this.cleanupWeekdays = undefined;
     this.cleanupSettings?.();
     this.cleanupSettings = undefined;
     const appEl = document.getElementById('app');
@@ -291,7 +299,7 @@ class KhmerCalendarApp {
         <span class="card-watermark-zodiac tinted-watermark" style="--watermark-image: url('${watermarkAnimal}')" aria-hidden="true"></span>
 
         <div class="weekdays-row" style="position: relative; z-index: 1;">
-          ${weekdays.map(day => `<span class="${day === 0 && this.settings.highlightSunday ? 'sunday-header' : ''}">${CalendarWords.weekday(day, k, 'narrow')}</span>`).join('')}
+          ${weekdays.map(day => `<span data-weekday="${day}" class="${day === 0 && this.settings.highlightSunday ? 'sunday-header' : ''}">${CalendarWords.weekday(day, k, this.settings.showLongerWeekdayNames ? 'grid_long' : 'narrow')}</span>`).join('')}
         </div>
         <div class="month-grid-cells" style="position: relative; z-index: 1;"></div>
         <div class="card-divider" style="position: relative; z-index: 1;"></div>
@@ -374,6 +382,10 @@ class KhmerCalendarApp {
         </div>
       `;
 
+    if (this.settings.showLongerWeekdayNames) {
+      this.cleanupWeekdays = fitWeekdayHeadings(container.querySelector<HTMLElement>('.weekdays-row')!);
+    }
+
     // Populate calendar grid cells
     const firstEpoch = toEpochDay(this.currentYear, this.currentMonth, 1);
     const firstWeekday = new Date(firstEpoch * 86400000).getUTCDay();
@@ -419,7 +431,7 @@ class KhmerCalendarApp {
       }
 
       cell.innerHTML = `
-        ${lunar.isHolyDay && this.settings.holyDayMarkers ? `<img src="${import.meta.env.BASE_URL}assets/drawables/holy_day_lotus.png" class="cell-lotus-img" alt="" />` : ''}
+        ${lunar.isHolyDay && this.settings.holyDayMarkers ? `<img src="${holyDayLotus(lunar)}" class="cell-lotus-img" alt="" />` : ''}
         <span class="cell-day-num">${CalendarWords.number(dayNum, k)}</span>
         ${this.settings.showLunar ? `<span class="cell-lunar-label">${CalendarWords.lunarShort(lunar.day, lunar.waxing, k)}</span>` : ''}
         ${marksHtml}
@@ -640,7 +652,13 @@ class KhmerCalendarApp {
   private renderSettingsScreen(container: HTMLElement, k: boolean) {
     this.cleanupSettings = renderSettings(container, this.settings, settings => {
       const scrollTop = container.scrollTop;
+      const previousToday = todayInZone(this.settings.todayTimeZone);
+      if (settings.todayTimeZone !== this.settings.todayTimeZone && this.selectedDateStr === previousToday) {
+        this.selectedDateStr = todayInZone(settings.todayTimeZone);
+        [this.currentYear, this.currentMonth] = this.selectedDateStr.split('-').map(Number);
+      }
       this.settings = settings;
+      this.todayRefresh?.reset();
       if (!settings.showHolyDaysInEvents && this.eventsFilter === 3) this.eventsFilter = 0;
       Storage.saveSettings(settings);
       this.applySettings();

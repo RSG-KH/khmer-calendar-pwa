@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test, after } from 'node:test';
 import { createServer } from 'vite';
 
-const server = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom' });
+const server = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom', optimizeDeps: { noDiscovery: true, include: [] } });
 after(() => server.close());
 const { adjacentMonth, bindMonthSwipe } = await server.ssrLoadModule('/src/ui/MonthSwipe.ts');
 

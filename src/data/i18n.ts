@@ -28,7 +28,7 @@ export class CalendarWords {
     return L.text(`calendar.month.${short ? 'short' : 'full'}.${month}`, khmer);
   }
 
-  static weekday(dayOfWeek: number, khmer: boolean, style: 'full' | 'short' | 'narrow' = 'full'): string {
+  static weekday(dayOfWeek: number, khmer: boolean, style: 'full' | 'short' | 'narrow' | 'grid_long' = 'full'): string {
     // dayOfWeek: 1 = Monday, 7 = Sunday -> % 7 maps 7 to 0 (Sunday)
     return L.text(`calendar.weekday.${style === 'narrow' ? 'grid' : style}.${dayOfWeek % 7}`, khmer);
   }

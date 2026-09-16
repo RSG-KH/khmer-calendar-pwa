@@ -72,14 +72,18 @@ See [Chrome's desktop installation guide](https://support.google.com/chrome/answ
 - Your events and settings stay on your device. No account or sync; clearing app/site data removes them.
 - To update, tap **Check for update** in Settings. Available updates download and reload automatically; saved events and settings are kept.
 - Swipe left or right on the calendar to change months.
+- Tap the month to choose a month and year, then **Go**. **This year** changes the draft year and keeps your chosen month.
+- Settings includes background tint, Light/Dark choices, longer weekday names and weekday colors. Today stays filled; another selected date has an outline.
 - Scheduled reminders are not available in PWA mode.
 
 You can also use the calendar directly in your browser without installing it.
 
 ## About the project
 
-This is the web version of [Khmer Calendar for Android](https://github.com/RSG-KH/khmer-calendar). For setup, testing and hosting, see [DEVELOPMENT.md](DEVELOPMENT.md). Calendar rules and source research live in the [Android documentation](https://github.com/RSG-KH/khmer-calendar/tree/main/docs).
+This is the web version of [Khmer Calendar for Android](https://github.com/RSG-KH/khmer-calendar). Calendar calculations use the bundled [Khmer Calendar Engine](https://github.com/RSG-KH/khmer-calendar-engine) for 1800–2200. Captured event records cover 2000–2030; calculated observances outside that range do not establish official public holidays.
+
+For setup, testing and hosting, see [DEVELOPMENT.md](DEVELOPMENT.md). The [engine and event data guide](docs/shared-engine.md) explains calculation ownership, sources and cache generation.
 
 ## License
 
-[Apache-2.0](LICENSE), with [calendar attribution](public/NOTICE.txt) and the font's [SIL Open Font License](public/fonts/OFL.txt). Also available in **Settings → Calendar sources & licenses**.
+[Apache-2.0](LICENSE), with [calendar attribution](public/NOTICE.txt), the engine's [license](public/engine-LICENSE.txt) and [upstream notices](public/engine-NOTICE.txt), and the font's [SIL Open Font License](public/fonts/OFL.txt). Also available offline in **Settings → Calendar sources & licenses**.

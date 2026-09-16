@@ -3,7 +3,7 @@ import { after, test } from 'node:test';
 import { readFile } from 'node:fs/promises';
 import { createServer } from 'vite';
 
-const server = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom' });
+const server = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom', optimizeDeps: { noDiscovery: true, include: [] } });
 after(() => server.close());
 const { applyInstallMetadata } = await server.ssrLoadModule('/src/ui/InstallMetadata.ts');
 

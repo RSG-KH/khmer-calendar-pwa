@@ -91,6 +91,9 @@ test('a single installation precaches the shell, code, styles, fonts and unseen 
   assert.equal(fonts.length, 4);
   for (const font of fonts) assert.ok((await app.request(font)).ok, font);
   assert.ok((await app.request(`${basePath}assets/drawables/zodiac_tiger_400.png`)).ok);
+  for (const path of ['assets/drawables/holy_day_lotus.png', 'assets/drawables/holy_day_lotus_blossom.png', 'engine-LICENSE.txt', 'engine-NOTICE.txt']) {
+    assert.ok((await app.request(`${basePath}${path}`)).ok, path);
+  }
   await assert.rejects(app.request(`${basePath}assets/missing.js`), /Offline/);
   assert.equal(app.request('https://other.test/data'), undefined);
   assert.equal(app.request(`${basePath}api/subscribe`, 'same-origin', 'POST'), undefined);

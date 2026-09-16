@@ -75,6 +75,17 @@ svg { flex-shrink: 0; }
 .btn-today-pill { min-height: 44px; font-size: calc(14px * var(--font-scale)); }
 .calendar-month-card { border: 0; border-radius: 22px; box-shadow: none; padding: 14px 10px 10px; touch-action: pan-y pinch-zoom; }
 .weekdays-row { font-size: calc(12px * var(--font-scale)); padding-block: 2px 8px; }
+.weekdays-row > span { min-width: 0; white-space: nowrap; }
+:root[data-background-accent] { --nav-background: var(--bg-color); }
+:root { --weekday-0: #D02C3A; --weekday-1: #8A6800; --weekday-2: #9639AE; --weekday-3: #53752D; --weekday-4: #187543; --weekday-5: #2675A3; --weekday-6: #56328C; }
+[data-theme="dark"] { --weekday-0: #FF8088; --weekday-1: #EDD271; --weekday-2: #DFA1F0; --weekday-3: #B1DB72; --weekday-4: #69C591; --weekday-5: #8BC7F1; --weekday-6: #B29ACF; }
+[data-colored-weekdays] [data-weekday="0"] { color: var(--weekday-0); }
+[data-colored-weekdays] [data-weekday="1"] { color: var(--weekday-1); }
+[data-colored-weekdays] [data-weekday="2"] { color: var(--weekday-2); }
+[data-colored-weekdays] [data-weekday="3"] { color: var(--weekday-3); }
+[data-colored-weekdays] [data-weekday="4"] { color: var(--weekday-4); }
+[data-colored-weekdays] [data-weekday="5"] { color: var(--weekday-5); }
+[data-colored-weekdays] [data-weekday="6"] { color: var(--weekday-6); }
 .cal-cell { border: 0; background: transparent; padding: 0; font-family: inherit; min-width: 0; }
 .cell-day-num { line-height: 1.4; font-size: calc(17px * var(--font-scale)); }
 /* Halve the extra leading and gap between date labels; keep cell heights intact. */
@@ -87,7 +98,7 @@ svg { flex-shrink: 0; }
 /* Match Android's zodiacAlpha() in the calendar and detail dialogs. */
 :root :is(.card-watermark-zodiac, .dialog-watermark-animal, .dialog-watermark-western) { opacity: var(--zodiac-watermark-opacity); }
 .card-legend-row { flex-wrap: wrap; gap: 6px 14px; }
-.cal-cell.active-day .mark-shape.holy_day { background: transparent !important; border-bottom-color: var(--on-accent); }
+.cal-cell.today .mark-shape.holy_day { background: transparent !important; border-bottom-color: var(--on-accent); }
 .date-summary-card { text-align: left; gap: 18px; border: 0; border-radius: 16px; padding: 16px; }
 .date-summary-left, .date-summary-right { min-width: 0; gap: 0; line-height: calc(20px * var(--font-scale)); }
 .date-summary-lunar { font-size: calc(13px * var(--font-scale)); font-weight: 500; color: var(--text-primary); }
@@ -166,8 +177,6 @@ svg { flex-shrink: 0; }
 .sources-links a { display: inline-block; padding-block: 2px; color: var(--accent); text-underline-offset: 3px; }
 .sources-content h3 { font-size: inherit; font-weight: 600; }
 .source-license + .source-license { margin-top: 4px; }
-.source-license summary { min-height: 44px; padding-block: 8px; color: var(--accent); cursor: pointer; }
-.source-license summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .source-license pre { margin-top: 8px; padding: 12px; border-radius: 10px; background: var(--bg-surface-variant); white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; font-size: calc(12px * var(--font-scale)); user-select: text; -webkit-user-select: text; }
 .sources-footer { display: flex; flex-shrink: 0; justify-content: flex-end; padding-top: 12px; }
 .settings-picker { flex: 0 1 auto; min-width: 0; max-width: 52%; }
@@ -214,11 +223,24 @@ svg { flex-shrink: 0; }
 .copy-status:not(.copy-error) { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .copy-status.copy-error { margin-top: 8px; color: var(--tertiary); font-size: calc(13px * var(--font-scale)); line-height: 1.7; }
 .event-title-copy { position: relative; margin-bottom: 12px; }
-.event-title-row { font-size: calc(18px * var(--font-scale)); font-weight: 600; color: var(--text-primary); line-height: 1.4; overflow-wrap: anywhere; }
+.event-title-row { display: flex; align-items: flex-start; gap: 6px; font-size: calc(18px * var(--font-scale)); font-weight: 600; color: var(--text-primary); line-height: 1.4; overflow-wrap: anywhere; }
+.event-detail-title { flex: 1; min-width: 0; }
 .event-detail-title { white-space: pre-wrap; user-select: text; -webkit-user-select: text; }
-.btn-copy-title { margin-inline-start: 4px; vertical-align: middle; }
+.event-detail-title { padding-top: max(0px, calc((44px - 25.2px * var(--font-scale)) / 2)); }
+.full-lunar-date { padding-top: max(0px, calc((44px - 30.6px * var(--font-scale)) / 2)); }
+:root[data-hide-copy-buttons] :is(.event-detail-title, .full-lunar-date) { padding-top: 0; }
+.source-licenses > summary { min-height: 48px; display: flex; align-items: center; gap: 10px; color: var(--accent); font-weight: 600; cursor: pointer; list-style: none; }
+.source-licenses > summary::-webkit-details-marker { display: none; }
+.source-licenses > summary::before { content: ''; flex: 0 0 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); }
+.source-licenses[open] > summary::before { transform: rotate(45deg); }
+.source-licenses > summary::after { content: ''; height: 1px; flex: 1; background: currentColor; }
+.source-licenses > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.source-license h3 { font-size: calc(13px * var(--font-scale)); margin: 12px 0; }
 .month-picker-dialog { display: flex; flex-direction: column; min-height: 0; overflow: hidden !important; }
 .month-picker-header { display: flex; flex-shrink: 0; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.month-picker-header .year-display { width: 110px; border: 0; border-radius: 10px; background: var(--bg-surface-variant); text-align: center; font-size: calc(22px * var(--font-scale)); font-weight: 700; color: var(--text-primary); }
+.month-picker-dialog > .year-picker-range { margin-bottom: 8px; }
+.year-picker-title-row .btn-this-year { flex-shrink: 0; }
 .month-picker-footer { display: flex; flex-shrink: 0; justify-content: flex-end; gap: 10px; margin-top: 18px; }
 .year-picker-title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .year-picker-title { font-size: calc(18px * var(--font-scale)); font-weight: 600; }

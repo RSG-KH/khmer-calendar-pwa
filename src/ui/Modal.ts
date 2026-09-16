@@ -43,4 +43,5 @@ export function hideModal(overlay: HTMLElement) {
   const previous = previousFocus.get(overlay);
   if (previous?.isConnected) previous.focus({ preventScroll: true });
   else document.querySelector<HTMLElement>('[data-page].active')?.focus({ preventScroll: true });
+  document.dispatchEvent(new Event('calendar-modal-closed'));
 }

@@ -2,11 +2,14 @@
 
 import rawEvents from './events.json';
 import { RecurringEvents } from './RecurringEvents';
+import { eventCoverage, hasCapturedYear } from './EventCoverage';
+import { bundledEventYear } from './BundledEventDates';
 import { KhmerCalendar, toEpochDay, fromEpochDay } from '../domain/KhmerCalendar';
 import { L } from './i18n';
-import { Storage, CustomEvent } from './Storage';
+import { Storage } from './Storage';
 
 export type EventKind = 'HOLIDAY' | 'OBSERVANCE' | 'HOLY_DAY' | 'CUSTOM';
+export type DateBasis = 'captured' | 'calculated' | 'khmer_lunar' | 'custom';
 
 export interface CalendarEvent {
   id: string;
@@ -14,6 +17,7 @@ export interface CalendarEvent {
   titleKm: string;
   titleEn: string;
   kind: EventKind;
+  basis: DateBasis;
   officialSourceUrl?: string | null;
   time?: string;
   notes?: string;
@@ -27,23 +31,28 @@ export class EventRepository {
     titleKm: e.km,
     titleEn: e.en,
     kind: e.kind as EventKind,
+    basis: 'captured',
     officialSourceUrl: e.url || null
   }));
 
   private static yearCache = new Map<number, CalendarEvent[]>();
 
   static hasBundledYear(year: number): boolean {
-    return year >= 2000 && year <= 2030;
+    return year >= eventCoverage.fromYear && year <= eventCoverage.throughYear;
   }
 
   static getYearEvents(year: number): CalendarEvent[] {
+    if (!Number.isInteger(year) || year < KhmerCalendar.minYear || year > KhmerCalendar.maxYear) {
+      throw new RangeError('Supported years: 1800–2200.');
+    }
     if (this.yearCache.has(year)) {
       return this.yearCache.get(year)!;
     }
 
     const events: CalendarEvent[] = [];
+    const bundled = bundledEventYear(year);
 
-    if (this.hasBundledYear(year)) {
+    if (hasCapturedYear(year)) {
       const prefix = `${year}-`;
       for (const e of this.bundledEvents) {
         if (e.date.startsWith(prefix)) {
@@ -51,19 +60,36 @@ export class EventRepository {
         }
       }
     } else {
-      const calculated = RecurringEvents.forYear(year);
+      const calculated = bundled ? RecurringEvents.fromDates(year, bundled.recurrences) : RecurringEvents.forYear(year);
       for (const c of calculated) {
         events.push({
           id: c.id,
           date: c.date,
           titleKm: c.km,
           titleEn: c.en,
-          kind: 'OBSERVANCE'
+          kind: 'OBSERVANCE',
+          basis: 'calculated'
         });
       }
     }
 
-    // Add Holy Days (Thngai Seil)
+    // Cached years avoid the daily scan, including captured snapshot years.
+    const holyDays = bundled?.holyDays ?? this.calculateHolyDays(year);
+    for (const date of holyDays) {
+      events.push({
+        id: `sil:${date}`, date,
+        titleKm: L.text('event.holy_day', true), titleEn: L.text('event.holy_day', false),
+        kind: 'HOLY_DAY', basis: 'khmer_lunar'
+      });
+    }
+
+    events.sort((a, b) => a.date.localeCompare(b.date));
+    this.yearCache.set(year, events);
+    return events;
+  }
+
+  private static calculateHolyDays(year: number): string[] {
+    const dates: string[] = [];
     const startEpoch = toEpochDay(year, 1, 1);
     const endEpoch = toEpochDay(year, 12, 31);
     for (let epoch = startEpoch; epoch <= endEpoch; epoch++) {
@@ -71,19 +97,11 @@ export class EventRepository {
       const lunar = KhmerCalendar.fromGregorian(dy, dm, dd);
       if (lunar.isHolyDay) {
         const dateStr = `${dy}-${String(dm).padStart(2, '0')}-${String(dd).padStart(2, '0')}`;
-        events.push({
-          id: `sil:${dateStr}`,
-          date: dateStr,
-          titleKm: L.text('event.holy_day', true),
-          titleEn: L.text('event.holy_day', false),
-          kind: 'HOLY_DAY'
-        });
+        dates.push(dateStr);
       }
     }
 
-    events.sort((a, b) => a.date.localeCompare(b.date));
-    this.yearCache.set(year, events);
-    return events;
+    return dates;
   }
 
   static forMonth(year: number, month: number): CalendarEvent[] {
@@ -101,6 +119,7 @@ export class EventRepository {
           titleKm: c.title,
           titleEn: c.title,
           kind: 'CUSTOM',
+          basis: 'custom',
           time: c.time,
           notes: c.notes,
           instant: c.instant
@@ -133,6 +152,7 @@ export class EventRepository {
           titleKm: c.title,
           titleEn: c.title,
           kind: 'CUSTOM',
+          basis: 'custom',
           time: c.time,
           notes: c.notes,
           instant: c.instant

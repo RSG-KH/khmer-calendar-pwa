@@ -5,7 +5,7 @@ import { createServer } from 'vite';
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom', optimizeDeps: { noDiscovery: true, include: [] } });
 after(() => server.close());
 const { KhmerCalendar, toEpochDay, fromEpochDay } = await server.ssrLoadModule('/src/domain/KhmerCalendar.ts');
-const { todayInZone, eventInstant, dateTimeInZone, isSupportedDate, localOffsetLabel } = await server.ssrLoadModule('/src/domain/DateTime.ts');
+const { todayInZone, eventInstant, dateTimeInZone, isSupportedDate, localOffsetLabel, timeZoneOffsetLabel } = await server.ssrLoadModule('/src/domain/DateTime.ts');
 const { CalendarWords } = await server.ssrLoadModule('/src/data/i18n.ts');
 const { Storage, DEFAULT_SETTINGS } = await server.ssrLoadModule('/src/data/Storage.ts');
 const { EventRepository } = await server.ssrLoadModule('/src/data/EventRepository.ts');
@@ -97,6 +97,17 @@ test('local UTC labels match Android across DST, zero and fractional offsets', (
   }
 });
 
+test('event header UTC offsets use the saved zone and selected date', () => {
+  for (const [zone, instant, expected] of [
+    ['Europe/Brussels', '2026-01-15T23:45:59.999Z', 'UTC+1'],
+    ['Europe/Brussels', '2026-07-15T23:45:59.999Z', 'UTC+2'],
+    ['cambodia', '2026-07-15T23:45:59.999Z', 'UTC+7'],
+    ['Asia/Kathmandu', '2026-07-15T23:45:59.999Z', 'UTC+5:45'],
+    ['America/St_Johns', '2026-01-15T00:00:59.999Z', 'UTC-3:30'],
+    ['UTC', '2026-07-15T23:45:59.999Z', 'UTC+0']
+  ]) assert.equal(timeZoneOffsetLabel(zone, new Date(instant)), expected, zone);
+});
+
 test('saved custom events preserve their instant when changing display time zone', () => {
   values.clear();
   Storage.saveSettings({ ...DEFAULT_SETTINGS, todayTimeZone: 'cambodia' });
@@ -145,7 +156,7 @@ test('new appearance preferences round-trip while preserving existing explicit t
     for (const dark of [false, true]) assert.equal(effectiveTheme(theme, dark), theme === 'system' ? (dark ? 'dark' : 'light') : theme);
   }
   assert.equal(appearanceBackground({ accent: 'rose', backgroundAccent: false }, true, '#A84465'), '#000000');
-  assert.equal(appearanceBackground({ accent: 'rose', backgroundAccent: true }, true, '#A84465'), '#100C12');
+  assert.equal(appearanceBackground({ accent: 'rose', backgroundAccent: true }, true, '#A84465'), '#110D14');
   assert.equal(appearanceBackground({ accent: 'blue', backgroundAccent: true }, false, '#4564B5'), '#e1e4f0');
   values.clear();
 });

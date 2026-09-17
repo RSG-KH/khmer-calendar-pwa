@@ -5,7 +5,7 @@ export function effectiveTheme(theme: ThemeMode, systemDark: boolean): 'light' |
 }
 
 const darkBackgrounds: Record<AccentColor, string> = {
-  blue: '#0A0E16', lavender: '#0D0D16', rose: '#100C12', amber: '#0F0E0E', lime: '#0A100C'
+  blue: '#0A0F18', lavender: '#0D0D18', rose: '#110D14', amber: '#110F0F', lime: '#0A120D'
 };
 
 export function appearanceBackground(settings: Pick<AppSettings, 'accent' | 'backgroundAccent'>, dark: boolean, lightAccent: string): string {

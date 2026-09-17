@@ -10,7 +10,7 @@ import { EventRepository, CalendarEvent } from './data/EventRepository';
 import { Storage, AppSettings } from './data/Storage';
 import { Icons } from './ui/Icons';
 import { MonthPickerModal, CustomEventModal, DateDetailsDialogModal, EventDetailsDialogModal } from './ui/Modals';
-import { todayInZone } from './domain/DateTime';
+import { dateTimeInZone, todayInZone } from './domain/DateTime';
 import { escapeHtml } from './ui/html';
 import { renderSettings } from './ui/Settings';
 import { isAndroid, prefersNativeScrollbars } from './ui/Platform';
@@ -89,7 +89,8 @@ class KhmerCalendarApp {
     }, 'year');
 
     this.customEventModal = new CustomEventModal(event => {
-      this.eventsYear = Number(event.date.slice(0, 4));
+      const displayedDate = event.instant ? dateTimeInZone(new Date(event.instant), this.settings.todayTimeZone).date : event.date;
+      this.eventsYear = Number(displayedDate.slice(0, 4));
       this.activePage = 1;
       this.eventsFilter = 4;
       this.eventsSearchQuery = '';
@@ -98,14 +99,8 @@ class KhmerCalendarApp {
 
     this.eventDetailsModal = new EventDetailsDialogModal(
       (event) => {
-        this.customEventModal.open(event.date, this.settings.language === 'km', {
-          id: event.id,
-          title: event.titleKm || event.titleEn,
-          date: event.date,
-          time: event.time,
-          notes: event.notes,
-          instant: event.instant
-        });
+        const source = Storage.getCustomEvents().find(item => item.id === (event.seriesId || event.id));
+        if (source) this.customEventModal.open(source.date, this.settings.language === 'km', source);
       },
       (id) => {
         Storage.deleteCustomEventSync(id);
@@ -338,7 +333,7 @@ class KhmerCalendarApp {
         const dayOfWeek = (dateObj.getUTCDay() === 0 ? 7 : dateObj.getUTCDay()) % 7;
         const isHol = e.kind === 'HOLIDAY';
         return `
-          <button class="event-row-card" data-event-id="${escapeHtml(e.id)}" data-event-date="${escapeHtml(e.date)}">
+          <button class="event-row-card ${e.kind === 'CUSTOM' ? 'custom-event-row' : ''}" data-event-id="${escapeHtml(e.id)}" data-event-date="${escapeHtml(e.date)}">
             <div class="event-row-date">
               <span class="event-row-daynum ${isHol ? 'holiday' : ''}">${CalendarWords.number(d, k)}</span>
               <span class="event-row-weekday">${CalendarWords.weekday(dayOfWeek, k, 'short')}</span>
@@ -535,7 +530,7 @@ class KhmerCalendarApp {
               const dayOfWeek = (dateObj.getUTCDay() === 0 ? 7 : dateObj.getUTCDay()) % 7;
               const isHol = e.kind === 'HOLIDAY';
               return `
-                <button class="event-row-card" data-event-id="${escapeHtml(e.id)}" data-event-date="${escapeHtml(e.date)}">
+                <button class="event-row-card ${e.kind === 'CUSTOM' ? 'custom-event-row' : ''}" data-event-id="${escapeHtml(e.id)}" data-event-date="${escapeHtml(e.date)}">
                   <div class="event-row-date">
                     <span class="event-row-daynum ${isHol ? 'holiday' : ''}">${CalendarWords.number(d, k)}</span>
                     <span class="event-row-weekday">${CalendarWords.weekday(dayOfWeek, k, 'short')}</span>

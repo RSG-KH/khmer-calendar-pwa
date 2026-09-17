@@ -1,10 +1,11 @@
 // Copyright (c) 2026 RSG-KH | Apache-2.0 License
 
 import rawTranslations from './translations.json';
+import repeatTranslations from './repeat-translations.json';
 import { KhmerDateDetails } from '../domain/KhmerDateDetails';
 import { khmerNumber } from '../domain/KhmerCalendar';
 
-const translations: Record<string, { km: string; en: string }> = rawTranslations;
+const translations: Record<string, { km: string; en: string }> = { ...rawTranslations, ...repeatTranslations };
 
 export class L {
   private static tokenRegex = /\{([A-Za-z][A-Za-z0-9_]*)\}/g;

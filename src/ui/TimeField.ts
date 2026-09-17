@@ -33,7 +33,7 @@ export function setupTimeField(container: HTMLElement, input: HTMLInputElement, 
       }
       render();
       input.dispatchEvent(new Event('change', { bubbles: true }));
-    }, 264);
+    }, { maxMenuHeight: 264, matchTriggerWidth: true });
   };
   render();
   return () => closePickers?.();

@@ -7,6 +7,8 @@ import { bundledEventYear } from './BundledEventDates';
 import { KhmerCalendar, toEpochDay, fromEpochDay } from '../domain/KhmerCalendar';
 import { L } from './i18n';
 import { Storage } from './Storage';
+import { customEventOccurrences } from './CustomEventOccurrences';
+import type { EventRepeat } from '../domain/EventRepeat';
 
 export type EventKind = 'HOLIDAY' | 'OBSERVANCE' | 'HOLY_DAY' | 'CUSTOM';
 export type DateBasis = 'captured' | 'calculated' | 'khmer_lunar' | 'custom';
@@ -22,6 +24,8 @@ export interface CalendarEvent {
   time?: string;
   notes?: string;
   instant?: string;
+  seriesId?: string;
+  repeat?: EventRepeat;
 }
 
 export class EventRepository {
@@ -109,23 +113,8 @@ export class EventRepository {
     const monthPrefix = `${year}-${String(month).padStart(2, '0')}-`;
     const filtered = yearEvents.filter(e => e.date.startsWith(monthPrefix));
 
-    // Merge custom events
-    const custom = Storage.getCustomEvents();
-    for (const c of custom) {
-      if (c.date.startsWith(monthPrefix)) {
-        filtered.push({
-          id: c.id,
-          date: c.date,
-          titleKm: c.title,
-          titleEn: c.title,
-          kind: 'CUSTOM',
-          basis: 'custom',
-          time: c.time,
-          notes: c.notes,
-          instant: c.instant
-        });
-      }
-    }
+    const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    filtered.push(...this.customForRange(`${monthPrefix}01`, `${monthPrefix}${lastDay}`));
 
     return filtered.sort((a, b) => {
       const dateCmp = a.date.localeCompare(b.date);
@@ -142,23 +131,17 @@ export class EventRepository {
 
   static forYearWithCustom(year: number): CalendarEvent[] {
     const yearEvents = [...this.getYearEvents(year)];
-    const prefix = `${year}-`;
-    const custom = Storage.getCustomEvents();
-    for (const c of custom) {
-      if (c.date.startsWith(prefix)) {
-        yearEvents.push({
-          id: c.id,
-          date: c.date,
-          titleKm: c.title,
-          titleEn: c.title,
-          kind: 'CUSTOM',
-          basis: 'custom',
-          time: c.time,
-          notes: c.notes,
-          instant: c.instant
-        });
-      }
-    }
-    return yearEvents.sort((a, b) => a.date.localeCompare(b.date));
+    yearEvents.push(...this.customForRange(`${year}-01-01`, `${year}-12-31`));
+    return yearEvents.sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''));
+  }
+
+  private static customForRange(from: string, through: string): CalendarEvent[] {
+    const zone = Storage.getSettings().todayTimeZone;
+    return Storage.getCustomEvents().flatMap(event => customEventOccurrences(event, from, through, zone))
+      .map(c => ({
+        id: c.id, seriesId: c.seriesId, repeat: c.repeat, date: c.date,
+        titleKm: c.title, titleEn: c.title, kind: 'CUSTOM', basis: 'custom',
+        time: c.time, notes: c.notes, instant: c.instant
+      }));
   }
 }

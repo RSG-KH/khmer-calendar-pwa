@@ -1,6 +1,7 @@
 // Copyright (c) 2026 RSG-KH | Apache-2.0 License
 
 import { dateTimeInZone, TodayTimeZone } from '../domain/DateTime';
+import type { EventRepeat } from '../domain/EventRepeat';
 
 export type AccentColor = 'blue' | 'lavender' | 'rose' | 'amber' | 'lime';
 export type ThemeMode = 'system' | 'light' | 'dark';
@@ -54,6 +55,7 @@ export interface CustomEvent {
   notes?: string;
   remind?: boolean;
   instant?: string;
+  repeat?: EventRepeat;
 }
 
 const LOCAL_EVENTS_KEY = 'khmer_calendar_custom_events';
@@ -82,13 +84,22 @@ class StorageManager {
 
   getCustomEvents(): CustomEvent[] {
     try {
+      const zone = this.getSettings().todayTimeZone;
+      return this.getStoredCustomEvents().map(event => event.instant && !event.repeat
+        ? { ...event, ...dateTimeInZone(new Date(event.instant), zone) }
+        : event);
+    } catch (e) {
+      console.warn('Error reading custom events:', e);
+      return [];
+    }
+  }
+
+  private getStoredCustomEvents(): CustomEvent[] {
+    try {
       const raw = localStorage.getItem(LOCAL_EVENTS_KEY);
       if (raw) {
         const events: CustomEvent[] = JSON.parse(raw);
-        const zone = this.getSettings().todayTimeZone;
-        return events.map(event => event.instant
-          ? { ...event, ...dateTimeInZone(new Date(event.instant), zone) }
-          : event);
+        return events;
       }
     } catch (e) {
       console.warn('Error reading custom events:', e);
@@ -97,7 +108,7 @@ class StorageManager {
   }
 
   saveCustomEventSync(event: CustomEvent): void {
-    const list = this.getCustomEvents();
+    const list = this.getStoredCustomEvents();
     const idx = list.findIndex(e => e.id === event.id);
     if (idx >= 0) {
       list[idx] = event;
@@ -108,7 +119,7 @@ class StorageManager {
   }
 
   deleteCustomEventSync(id: string): void {
-    const list = this.getCustomEvents().filter(e => e.id !== id);
+    const list = this.getStoredCustomEvents().filter(e => e.id !== id);
     localStorage.setItem(LOCAL_EVENTS_KEY, JSON.stringify(list));
   }
 

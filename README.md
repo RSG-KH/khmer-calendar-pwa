@@ -4,6 +4,11 @@
 
 # Khmer Calendar (PWA)
 
+[![Deploy to GitHub Pages](https://github.com/RSG-KH/khmer-calendar-pwa/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/RSG-KH/khmer-calendar-pwa/actions/workflows/deploy-pages.yml)
+[![License: Apache-2.0](https://img.shields.io/github/license/RSG-KH/khmer-calendar-pwa?color=blue)](LICENSE)
+[![PWA · offline-first](https://img.shields.io/badge/PWA-offline--first-5a0fc8)](https://rsg-kh.github.io/khmer-calendar-pwa/)
+[![Engine 0.1.0](https://img.shields.io/badge/engine-khmer--calendar--engine%200.1.0-2b8a3e)](https://github.com/RSG-KH/khmer-calendar-engine)
+
 Khmer lunar dates, Buddhist holy days, Cambodian holidays and your own events, in Khmer and English. Made for phones, tablets and desktops, with an interface inspired by iOS.
 
 **Free · Ad-free · Zero tracking**
@@ -69,7 +74,9 @@ See [Chrome's desktop installation guide](https://support.google.com/chrome/answ
 ## Good to know
 
 - Works offline after the first full online load in your browser or installed app.
+- Browse years **1800–2200**. Built-in event dates are bundled for **1980–2050**; observances and holy days outside that range are calculated on-device.
 - Your events and settings stay on your device. No account or sync; clearing app/site data removes them.
+- Events can repeat every X days, weekly, monthly or yearly, with a required end date and a preview. Choose how to handle missing month-end or leap-day dates; editing or deleting applies to the whole series.
 - To update, tap **Check for update** in Settings. Available updates download and reload automatically; saved events and settings are kept.
 - Swipe left or right on the calendar to change months.
 - Tap the month to choose a month and year, then **Go**. **This year** changes the draft year and keeps your chosen month.
@@ -80,9 +87,9 @@ You can also use the calendar directly in your browser without installing it.
 
 ## About the project
 
-This is the web version of [Khmer Calendar for Android](https://github.com/RSG-KH/khmer-calendar). Calendar calculations use the bundled [Khmer Calendar Engine](https://github.com/RSG-KH/khmer-calendar-engine) for 1800–2200. Captured event records cover 2000–2030; calculated observances outside that range do not establish official public holidays.
+This is the web version of [Khmer Calendar for Android](https://github.com/RSG-KH/khmer-calendar). Both apps use [Khmer Calendar Engine](https://github.com/RSG-KH/khmer-calendar-engine) for calendar calculations. Calendar algorithms, source references and validation are documented in the [engine project](https://github.com/RSG-KH/khmer-calendar-engine#verification-and-accuracy).
 
-For setup, testing and hosting, see [DEVELOPMENT.md](DEVELOPMENT.md). The [engine and event data guide](docs/shared-engine.md) explains calculation ownership, sources and cache generation.
+For setup, testing and hosting, see [DEVELOPMENT.md](DEVELOPMENT.md). Dependency updates and cache generation are covered in the [engine integration guide](docs/shared-engine.md).
 
 ## License
 

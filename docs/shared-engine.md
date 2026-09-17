@@ -1,10 +1,14 @@
-# Shared engine and event data
+# Shared engine integration
 
 The PWA bundles `khmer-calendar-engine` **0.1.0** from its [versioned release](https://github.com/RSG-KH/khmer-calendar-engine/releases/tag/v0.1.0). npm's lockfile records the exact release URL and integrity. Builds need Node/npm only; neither a sibling Android checkout nor Kotlin/Java is required. There are no runtime CDN requests.
 
 ## Calculation ownership
 
+The engine's [API contract](https://github.com/RSG-KH/khmer-calendar-engine/blob/v0.1.0/docs/api.md) defines calculation behavior. Its [reference evidence](https://github.com/RSG-KH/khmer-calendar-engine/blob/v0.1.0/docs/references.md) documents calculation sources and validation. This guide covers how the PWA consumes that engine.
+
 One `calendarEngine` instance supplies lunar dates, Buddhist Era, animal year, Sak, New Year and recurrence dates for Gregorian years 1800–2200. The PWA retains civil-date validation, local/Cambodia time zones, Western zodiac labels, translations, event titles, anniversaries and custom-event storage.
+
+The app's **1980–2050** bundle is an event-list optimization. Calendar cells and date details still call the engine for lunar dates throughout **1800–2200**. Personal repeats use the app's `EventRepeat.ts` and their saved end date, independently of that bundle.
 
 `RecurringEvents.ts` maps only engine input fields through `createRule`. In particular, it preserves `monthPolicy: ordinary_or_second_asadh` and maps the app's nth-weekday `offset` to engine `occurrence`. Modern event definitions retain their effective-year limits. Engine recurrence evaluation uses an **anchor year**, which is not necessarily the year of every returned occurrence. Current app rules all stay inside the anchor year; the adapter and tests assert this. A future cross-year rule needs an explicit repository/cache design change.
 
@@ -42,4 +46,4 @@ Review `src/data/engine-event-dates.json` whenever engine or rule inputs change.
 4. Regenerate event dates, review calendar corrections against explicit date anchors, and run tests for root and GitHub Pages paths. Change baseline hashes/counts only after understanding the data changes.
 5. Verify production update, offline reopening and saved events. A dependency update alone does not authorize publishing or a PWA version bump.
 
-The app, engine (including MIT upstream notices) and font license texts are bundled and readable offline in the Sources disclosure. The engine's [source audit](https://github.com/RSG-KH/khmer-calendar-engine/blob/v0.1.0/docs/source-audit.md) owns calculation research; the PWA tests its adapters and data use. Scheduled reminders remain unavailable in this PWA.
+The app, engine (including MIT upstream notices) and font license texts are bundled and readable offline in the Sources disclosure. Calculation evidence is maintained in the engine's [references](https://github.com/RSG-KH/khmer-calendar-engine/blob/v0.1.0/docs/references.md); its legacy implementation comparison is a historical migration report. The PWA tests its adapters and data use. Scheduled reminders remain unavailable in this PWA.

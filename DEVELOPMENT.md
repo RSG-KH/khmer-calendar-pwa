@@ -1,10 +1,10 @@
 # Development and deployment
 
-This TypeScript/Vite project is the web port of [Khmer Calendar for Android](https://github.com/RSG-KH/khmer-calendar). See the [README](README.md) for installation, and the [Android documentation](https://github.com/RSG-KH/khmer-calendar/tree/main/docs) for calendar rules, event data, source research and shared behavior.
+This TypeScript/Vite project is the web port of [Khmer Calendar for Android](https://github.com/RSG-KH/khmer-calendar). See the [README](README.md) for installation and features.
 
-The [Android 0.2.0 parity plan](docs/android-0.2.0-pwa-plan.md) records the reviewed changes and implementation scope. See the [engine and event data guide](docs/shared-engine.md) for dependency upgrades and cache generation, and the [verification report](docs/android-0.2.0-verification.md) for results and remaining physical-device checks.
+The [engine integration guide](docs/shared-engine.md) covers the pinned dependency, PWA adapters and cache generation. Calendar algorithms, calculation sources and reference evidence are maintained in [Khmer Calendar Engine](https://github.com/RSG-KH/khmer-calendar-engine).
 
-The shared engine increments the Buddhist Era year on 1 Roach of Pisakh (១រោច ខែពិសាខ). [KhmerCalendar.ts](src/domain/KhmerCalendar.ts) validates civil dates and adapts the engine result; it does not maintain a second calendar algorithm.
+[KhmerCalendar.ts](src/domain/KhmerCalendar.ts) validates civil dates and adapts the engine result. Personal event repeats are implemented separately in [EventRepeat.ts](src/domain/EventRepeat.ts). The app's built-in observance definitions are passed to the engine through [RecurringEvents.ts](src/data/RecurringEvents.ts).
 
 ## Local development
 
@@ -29,6 +29,7 @@ The PWA shares one visual design across platforms. `main.ts` imports [src/styles
 - [components.css](src/styles/components.css): base component structure.
 - [responsive.css](src/styles/responsive.css): layout changes for viewport size and orientation.
 - [appearance.css](src/styles/appearance.css): shared fonts, surface colors, controls and visual refinements on every platform.
+- [event-repeat.css](src/styles/event-repeat.css): repeat controls inside the existing event editor.
 - [scrollbars.css](src/styles/scrollbars.css): custom scrollbar appearance, centering and column spacing, scoped to `[data-auto-hide-scrollbars]`.
 
 [Platform.ts](src/ui/Platform.ts) owns device-specific choices for native time pickers, native scrollbars and phone font-size limits. [Scrollbars.ts](src/ui/Scrollbars.ts) enables the scrollbar attribute and manages the idle fade on selected desktop platforms; Android and Apple devices keep native scrollbars. Keep platform exceptions explicit instead of naming shared controls after an OS.
@@ -98,6 +99,7 @@ If hosting at another address, update `installUrl` in [Settings.ts](src/ui/Setti
 - Events and settings stay in local storage for that site and browser/app profile. There is no account or sync; changing the site address does not migrate data, and clearing site data removes it.
 - Deploy the complete build together. **Settings → Check for update** checks the deployed worker with HTTP caching disabled, downloads all assets, then activates and reloads in one click. Settings shows **Updated** or **No update available** for three seconds before restoring the button. A short-lived session receipt restores Settings after the reload; saved events and settings are never cleared. Background updates wait for old windows to close; first installation and updates in other windows never force this window to reload.
 - Time entry uses native pickers on iOS/iPadOS, and themed 24-hour hour/minute menus on Android and desktop browsers. The menus support touch and keyboard navigation and follow the app theme.
+- Custom repeats store one event with a rule, an inclusive end date and its original IANA time zone. `EventRepeat.ts` generates civil dates from the original anchor; `CustomEventOccurrences.ts` expands only the requested display range. Monthly dates default to skipping missing days, with independent 30-day-month and February fallbacks. Yearly February 29 can fall back to February 28. Timed repeats preserve wall time in the saved zone; a future DST gap moves that occurrence forward by the clock change, and an ambiguous time uses the earlier instant. All-day repeats keep their civil date. Editing and deleting apply to the entire series; individual exceptions are not supported.
 - Month navigation supports swipes, mouse dragging and arrow buttons while preserving vertical scrolling and date taps.
 - Month selection uses a draft: **This year** follows the selected Today time zone and preserves the month; **Go** selects day one; Cancel/Escape commits nothing.
 - The initial theme follows the system. Tapping Light or Dark saves an explicit choice, including when that chip is already highlighted. Background tint and colored weekday headings default on; longer weekday headings default off. Existing saved choices are preserved. Colors follow weekday identity when Monday-first is enabled.
@@ -106,3 +108,11 @@ If hosting at another address, update `installUrl` in [Settings.ts](src/ui/Setti
 - Scheduled reminders are not available in PWA mode. The unused [push prototype](worker/push-scheduler.js) is not part of the Pages deployment and does not send reminders.
 
 After deployment, check installed launch, offline reopening, **Check for update**, and event persistence on physical target devices. Follow the README's installation steps for [iPhone/iPad](README.md#install-on-iphone-or-ipad), [Mac](README.md#install-on-mac), [Android](README.md#install-on-android), [Windows](README.md#install-on-windows) and [Linux](README.md#install-on-linux).
+
+## Previous implementation and verification reports
+
+These reports record the revisions and checks at the time of each change:
+
+- [Android 0.2.0 parity plan](docs/android-0.2.0-pwa-plan.md)
+- [Android 0.2.0 parity verification](docs/android-0.2.0-verification.md)
+- [Recurring events verification](docs/repeat-verification.md)

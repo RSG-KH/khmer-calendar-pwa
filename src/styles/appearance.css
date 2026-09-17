@@ -192,8 +192,9 @@ svg { flex-shrink: 0; }
 @media (hover: hover) { .settings-picker-option:hover { background: var(--accent-container); } }
 .choice-pill-group { border-radius: 9px; flex-shrink: 0; }
 .choice-pill { border-radius: 7px; min-height: 34px; }
-.accent-circles-row { gap: 2px; }
-.accent-btn { width: 32px; height: 40px; border: 0; border-radius: 0; background: transparent; display: grid; place-items: center; }
+/* Keep 22px swatches, reducing the visible gap from 12px to 9.6px. */
+.accent-circles-row { gap: 0; }
+.accent-btn { width: 31.6px; height: 40px; border: 0; border-radius: 0; background: transparent; display: grid; place-items: center; }
 .accent-btn::before { content: ''; width: 22px; height: 22px; border-radius: 50%; background: var(--swatch); }
 .accent-btn.active { transform: none; }
 .accent-btn.active::before { outline: 2px solid var(--swatch); outline-offset: 3px; }
@@ -266,11 +267,18 @@ svg { flex-shrink: 0; }
 .event-native-field input:focus-visible { outline: none; }
 /* Fixed picker menus must sit above the scrolling event editor. */
 .modal-overlay.open .custom-time-editor { transform: none; }
-.custom-time-field { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 6px 12px; border: 1px solid var(--outline); border-radius: 8px; }
+.custom-time-field { --time-picker-icon-width: 12px; --time-picker-icon-gap: 7px; display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 6px 12px; border: 1px solid var(--outline); border-radius: 8px; }
 .time-field-part { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
 .time-field-label { font-size: calc(12px * var(--font-scale)); color: var(--on-surface-variant); }
 .custom-time-field .settings-picker { flex: 1; max-width: none; }
-.custom-time-field .settings-select { justify-content: space-between; min-width: 62px; padding: 4px 6px; border-radius: 6px; font-variant-numeric: tabular-nums; }
+.custom-time-field .settings-select { justify-content: space-between; gap: var(--time-picker-icon-gap); min-width: 62px; padding: 4px 6px; border-radius: 6px; font-variant-numeric: tabular-nums; }
+.custom-time-field .settings-select > svg { width: var(--time-picker-icon-width); flex-shrink: 0; }
+.custom-time-field .settings-select > span { flex: 1; text-align: center; }
+.custom-time-field .settings-picker-option { position: relative; justify-content: center; padding-inline: 24px; font-variant-numeric: tabular-nums; }
+/* Match the value's center after the trigger reserves space for its icon and gap. */
+.custom-time-field .settings-picker-option > span { text-align: center; white-space: nowrap; transform: translateX(calc((var(--time-picker-icon-width) + var(--time-picker-icon-gap)) / -2)); }
+.custom-time-field .settings-picker-option > svg { position: absolute; right: 8px; }
+.custom-time-field .settings-picker-option[aria-checked="true"] { background: var(--accent-container); color: var(--accent); }
 .time-field-separator { color: var(--on-surface-variant); }
 .full-lunar-date, .date-summary-lunar { white-space: pre-line; }
 @media (max-width: 599px) and (orientation: portrait) {

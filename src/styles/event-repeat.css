@@ -1,0 +1,26 @@
+/* Additive controls for the existing event editor. */
+.event-editor-dialog { width: 92%; max-width: 440px; }
+@media (min-width: 600px) { .event-editor-dialog { max-width: 580.8px; } }
+.event-editor-header { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 16px; }
+.event-editor-title { flex: 1 1 auto; min-width: 0; font-size: calc(18px * var(--font-scale)); font-weight: 600; color: var(--text-primary); }
+.event-time-zone { max-width: 100%; margin-left: auto; color: var(--accent); font-size: calc(12px * var(--font-scale)); text-align: right; overflow-wrap: anywhere; }
+.event-time-zone-offset { white-space: nowrap; }
+.event-repeat-block { display: flex; flex-direction: column; gap: 10px; min-width: 0; padding-top: 12px; border-top: 1px solid var(--outline); }
+.event-repeat-block [hidden] { display: none !important; }
+.event-repeat-label { display: block; font-size: calc(13px * var(--font-scale)); font-weight: 500; color: var(--on-surface-variant); }
+.event-repeat-choices { display: flex; gap: 6px; flex-wrap: wrap; }
+.event-repeat-choices .filter-chip { min-height: 44px; background: var(--bg-surface-variant); }
+.event-repeat-choices .filter-chip.active { background: var(--accent); color: var(--on-accent); }
+.event-repeat-interval { display: grid; gap: 4px; min-width: 0; }
+.event-repeat-interval input { width: 100%; padding: 8px 10px; border: 1px solid var(--outline); border-radius: 8px; background: var(--bg-surface); color: var(--text-primary); }
+.event-repeat-end { display: grid; gap: 4px; min-width: 0; }
+.event-repeat-short { padding-top: 12px; }
+.event-repeat-toggle { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; padding: 6px 0; font-size: calc(13px * var(--font-scale)); cursor: pointer; }
+.modal-dialog-surface .event-repeat-toggle .settings-switch { min-height: 30px; margin: 0; }
+.event-repeat-block p { margin: 0; }
+.event-repeat-preview { padding: 12px; border-radius: 12px; background: var(--bg-surface-variant); display: grid; gap: 10px; }
+.event-repeat-dates { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.event-repeat-date { background: var(--bg-surface); padding: 4px 8px; border-radius: 8px; font-size: calc(12px * var(--font-scale)); font-variant-numeric: tabular-nums; }
+.event-repeat-preview .settings-subtitle { overflow-wrap: anywhere; }
+.event-detail-actions:has(.btn-ev-delete[data-series]) { flex-wrap: wrap; gap: 10px; }
+.event-detail-actions:has(.btn-ev-delete[data-series]) > div { flex-wrap: wrap; }

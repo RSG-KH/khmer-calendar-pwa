@@ -6,13 +6,14 @@ import { Storage, CustomEvent } from '../data/Storage';
 import { CalendarEvent } from '../data/EventRepository';
 import { KhmerDateDetails } from '../domain/KhmerDateDetails';
 import { Zodiac } from '../domain/Zodiac';
-import { eventInstant, isSupportedDate, todayInZone } from '../domain/DateTime';
+import { eventInstant, isSupportedDate, namedTimeZone, timeZoneOffsetLabel, todayInZone } from '../domain/DateTime';
 import { escapeHtml } from './html';
 import { setupModal, showModal, hideModal } from './Modal';
 import { prefersNativeTimePicker } from './Platform';
 import { setupTimeField } from './TimeField';
 import { setupCopyButton } from './CopyButton';
 import { holyDayLotus } from './HolyDayLotus';
+import { EventRepeatField, repeatDateLabel } from './EventRepeatField';
 
 /* ==========================================================================
    1. MONTH / YEAR PICKER MODAL
@@ -224,6 +225,8 @@ export class EventDetailsDialogModal {
               ${event.time ? ` · ${escapeHtml(event.time)}` : ''}
             </div>
 
+            ${event.repeat ? `<p class="settings-subtitle">${L.text(`repeat.${event.repeat.frequency}`, isKhmer)} · ${L.text('repeat.end', isKhmer)} ${repeatDateLabel(event.repeat.until, isKhmer)}</p>` : ''}
+
             <!-- Notes if any -->
             ${event.notes ? `<div style="white-space: pre-wrap; overflow-wrap: anywhere; color: var(--on-surface-variant); background: var(--bg-surface-variant); padding: 10px; border-radius: 8px;">${escapeHtml(event.notes)}</div>` : ''}
 
@@ -254,7 +257,7 @@ export class EventDetailsDialogModal {
           </div>
 
           ${isCustom ? `<div class="event-delete-confirmation" hidden>
-            <p class="form-error" role="alert">${L.text('ui.delete_this_event.925263', isKhmer)}</p>
+            <p class="form-error" role="alert">${L.text(event.seriesId ? 'repeat.delete_confirm' : 'ui.delete_this_event.925263', isKhmer)}</p>
             <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px;">
               <button class="btn-today-pill btn-cancel-delete">${L.text('ui.cancel.5bf834', isKhmer)}</button>
               <button class="btn-today-pill btn-confirm-delete" style="color: var(--tertiary);">${L.text('ui.delete.4708f4', isKhmer)}</button>
@@ -262,12 +265,12 @@ export class EventDetailsDialogModal {
           </div>` : ''}
           <div class="event-detail-actions" style="display: flex; justify-content: ${isCustom ? 'space-between' : 'flex-end'}; align-items: center; margin-top: 24px;">
             ${isCustom ? `
-              <button class="btn-today-pill btn-ev-delete" style="color: #FF5252; background: transparent; border: 1px solid #FF5252;">
-                ${L.text('ui.delete.4708f4', isKhmer)}
+              <button class="btn-today-pill btn-ev-delete" ${event.seriesId ? 'data-series' : ''} style="color: #FF5252; background: transparent; border: 1px solid #FF5252;">
+                ${L.text(event.seriesId ? 'repeat.delete_series' : 'ui.delete.4708f4', isKhmer)}
               </button>
               <div style="display: flex; gap: 8px;">
                 <button class="btn-today-pill btn-ev-edit" style="border: 1px solid var(--outline); background: transparent;">
-                  ${L.text('ui.edit.bbdcac', isKhmer)}
+                  ${L.text(event.seriesId ? 'repeat.edit_series' : 'ui.edit.bbdcac', isKhmer)}
                 </button>
                 <button class="btn-today-pill btn-ev-close" style="background: var(--accent); color: var(--on-accent); padding: 8px 18px; border-radius: 20px;">
                   ${L.text('ui.close.7df7dc', isKhmer)}
@@ -312,7 +315,7 @@ export class EventDetailsDialogModal {
       });
       this.overlay.querySelector('.btn-confirm-delete')?.addEventListener('click', () => {
         try {
-          this.onDelete(event.id);
+          this.onDelete(event.seriesId || event.id);
           this.close();
         } catch {
           this.overlay.querySelector('.form-error')!.textContent = L.text('ui.could_not_save_changes_please_try_again.140b3e', isKhmer);
@@ -337,6 +340,7 @@ export class CustomEventModal {
   private overlay: HTMLElement;
   private onSaved: (event: CustomEvent) => void;
   private cleanupTimeField?: () => void;
+  private repeatField?: EventRepeatField;
 
   constructor(onSaved: (event: CustomEvent) => void) {
     this.onSaved = onSaved;
@@ -348,27 +352,35 @@ export class CustomEventModal {
     document.body.appendChild(this.overlay);
   }
 
-  open(dateStr: string, isKhmer: boolean, existing?: { id: string; title: string; date: string; time?: string; notes?: string; instant?: string }) {
+  open(dateStr: string, isKhmer: boolean, existing?: CustomEvent) {
     this.cleanupTimeField?.();
     this.cleanupTimeField = undefined;
+    this.repeatField?.dispose();
     const isEdit = !!existing;
     const initialTitle = existing?.title || '';
     const initialDate = existing?.date || dateStr;
     const initialTime = existing ? existing.time || '' : '09:00';
     const initialNotes = existing?.notes || '';
     const zone = Storage.getSettings().todayTimeZone;
+    const seriesZone = existing?.repeat?.timeZone || namedTimeZone(zone);
+    const editorZone = existing?.repeat ? seriesZone : zone;
+    const displayZone = existing?.repeat && seriesZone !== namedTimeZone(zone) ? seriesZone : zone;
+    const zoneLabel = displayZone === 'local' ? L.text('ui.local_short', isKhmer)
+      : displayZone === 'cambodia' || displayZone === 'Asia/Phnom_Penh' ? L.text('ui.cambodia_short', isKhmer)
+      : displayZone;
     const nativeTimePicker = prefersNativeTimePicker();
 
     this.overlay.innerHTML = `
-      <div class="modal-dialog-surface ${nativeTimePicker ? '' : 'custom-time-editor'}" style="max-width: 440px; width: 92%;">
-        <div style="font-size: calc(18px * var(--font-scale)); font-weight: 600; color: var(--text-primary); margin-bottom: 16px;">
-          ${isEdit ? L.text('ui.edit_event.c29d7a', isKhmer) : L.text('ui.add_event.bf2f10', isKhmer)}
+      <div class="modal-dialog-surface event-editor-dialog ${nativeTimePicker ? '' : 'custom-time-editor'}">
+        <div class="event-editor-header">
+          <div class="event-editor-title">${L.text(existing?.repeat ? 'repeat.edit_series' : isEdit ? 'ui.edit_event.c29d7a' : 'ui.add_event.bf2f10', isKhmer)}</div>
+          <div class="event-time-zone">${escapeHtml(zoneLabel)} <span class="event-time-zone-offset"></span></div>
         </div>
 
         <form id="custom-event-form" style="display: flex; flex-direction: column; gap: 14px;">
           <div>
             <label for="ev-title" style="display: block; font-size: calc(13px * var(--font-scale)); font-weight: 500; color: var(--on-surface-variant); margin-bottom: 4px;">
-              ${L.text('ui.title.a4c172', isKhmer)} *
+              ${L.text('ui.title.a4c172', isKhmer)} <span class="required-marker">*</span>
             </label>
             <input type="text" id="ev-title" required maxlength="120" value="${escapeHtml(initialTitle)}"
               style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--outline); background: var(--bg-surface); color: var(--text-primary); font-size: calc(14px * var(--font-scale)); box-sizing: border-box;" />
@@ -399,11 +411,13 @@ export class CustomEventModal {
             <label for="ev-notes" style="display: block; font-size: calc(13px * var(--font-scale)); font-weight: 500; color: var(--on-surface-variant); margin-bottom: 4px;">
               ${L.text('ui.notes_optional.fde199', isKhmer)}
             </label>
-            <textarea id="ev-notes" rows="3" maxlength="2000"
+            <textarea id="ev-notes" rows="2" maxlength="2000"
               style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--outline); background: var(--bg-surface); color: var(--text-primary); font-size: calc(14px * var(--font-scale)); box-sizing: border-box; resize: vertical;">${escapeHtml(initialNotes)}</textarea>
           </div>
 
-          <p class="settings-subtitle">${L.text('ui.date_and_time_follow_zone_switch_between_local_and_camb.e2a176', isKhmer, { zone: L.text(zone === 'local' ? 'ui.local_time.541b44' : 'ui.cambodia_utc_7.458037', isKhmer) })}</p>
+          <div class="event-repeat-block" role="group" aria-labelledby="ev-repeat-label"></div>
+
+          ${existing?.repeat ? `<p class="settings-subtitle">${L.text('repeat.edit_hint', isKhmer)}</p>` : ''}
           <p class="form-error" role="alert"></p>
 
           <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
@@ -421,11 +435,25 @@ export class CustomEventModal {
     this.overlay.querySelector('.btn-form-cancel')!.addEventListener('click', () => this.close());
 
     const form = this.overlay.querySelector('#custom-event-form') as HTMLFormElement;
+    this.repeatField = new EventRepeatField(form.querySelector('.event-repeat-block')!, form.querySelector('#ev-date')!, isKhmer, seriesZone, existing?.repeat);
     if (!nativeTimePicker) {
       this.cleanupTimeField = setupTimeField(
         form.querySelector('.custom-time-field')!, form.querySelector<HTMLInputElement>('#ev-time')!, isKhmer
       );
     }
+    const updateZoneOffset = () => {
+      const date = form.querySelector<HTMLInputElement>('#ev-date')!.value;
+      const time = form.querySelector<HTMLInputElement>('#ev-time')!.value;
+      const instant = eventInstant(date, time || '12:00', editorZone)
+        ?? eventInstant(date, '12:00', editorZone);
+      this.overlay.querySelector('.event-time-zone-offset')!.textContent =
+        `(${timeZoneOffsetLabel(editorZone, instant ? new Date(instant) : new Date())})`;
+    };
+    for (const id of ['#ev-date', '#ev-time']) {
+      form.querySelector(id)!.addEventListener('input', updateZoneOffset);
+      form.querySelector(id)!.addEventListener('change', updateZoneOffset);
+    }
+    updateZoneOffset();
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const title = (this.overlay.querySelector('#ev-title') as HTMLInputElement).value.trim();
@@ -434,7 +462,8 @@ export class CustomEventModal {
       const notes = (this.overlay.querySelector('#ev-notes') as HTMLTextAreaElement).value.trim();
 
       if (!title || !isSupportedDate(date)) return;
-      const instant = time ? eventInstant(date, time, zone) : undefined;
+      if (!this.repeatField!.validate()) return;
+      const instant = time ? eventInstant(date, time, editorZone) : undefined;
       const error = this.overlay.querySelector('.form-error')!;
       if (time && !instant) {
         error.textContent = L.text('ui.this_time_does_not_exist_because_the_local_clock_change.49ab61', isKhmer);
@@ -447,7 +476,9 @@ export class CustomEventModal {
         date,
         time: time || undefined,
         notes: notes || undefined,
-        instant: existing?.instant && date === initialDate && time === initialTime ? existing.instant : instant
+        instant: existing?.instant && date === initialDate && time === initialTime ? existing.instant : instant,
+        remind: existing?.remind,
+        repeat: this.repeatField!.value()
       };
 
       try { Storage.saveCustomEventSync(event); }
@@ -459,12 +490,14 @@ export class CustomEventModal {
       this.onSaved(event);
     });
 
-    showModal(this.overlay, L.text(isEdit ? 'ui.edit_event.c29d7a' : 'ui.add_event.bf2f10', isKhmer));
+    showModal(this.overlay, L.text(existing?.repeat ? 'repeat.edit_series' : isEdit ? 'ui.edit_event.c29d7a' : 'ui.add_event.bf2f10', isKhmer));
   }
 
   close() {
     this.cleanupTimeField?.();
     this.cleanupTimeField = undefined;
+    this.repeatField?.dispose();
+    this.repeatField = undefined;
     hideModal(this.overlay);
   }
 }

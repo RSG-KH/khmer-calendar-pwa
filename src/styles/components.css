@@ -347,6 +347,9 @@
    EVENT ROW ITEMS (matching EventRow in CalendarApp.kt)
    ========================================================================== */
 .event-row-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   width: 100%;
   background: var(--bg-surface);
   border-radius: 16px;
@@ -357,6 +360,19 @@
   align-items: center;
   cursor: pointer;
   transition: background 0.15s;
+}
+
+/* Match Android's custom-event artwork, 2 dp vertical inset and 5% opacity. */
+.custom-event-row::before {
+  content: '';
+  position: absolute;
+  inset: 2px 21px 2px 0;
+  z-index: -1;
+  background: #E53935;
+  -webkit-mask: url('/assets/drawables/custom_event_star.png') right center / contain no-repeat;
+  mask: url('/assets/drawables/custom_event_star.png') right center / contain no-repeat;
+  opacity: 0.05;
+  pointer-events: none;
 }
 
 .event-row-card:active {
@@ -704,6 +720,10 @@
 
 .fab-add:active {
   transform: scale(0.92);
+}
+
+.required-marker {
+  color: var(--accent);
 }
 
 /* Base dialog surface; shared appearance rules provide the final shape and spacing. */

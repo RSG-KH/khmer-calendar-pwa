@@ -15,7 +15,8 @@ export function settingsPicker(id: string, value: string, options: string[][]): 
   </div>`;
 }
 
-export function setupSettingsPickers(container: HTMLElement, onChange: (id: string, value: string) => void, maxMenuHeight = Infinity): () => void {
+export function setupSettingsPickers(container: HTMLElement, onChange: (id: string, value: string) => void,
+  { maxMenuHeight = Infinity, matchTriggerWidth = false }: { maxMenuHeight?: number; matchTriggerWidth?: boolean } = {}): () => void {
   let closeActive: (() => void) | undefined;
   const cleanups: (() => void)[] = [];
 
@@ -53,8 +54,8 @@ export function setupSettingsPickers(container: HTMLElement, onChange: (id: stri
       trigger.setAttribute('aria-expanded', 'true');
       typed = '';
 
-      // Native iPad select popups have an OS-controlled width. This menu uses
-      // its longest label, then stays within the visible viewport near its button.
+      // Time menus follow their field width; settings menus fit their labels.
+      // Both stay within the visible viewport near their button.
       const viewport = window.visualViewport;
       const left = (viewport?.offsetLeft ?? 0) + 8;
       const top = (viewport?.offsetTop ?? 0) + 8;
@@ -63,6 +64,7 @@ export function setupSettingsPickers(container: HTMLElement, onChange: (id: stri
       menu.style.maxWidth = `${right - left}px`;
       menu.style.maxHeight = `${Math.min(bottom - top, maxMenuHeight)}px`;
       const anchor = trigger.getBoundingClientRect();
+      menu.style.width = matchTriggerWidth ? `${Math.min(anchor.width, right - left)}px` : '';
       const bounds = menu.getBoundingClientRect();
       menu.style.left = `${Math.max(left, Math.min(anchor.right - bounds.width, right - bounds.width))}px`;
       const below = anchor.bottom + 6;

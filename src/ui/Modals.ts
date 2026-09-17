@@ -199,7 +199,16 @@ export class EventDetailsDialogModal {
     const animalImg = Zodiac.getAnimalDrawable(info.animalYear, true);
     const westernImg = Zodiac.getWesternDrawable(info.zodiac);
 
-    const categoryDesc = L.text(isCustom ? 'ui.a_custom_event_saved_on_your_device.96d6e7' : 'events.engine_calculations', isKhmer);
+    let categoryDesc = '';
+    if (isCustom) {
+      categoryDesc = L.text('ui.a_custom_event_saved_on_your_device.96d6e7', isKhmer);
+    } else if (event.kind === 'HOLY_DAY') {
+      categoryDesc = L.text('ui.a_buddhist_observance_on_the_8th_and_15th_waxing_days_t.4bac2c', isKhmer);
+    } else if (event.kind === 'HOLIDAY') {
+      categoryDesc = L.text('ui.listed_in_cambodia_s_official_year_holiday_calendar.044398', isKhmer, { year: CalendarWords.number(parts[0], isKhmer) });
+    } else {
+      categoryDesc = L.text('events.engine_calculations', isKhmer);
+    }
 
     this.overlay.innerHTML = `
       <div class="modal-dialog-surface" style="position: relative; overflow: hidden; max-width: 480px; width: 92%;">
@@ -249,6 +258,12 @@ export class EventDetailsDialogModal {
                 L.text('ui.custom.917053', isKhmer)}
             </div>
             ${categoryDesc ? `<div style="font-size: calc(13px * var(--font-scale)); line-height: 1.6; color: var(--on-surface-variant);">${categoryDesc}</div>` : ''}
+
+            ${(event.kind === 'HOLIDAY' && ((isKhmer ? event.citationKm : event.citationEn) || event.citation)) ? `
+              <div class="event-citation" style="font-size: calc(12.5px * var(--font-scale)); line-height: 1.5; color: var(--on-surface-variant); margin-top: 2px;">
+                ${escapeHtml(((isKhmer ? event.citationKm : event.citationEn) || event.citation)!)}
+              </div>
+            ` : ''}
 
             <!-- Secondary title -->
             <div style="font-size: calc(13px * var(--font-scale)); color: var(--on-surface-variant);">

@@ -1,17 +1,15 @@
 // Copyright (c) 2026 RSG-KH | Apache-2.0 License
 
-import rawEvents from './events.json';
-import { RecurringEvents } from './RecurringEvents';
-import { eventCoverage, hasCapturedYear } from './EventCoverage';
-import { bundledEventYear } from './BundledEventDates';
-import { KhmerCalendar, toEpochDay, fromEpochDay } from '../domain/KhmerCalendar';
+import { calendarCatalog, eventNames, type CatalogEvent, type CatalogHoliday, type CatalogSource } from './RecurringEvents';
+import { KhmerCalendar, calendarEngine, khmerNumber, toEpochDay, fromEpochDay } from '../domain/KhmerCalendar';
+import { EventDateOverride, GregorianDate, createRule, type RecurrenceRule as EngineRecurrenceRule } from 'khmer-calendar-engine';
 import { L } from './i18n';
 import { Storage } from './Storage';
 import { customEventOccurrences } from './CustomEventOccurrences';
 import type { EventRepeat } from '../domain/EventRepeat';
 
 export type EventKind = 'HOLIDAY' | 'OBSERVANCE' | 'HOLY_DAY' | 'CUSTOM';
-export type DateBasis = 'captured' | 'calculated' | 'khmer_lunar' | 'custom';
+export type DateBasis = 'captured' | 'calculated' | 'khmer_lunar' | 'custom' | 'recorded' | 'corrected' | 'official';
 
 export interface CalendarEvent {
   id: string;
@@ -21,6 +19,10 @@ export interface CalendarEvent {
   kind: EventKind;
   basis: DateBasis;
   officialSourceUrl?: string | null;
+  citation?: string | null;
+  citationEn?: string | null;
+  citationKm?: string | null;
+  sourceIds?: string[];
   time?: string;
   notes?: string;
   instant?: string;
@@ -29,20 +31,36 @@ export interface CalendarEvent {
 }
 
 export class EventRepository {
-  private static bundledEvents: CalendarEvent[] = (rawEvents as any[]).map(e => ({
-    id: e.id,
-    date: e.date,
-    titleKm: e.km,
-    titleEn: e.en,
-    kind: e.kind as EventKind,
-    basis: 'captured',
-    officialSourceUrl: e.url || null
-  }));
-
   private static yearCache = new Map<number, CalendarEvent[]>();
+  private static compiledRules = new Map<string, EngineRecurrenceRule>(
+    calendarCatalog.events.filter(e => !!e.rule).map(e => [e.id, createRule(e.rule!)])
+  );
+  private static sourcesMap = new Map<string, CatalogSource>(
+    calendarCatalog.sources.map(s => [s.id, s])
+  );
+
+  private static getSourceInfo(sourceIds: string[]) {
+    const sources = sourceIds.map(id => this.sourcesMap.get(id)).filter((s): s is CatalogSource => !!s);
+    const govSources = sources.filter(s => s.kind === 'government');
+    if (govSources.length === 0) {
+      return { url: null, citationEn: null, citationKm: null };
+    }
+    const withUrl = govSources.find(s => !!s.url);
+    const withRef = govSources.find(s => !!s.reference);
+    const primary = withRef || govSources[0];
+
+    const url = withUrl?.url || primary?.url || null;
+    const citationEn = primary?.reference || primary?.title || null;
+    const citationKm = primary?.notes || primary?.reference || primary?.title || null;
+    return { url, citationEn, citationKm };
+  }
 
   static hasBundledYear(year: number): boolean {
-    return year >= eventCoverage.fromYear && year <= eventCoverage.throughYear;
+    return year >= KhmerCalendar.minYear && year <= KhmerCalendar.maxYear;
+  }
+
+  static clearCache(): void {
+    this.yearCache.clear();
   }
 
   static getYearEvents(year: number): CalendarEvent[] {
@@ -54,40 +72,122 @@ export class EventRepository {
     }
 
     const events: CalendarEvent[] = [];
-    const bundled = bundledEventYear(year);
 
-    if (hasCapturedYear(year)) {
-      const prefix = `${year}-`;
-      for (const e of this.bundledEvents) {
-        if (e.date.startsWith(prefix)) {
-          events.push(e);
-        }
-      }
-    } else {
-      const calculated = bundled ? RecurringEvents.fromDates(year, bundled.recurrences) : RecurringEvents.forYear(year);
-      for (const c of calculated) {
+    // 1. Static date-backed events (Chinese festivals & UNESCO milestones)
+    for (const event of calendarCatalog.events) {
+      if (!event.dates) continue;
+      for (const date of event.dates) {
+        if (Number(date.slice(0, 4)) !== year) continue;
         events.push({
-          id: c.id,
-          date: c.date,
-          titleKm: c.km,
-          titleEn: c.en,
+          id: event.id,
+          date,
+          titleKm: event.names.km,
+          titleEn: event.names.en,
           kind: 'OBSERVANCE',
-          basis: 'calculated'
+          basis: 'recorded',
+          sourceIds: event.sourceIds
         });
       }
     }
 
-    // Cached years avoid the daily scan, including captured snapshot years.
-    const holyDays = bundled?.holyDays ?? this.calculateHolyDays(year);
+    // 2. Recurring events evaluated via engine, with historical date overrides
+    const yearOverrides = calendarCatalog.overrides.filter(o => o.year === year);
+    for (const event of calendarCatalog.events) {
+      if (!event.rule) continue;
+      if ((event.rule.fromYear !== undefined && year < event.rule.fromYear) ||
+          (event.rule.throughYear !== undefined && year > event.rule.throughYear)) continue;
+
+      const rule = this.compiledRules.get(event.id)!;
+      const override = yearOverrides.find(o => o.eventId === event.id);
+      const replacement = override ? new EventDateOverride(
+        event.id,
+        year,
+        override.dates.map(iso => {
+          const [y, m, d] = iso.split('-').map(Number);
+          return new GregorianDate(y, m, d);
+        }),
+        override.sourceId,
+        override.reason
+      ) : undefined;
+
+      const occurrences = calendarEngine.evaluateRule(year, rule, replacement);
+      const names = eventNames(event, year);
+
+      for (const occ of occurrences) {
+        if (occ.date.year !== year) continue;
+        if (event.kind === 'historical' && event.originalDate && occ.date.iso < event.originalDate) continue;
+
+        const isCorrected = occ.basis === 'source_override';
+        const sourceIds = isCorrected && occ.sourceId ? [occ.sourceId] : event.sourceIds;
+
+        events.push({
+          id: event.id,
+          date: occ.date.iso,
+          titleKm: names.km,
+          titleEn: names.en,
+          kind: 'OBSERVANCE',
+          basis: isCorrected ? 'corrected' : 'calculated',
+          sourceIds
+        });
+      }
+    }
+
+    // 3. Official public holiday calendars (2020–2027)
+    const holidayCalendar = calendarCatalog.holidayCalendars.find(c => c.year === year);
+    if (holidayCalendar) {
+      for (const h of holidayCalendar.holidays) {
+        if (h.status === 'cancelled') continue;
+        const { url, citationEn, citationKm } = this.getSourceInfo(h.sourceIds);
+        const candidateIds = new Set([
+          h.id,
+          ...(h.eventId ? [h.eventId] : [])
+        ]);
+
+        for (const date of h.dates) {
+          const existing = events.find(e => e.date === date && candidateIds.has(e.id));
+          if (existing) {
+            existing.kind = 'HOLIDAY';
+            existing.basis = 'official';
+            if (h.names?.km) existing.titleKm = h.names.km;
+            if (h.names?.en) existing.titleEn = h.names.en;
+            existing.sourceIds = [...new Set([...(existing.sourceIds || []), ...h.sourceIds])];
+            if (url) existing.officialSourceUrl = url;
+            if (citationEn) existing.citation = citationEn;
+            if (citationEn) existing.citationEn = citationEn;
+            if (citationKm) existing.citationKm = citationKm;
+          } else {
+            events.push({
+              id: h.id,
+              date,
+              titleKm: h.names.km,
+              titleEn: h.names.en,
+              kind: 'HOLIDAY',
+              basis: 'official',
+              officialSourceUrl: url,
+              citation: citationEn,
+              citationEn,
+              citationKm,
+              sourceIds: h.sourceIds
+            });
+          }
+        }
+      }
+    }
+
+    // 4. Buddhist Holy Days (Thngai Sil)
+    const holyDays = this.calculateHolyDays(year);
     for (const date of holyDays) {
       events.push({
-        id: `sil:${date}`, date,
-        titleKm: L.text('event.holy_day', true), titleEn: L.text('event.holy_day', false),
-        kind: 'HOLY_DAY', basis: 'khmer_lunar'
+        id: `sil:${date}`,
+        date,
+        titleKm: L.text('event.holy_day', true),
+        titleEn: L.text('event.holy_day', false),
+        kind: 'HOLY_DAY',
+        basis: 'khmer_lunar'
       });
     }
 
-    events.sort((a, b) => a.date.localeCompare(b.date));
+    events.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
     this.yearCache.set(year, events);
     return events;
   }

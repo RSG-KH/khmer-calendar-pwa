@@ -58,7 +58,10 @@ export function showCalendarSources(k: boolean): () => void {
     link('https://github.com/RSG-KH/khmer-calendar-engine', 'Khmer Calendar Engine'));
 
   const holidayText = L.text('about.public_holiday_source', k);
-  const holidayName = k ? 'គេហទំព័រផ្លូវការរបស់រដ្ឋាភិបាល' : 'official government websites';
+  const holidayCandidates = k
+    ? ['ឯកសារផ្លូវការរបស់រដ្ឋ', 'គេហទំព័រផ្លូវការរបស់រដ្ឋាភិបាល']
+    : ['official government publications', 'official government websites'];
+  const holidayName = holidayCandidates.find(name => holidayText.includes(name)) || holidayCandidates[0];
   const holidayTitle = L.text('about.government_websites_title', k);
   const holidayUrls = [
     'https://library.ncdd.gov.kh/',

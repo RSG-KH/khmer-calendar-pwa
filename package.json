@@ -8,9 +8,7 @@
     "dev": "vite",
     "build": "tsc && vite build && node scripts/build-service-worker.mjs",
     "preview": "vite preview",
-    "test": "npm run check:events && npm run build && node --test tests/*.test.mjs",
-    "generate:events": "node scripts/generate-engine-event-dates.mjs",
-    "check:events": "node scripts/generate-engine-event-dates.mjs --check"
+    "test": "npm run build && node --test tests/*.test.mjs"
   },
   "devDependencies": {
     "typescript": "^5.7.3",

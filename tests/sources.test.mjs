@@ -15,19 +15,27 @@ const { showCalendarSources } = await server.ssrLoadModule('/src/ui/Sources.ts')
 test('archive and holiday sources and copy translations resolve in English and Khmer', () => {
   assert.equal(
     L.text('about.event_archive_source', false),
-    'Events for 2000–2030 were captured from Khmer Lunar Calendar.'
+    'Traditional Chinese festivals and historical commemorations are preserved from Khmer Lunar Calendar records.'
   );
   assert.equal(
     L.text('about.event_archive_source', true),
-    'ព្រឹត្តិការណ៍សម្រាប់ឆ្នាំ ២០០០–២០៣០ ត្រូវបានដកស្រង់ចេញពីប្រតិទិនចន្ទគតិខ្មែរ។'
+    'ពិធីបុណ្យប្រពៃណីចិន និងទិវាប្រវត្តិសាស្ត្រនានា ត្រូវបានដកស្រង់ចេញពីកំណត់ត្រាប្រតិទិនចន្ទគតិខ្មែរ។'
   );
   assert.equal(
     L.text('about.public_holiday_source', false),
-    'Official public holidays are sourced from official government websites.'
+    'Official public holidays are confirmed from Royal Government of Cambodia Sub-Decrees (Anukret) and official government publications.'
   );
   assert.equal(
     L.text('about.public_holiday_source', true),
-    'ថ្ងៃឈប់សម្រាកផ្លូវការ ត្រូវបានដកស្រង់ចេញពីគេហទំព័រផ្លូវការរបស់រដ្ឋាភិបាល។'
+    'ថ្ងៃឈប់សម្រាកការងារផ្លូវការ ត្រូវបានផ្ទៀងផ្ទាត់ និងបញ្ជាក់ចេញពីអនុក្រឹត្យរបស់រាជរដ្ឋាភិបាលកម្ពុជា និងឯកសារផ្លូវការរបស់រដ្ឋ។'
+  );
+  assert.equal(
+    L.text('rules.source_summary', false),
+    'Recurring observances and traditional festivals are calculated dynamically across 1800–2200 using Gregorian dates and the Khmer lunisolar calendar. Modern fixed-date observances are not projected before their historical inception. Calculations alone do not establish official government leave.'
+  );
+  assert.equal(
+    L.text('rules.source_summary', true),
+    'ទិវា និងពិធីបុណ្យប្រចាំឆ្នាំនានា ត្រូវបានគណនាដោយស្វ័យប្រវត្តិចន្លោះឆ្នាំ ១៨០០–២២០០ ផ្អែកលើប្រតិទិនសុរិយគតិ និងចន្ទគតិខ្មែរ។ ចំពោះទិវាសម័យទំនើបដែលមានកាលបរិច្ឆេទថេរ មិនត្រូវបានគណនាថយក្រោយហួសឆ្នាំបង្កើតដំបូងឡើយ។ ការគណនានេះមិនអាចយកជាការបញ្ជាក់អំពីថ្ងៃឈប់សម្រាកការងារផ្លូវការនោះទេ។'
   );
   assert.equal(
     L.text('about.government_websites_title', false),
@@ -300,7 +308,7 @@ test('sources dialog renders official government websites credit and copies all 
   const closeSources = showCalendarSources(false);
   const holidayLink = dom.body.querySelector('[data-url-source="holiday"]');
   assert.ok(holidayLink, 'holiday source link should exist');
-  assert.equal(holidayLink.textContent, 'official government websites');
+  assert.equal(holidayLink.textContent, 'official government publications');
 
   // Click holiday source link
   const clickEvent = new Event('click');

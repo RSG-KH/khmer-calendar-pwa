@@ -179,6 +179,13 @@ svg { flex-shrink: 0; }
 .source-license + .source-license { margin-top: 4px; }
 .source-license pre { margin-top: 8px; padding: 12px; border-radius: 10px; background: var(--bg-surface-variant); white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; font-size: calc(12px * var(--font-scale)); user-select: text; -webkit-user-select: text; }
 .sources-footer { display: flex; flex-shrink: 0; justify-content: flex-end; padding-top: 12px; }
+.source-url-link { color: var(--accent); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.source-url-dialog { display: flex; flex-direction: column; max-width: 440px; width: 92%; }
+.source-url-title { font-size: calc(16px * var(--font-scale)); font-weight: 600; line-height: 22px; color: var(--text-primary); margin-bottom: 12px; }
+.source-url-body { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; user-select: text; -webkit-user-select: text; }
+.source-url-text { font-size: calc(14px * var(--font-scale)); line-height: 20px; color: var(--accent); font-weight: 500; overflow-wrap: anywhere; }
+.source-url-footer { display: flex; justify-content: flex-end; gap: 8px; }
+.source-url-footer .btn-today-pill { background: transparent; border: 0; color: var(--accent); font-weight: 500; }
 .settings-picker { flex: 0 1 auto; min-width: 0; max-width: 52%; }
 .settings-select { display: flex; align-items: center; justify-content: flex-end; gap: 7px; width: 100%; min-height: 44px; border: 0; background: transparent; color: var(--accent); font-size: max(16px, calc(14px * var(--font-scale))); line-height: 1.6; text-align: right; cursor: pointer; }
 .settings-select > span { min-width: 0; overflow-wrap: anywhere; }

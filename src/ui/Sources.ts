@@ -7,12 +7,64 @@ import fontLicense from '../../public/fonts/OFL.txt?raw';
 import engineLicense from '../../public/engine-LICENSE.txt?raw';
 import engineNotice from '../../public/engine-NOTICE.txt?raw';
 
+function showUrlDialog(title: string, urlText: string, k: boolean): () => void {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.style.zIndex = '110';
+  const urls = urlText.split('\n').filter(Boolean);
+  const urlLinesHtml = urls.map(u => `<div class="source-url-text">${escapeHtml(u)}</div>`).join('');
+  overlay.innerHTML = `
+    <div class="modal-dialog-surface source-url-dialog">
+      <div class="source-url-title">${escapeHtml(title)}</div>
+      <div class="source-url-body">
+        ${urlLinesHtml}
+      </div>
+      <div class="source-url-footer">
+        <button type="button" class="btn-today-pill source-url-close">${escapeHtml(L.text('ui.close.7df7dc', k))}</button>
+        <button type="button" class="btn-today-pill source-url-copy">${escapeHtml(L.text('ui.copy', k))}</button>
+      </div>
+    </div>`;
+
+  let closed = false;
+  const close = () => {
+    if (closed) return;
+    closed = true;
+    hideModal(overlay);
+    overlay.remove();
+  };
+  setupModal(overlay, close);
+  overlay.querySelector('.source-url-close')!.addEventListener('click', close);
+  overlay.querySelector('.source-url-copy')!.addEventListener('click', async () => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(urlText);
+      }
+    } catch {
+      // restricted environment fallback
+    }
+    close();
+  });
+  overlay.addEventListener('click', event => { if (event.target === overlay) close(); });
+  document.body.appendChild(overlay);
+  showModal(overlay, title);
+  return close;
+}
+
 export function showCalendarSources(k: boolean): () => void {
   const text = (key: string) => escapeHtml(L.text(key, k));
   const link = (url: string, label = url) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`;
   const license = (title: string, content: string) => `<section class="source-license"><h3>${escapeHtml(title)}</h3><pre>${escapeHtml(content)}</pre></section>`;
   const engineDescription = text('about.calendar_engine').replace('Khmer Calendar Engine',
     link('https://github.com/RSG-KH/khmer-calendar-engine', 'Khmer Calendar Engine'));
+
+  const archiveText = L.text('about.event_archive_source', k);
+  const archiveName = k ? 'ប្រតិទិនចន្ទគតិខ្មែរ' : 'Khmer Lunar Calendar';
+  const archiveUrl = 'https://khmer-lunar-calendar.com/';
+  const archiveIndex = archiveText.indexOf(archiveName);
+  const archiveDescription = archiveIndex < 0
+    ? escapeHtml(archiveText)
+    : `${escapeHtml(archiveText.slice(0, archiveIndex))}<a href="${archiveUrl}" class="source-url-link" data-url-source="archive">${escapeHtml(archiveName)}</a>${escapeHtml(archiveText.slice(archiveIndex + archiveName.length))}`;
+
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.innerHTML = `
@@ -21,6 +73,7 @@ export function showCalendarSources(k: boolean): () => void {
       <div class="sources-content">
         <p class="sources-update">${text('ui.new_event_years_and_corrections_are_delivered_through_a.a6af2d')}</p>
         <p>${text('rules.source_summary')}</p>
+        <p>${archiveDescription}</p>
         <p>${engineDescription}</p>
         <details class="source-licenses">
           <summary>${text('ui.open_source_license.ab00af')}</summary>
@@ -32,15 +85,23 @@ export function showCalendarSources(k: boolean): () => void {
       <div class="sources-footer"><button class="btn-today-pill sources-close">${text('ui.close.7df7dc')}</button></div>
     </div>`;
 
+  let childClose: (() => void) | undefined;
   let closed = false;
   const close = () => {
     if (closed) return;
     closed = true;
+    childClose?.();
+    childClose = undefined;
     hideModal(overlay);
     overlay.remove();
   };
   setupModal(overlay, close);
   overlay.querySelector('.sources-close')!.addEventListener('click', close);
+  overlay.querySelector('[data-url-source="archive"]')?.addEventListener('click', event => {
+    event.preventDefault();
+    childClose?.();
+    childClose = showUrlDialog(archiveName, archiveUrl, k);
+  });
   overlay.addEventListener('click', event => { if (event.target === overlay) close(); });
   document.body.appendChild(overlay);
   showModal(overlay, L.text('ui.calendar_sources.7f962e', k));

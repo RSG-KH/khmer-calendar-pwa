@@ -201,6 +201,23 @@ test('all 8 official government holiday calendars (2020–2027) apply public hol
       assert.ok(!sha256Regex.test(source.notes), `Source ${source.id} notes should not contain raw SHA-256 string`);
     }
   }
+
+  // Verify {anniversary} is always properly formatted in holiday titles
+  for (const year of [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027]) {
+    const yearEvents = EventRepository.getYearEvents(year);
+    for (const ev of yearEvents) {
+      assert.ok(!ev.titleKm.includes('{anniversary}'), `Year ${year} event ${ev.id} titleKm has unreplaced {anniversary}`);
+      assert.ok(!ev.titleEn.includes('{anniversary}'), `Year ${year} event ${ev.id} titleEn has unreplaced {anniversary}`);
+    }
+  }
+
+  const y2027 = EventRepository.getYearEvents(2027);
+  const victory2027 = y2027.find(e => e.id === 'victory_over_genocide');
+  assert.ok(victory2027.titleKm.includes('៤៨'), '2027 Victory Day should show 48th anniversary in Khmer');
+  const women2027 = y2027.find(e => e.id === 'international_women_day');
+  assert.ok(women2027.titleKm.includes('១១៦'), '2027 Women Day should show 116th anniversary in Khmer');
+  const labor2027 = y2027.find(e => e.id === 'international_labor_day');
+  assert.ok(labor2027.titleKm.includes('១៤១'), '2027 Labor Day should show 141st anniversary in Khmer');
 });
 
 test('in-memory year cache serves subsequent requests and year boundaries enforce 1800-2200 range', () => {

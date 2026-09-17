@@ -38,6 +38,24 @@ export class EventRepository {
   private static sourcesMap = new Map<string, CatalogSource>(
     calendarCatalog.sources.map(s => [s.id, s])
   );
+  private static eventsMap = new Map<string, CatalogEvent>(
+    calendarCatalog.events.map(e => [e.id, e])
+  );
+
+  private static formatHolidayNames(h: CatalogHoliday, year: number): { km: string; en: string } {
+    let km = h.names.km;
+    let en = h.names.en;
+    if (km.includes('{anniversary}') || en.includes('{anniversary}')) {
+      const ev = this.eventsMap.get(h.eventId || h.id);
+      const base = ev?.anniversaryBase;
+      if (base !== undefined) {
+        const anniversary = year - base;
+        km = km.replaceAll('{anniversary}', khmerNumber(anniversary));
+        en = en.replaceAll('{anniversary}', String(anniversary));
+      }
+    }
+    return { km, en };
+  }
 
   private static getSourceInfo(sourceIds: string[]) {
     const sources = sourceIds.map(id => this.sourcesMap.get(id)).filter((s): s is CatalogSource => !!s);
@@ -143,13 +161,15 @@ export class EventRepository {
           ...(h.eventId ? [h.eventId] : [])
         ]);
 
+        const holidayNames = this.formatHolidayNames(h, year);
+
         for (const date of h.dates) {
           const existing = events.find(e => e.date === date && candidateIds.has(e.id));
           if (existing) {
             existing.kind = 'HOLIDAY';
             existing.basis = 'official';
-            if (h.names?.km) existing.titleKm = h.names.km;
-            if (h.names?.en) existing.titleEn = h.names.en;
+            if (holidayNames.km) existing.titleKm = holidayNames.km;
+            if (holidayNames.en) existing.titleEn = holidayNames.en;
             existing.sourceIds = [...new Set([...(existing.sourceIds || []), ...h.sourceIds])];
             if (url) existing.officialSourceUrl = url;
             if (citationEn) existing.citation = citationEn;
@@ -159,8 +179,8 @@ export class EventRepository {
             events.push({
               id: h.id,
               date,
-              titleKm: h.names.km,
-              titleEn: h.names.en,
+              titleKm: holidayNames.km,
+              titleEn: holidayNames.en,
               kind: 'HOLIDAY',
               basis: 'official',
               officialSourceUrl: url,

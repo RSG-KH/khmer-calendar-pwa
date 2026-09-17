@@ -2,7 +2,7 @@
 
 This TypeScript/Vite project is the web port of [Khmer Calendar for Android](https://github.com/RSG-KH/khmer-calendar). See the [README](README.md) for installation and features.
 
-The [engine integration guide](docs/shared-engine.md) covers the pinned dependency, PWA adapters and cache generation. Calendar algorithms, calculation sources and reference evidence are maintained in [Khmer Calendar Engine](https://github.com/RSG-KH/khmer-calendar-engine).
+The [engine integration guide](docs/shared-engine.md) covers the pinned dependency, PWA adapters and the event catalog. Calendar algorithms, calculation sources and reference evidence are maintained in [Khmer Calendar Engine](https://github.com/RSG-KH/khmer-calendar-engine).
 
 [KhmerCalendar.ts](src/domain/KhmerCalendar.ts) validates civil dates and adapts the engine result. Personal event repeats are implemented separately in [EventRepeat.ts](src/domain/EventRepeat.ts). The app's built-in observance definitions are passed to the engine through [RecurringEvents.ts](src/data/RecurringEvents.ts).
 
@@ -51,13 +51,13 @@ Windows/Linux use `app-icon-desktop-512.png`, an unchanged copy of the supplied 
 ## Build and test
 
 ```sh
-npm test          # Check generated dates, build and run regression tests
+npm test          # Build and run regression tests
 npm run preview   # Serve the production build locally
 ```
 
 For a build without tests, run `npm run build`. Output is in `dist/`. The production preview serves that build on a separate port (normally 4173); use the address printed in the terminal. Source edits require a new build.
 
-The tests cover full-range calendar continuity and recurrence mapping, cached event integrity, time zones, saved events, appearance defaults, picker drafts, foreground refresh, input escaping, modal viewport behavior, month swipes, platform controls and offline caching.
+The tests cover full-range calendar continuity and recurrence mapping, event catalog expectations (recorded dates, overrides, official holiday calendars), time zones, saved events, appearance defaults, picker drafts, foreground refresh, input escaping, modal viewport behavior, month swipes, platform controls and offline caching.
 
 The four-part version shown in Settings comes from `appVersion` in `package.json`. Change it only when a version bump is explicitly requested; committing or pushing changes does not finalize a release. The last component is for bug fixes only (for example, `0.1.8.1`). Feature releases advance the feature version and reset the last component to zero (for example, `0.1.7.5` → `0.1.8.0`). If the first three parts change, also update npm's three-part `version` and the lockfile with `npm version X.Y.Z --no-git-tag-version`. The service worker cache hash is generated automatically for every build.
 

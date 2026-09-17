@@ -9,7 +9,7 @@ import { customEventOccurrences } from './CustomEventOccurrences';
 import type { EventRepeat } from '../domain/EventRepeat';
 
 export type EventKind = 'HOLIDAY' | 'OBSERVANCE' | 'HOLY_DAY' | 'CUSTOM';
-export type DateBasis = 'captured' | 'calculated' | 'khmer_lunar' | 'custom' | 'recorded' | 'corrected' | 'official';
+export type DateBasis = 'calculated' | 'khmer_lunar' | 'custom' | 'recorded' | 'corrected' | 'official';
 
 export interface CalendarEvent {
   id: string;

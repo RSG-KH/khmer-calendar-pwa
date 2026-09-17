@@ -12,7 +12,7 @@ after(() => server.close());
 const { L } = await server.ssrLoadModule('/src/data/i18n.ts');
 const { showCalendarSources } = await server.ssrLoadModule('/src/ui/Sources.ts');
 
-test('archive source and copy translations resolve in English and Khmer', () => {
+test('archive and holiday sources and copy translations resolve in English and Khmer', () => {
   assert.equal(
     L.text('about.event_archive_source', false),
     'Events for 2000–2030 were captured from Khmer Lunar Calendar.'
@@ -20,6 +20,22 @@ test('archive source and copy translations resolve in English and Khmer', () => 
   assert.equal(
     L.text('about.event_archive_source', true),
     'ព្រឹត្តិការណ៍សម្រាប់ឆ្នាំ ២០០០–២០៣០ ត្រូវបានដកស្រង់ចេញពីប្រតិទិនចន្ទគតិខ្មែរ។'
+  );
+  assert.equal(
+    L.text('about.public_holiday_source', false),
+    'Official public holidays are sourced from official government websites.'
+  );
+  assert.equal(
+    L.text('about.public_holiday_source', true),
+    'ថ្ងៃឈប់សម្រាកផ្លូវការ ត្រូវបានដកស្រង់ចេញពីគេហទំព័រផ្លូវការរបស់រដ្ឋាភិបាល។'
+  );
+  assert.equal(
+    L.text('about.government_websites_title', false),
+    'Official government websites'
+  );
+  assert.equal(
+    L.text('about.government_websites_title', true),
+    'គេហទំព័រផ្លូវការរបស់រដ្ឋាភិបាល'
   );
   assert.equal(L.text('ui.copy', false), 'Copy');
   assert.equal(L.text('ui.copy', true), 'ចម្លង');
@@ -274,6 +290,42 @@ test('sources dialog works in Khmer and close button dismisses URL dialog', () =
   const closeBtn = dom.body.querySelector('.source-url-close');
   closeBtn.dispatchEvent(new Event('click'));
   assert.equal(dom.body.querySelector('.source-url-dialog'), null, 'Close button should dismiss URL dialog');
+
+  closeSources();
+});
+
+test('sources dialog renders official government websites credit and copies all URLs', async () => {
+  const dom = createMockDom();
+
+  const closeSources = showCalendarSources(false);
+  const holidayLink = dom.body.querySelector('[data-url-source="holiday"]');
+  assert.ok(holidayLink, 'holiday source link should exist');
+  assert.equal(holidayLink.textContent, 'official government websites');
+
+  // Click holiday source link
+  const clickEvent = new Event('click');
+  clickEvent.preventDefault = () => {};
+  holidayLink.dispatchEvent(clickEvent);
+
+  const urlDialog = dom.body.querySelector('.source-url-dialog');
+  assert.ok(urlDialog, 'URL dialog should appear');
+  assert.equal(dom.body.querySelector('.source-url-title')?.textContent, 'Official government websites');
+  const urlTexts = dom.body.querySelectorAll('.source-url-text').map(el => el.textContent);
+  assert.deepEqual(urlTexts, [
+    'https://library.ncdd.gov.kh/',
+    'https://www.ocm.gov.kh/',
+    'https://www.nbc.gov.kh/'
+  ]);
+
+  const copyBtn = dom.body.querySelector('.source-url-copy');
+  copyBtn.dispatchEvent(new Event('click'));
+  await new Promise(r => setTimeout(r, 10));
+  assert.equal(dom.getClipboard(), [
+    'https://library.ncdd.gov.kh/',
+    'https://www.ocm.gov.kh/',
+    'https://www.nbc.gov.kh/'
+  ].join('\n'));
+  assert.equal(dom.body.querySelector('.source-url-dialog'), null);
 
   closeSources();
 });

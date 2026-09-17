@@ -57,6 +57,19 @@ export function showCalendarSources(k: boolean): () => void {
   const engineDescription = text('about.calendar_engine').replace('Khmer Calendar Engine',
     link('https://github.com/RSG-KH/khmer-calendar-engine', 'Khmer Calendar Engine'));
 
+  const holidayText = L.text('about.public_holiday_source', k);
+  const holidayName = k ? 'គេហទំព័រផ្លូវការរបស់រដ្ឋាភិបាល' : 'official government websites';
+  const holidayTitle = L.text('about.government_websites_title', k);
+  const holidayUrls = [
+    'https://library.ncdd.gov.kh/',
+    'https://www.ocm.gov.kh/',
+    'https://www.nbc.gov.kh/'
+  ].join('\n');
+  const holidayIndex = holidayText.indexOf(holidayName);
+  const holidayDescription = holidayIndex < 0
+    ? escapeHtml(holidayText)
+    : `${escapeHtml(holidayText.slice(0, holidayIndex))}<a href="https://www.ocm.gov.kh/" class="source-url-link" data-url-source="holiday">${escapeHtml(holidayName)}</a>${escapeHtml(holidayText.slice(holidayIndex + holidayName.length))}`;
+
   const archiveText = L.text('about.event_archive_source', k);
   const archiveName = k ? 'ប្រតិទិនចន្ទគតិខ្មែរ' : 'Khmer Lunar Calendar';
   const archiveUrl = 'https://khmer-lunar-calendar.com/';
@@ -73,6 +86,7 @@ export function showCalendarSources(k: boolean): () => void {
       <div class="sources-content">
         <p class="sources-update">${text('ui.new_event_years_and_corrections_are_delivered_through_a.a6af2d')}</p>
         <p>${text('rules.source_summary')}</p>
+        <p>${holidayDescription}</p>
         <p>${archiveDescription}</p>
         <p>${engineDescription}</p>
         <details class="source-licenses">
@@ -97,6 +111,11 @@ export function showCalendarSources(k: boolean): () => void {
   };
   setupModal(overlay, close);
   overlay.querySelector('.sources-close')!.addEventListener('click', close);
+  overlay.querySelector('[data-url-source="holiday"]')?.addEventListener('click', event => {
+    event.preventDefault();
+    childClose?.();
+    childClose = showUrlDialog(holidayTitle, holidayUrls, k);
+  });
   overlay.querySelector('[data-url-source="archive"]')?.addEventListener('click', event => {
     event.preventDefault();
     childClose?.();

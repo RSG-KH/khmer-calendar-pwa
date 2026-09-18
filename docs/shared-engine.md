@@ -8,7 +8,7 @@ The engine's [API contract](https://github.com/RSG-KH/khmer-calendar-engine/blob
 
 One `calendarEngine` instance supplies lunar dates, Buddhist Era, animal year, Sak, New Year and recurrence dates for Gregorian years 1800–2200. The PWA retains civil-date validation, local/Cambodia time zones, Western zodiac labels, translations, event titles, anniversaries and custom-event storage.
 
-Built-in events come from the Schema v2 catalog `src/data/khmer-calendar-data-0.3.2.json` (file name carries its `dataVersion`). The repository evaluates that catalog live through the engine — there is no generated date cache to keep fresh. Calendar cells and date details call the engine for lunar dates throughout **1800–2200**. Personal repeats use the app's `EventRepeat.ts` and their saved end date, independently of the catalog.
+Built-in events come from the Schema v2 catalog `src/data/khmer-calendar-data-0.3.3.json` (file name carries its `dataVersion`). The repository evaluates that catalog live through the engine — there is no generated date cache to keep fresh. Calendar cells and date details call the engine for lunar dates throughout **1800–2200**. Personal repeats use the app's `EventRepeat.ts` and their saved end date, independently of the catalog.
 
 `RecurringEvents.ts` compiles each catalog `rule` (engine-native `RuleInput`, including `monthPolicy: ordinary_or_second_asadh` and `cn-reference-utc8`) through `createRule` once, then evaluates per year. Engine recurrence evaluation uses an **anchor year**, which is not necessarily the year of every returned occurrence. The adapter throws if a rule produces dates outside its anchor year, and the repository skips occurrences from other anchor years; current catalog rules all stay inside the anchor year. A future cross-year rule needs an explicit repository design change.
 
@@ -26,7 +26,7 @@ Built-in events come from the Schema v2 catalog `src/data/khmer-calendar-data-0.
 
 Repository events carry `basis: recorded | calculated | corrected | official | khmer_lunar | custom`. Details distinguish calculated observances with the calculated-observance label; official holidays link their government source. The catalog's `sources[]` (government, calendar, historical) drive those citations, and the Sources dialog credits the official government websites (library.ncdd.gov.kh, ocm.gov.kh, nbc.gov.kh) and the shared Khmer Calendar Engine.
 
-The catalog is app-owned data distilled from the reviewed reference-event database, exported via Calendar Data Catalog v0.3.2 and evaluated dynamically by Khmer Calendar Engine. Engine adoption does not certify official holiday coverage beyond the catalog's holiday calendars; calculations do not confirm official leave outside them.
+The catalog is app-owned data distilled from the reviewed reference-event database, exported via Calendar Data Catalog v0.3.3 and evaluated dynamically by Khmer Calendar Engine. Engine adoption does not certify official holiday coverage beyond the catalog's holiday calendars; calculations do not confirm official leave outside them.
 
 ## Updating the event catalog
 

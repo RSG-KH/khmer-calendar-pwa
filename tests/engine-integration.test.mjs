@@ -73,7 +73,7 @@ test('all 111 app definitions yield 30,371 unique in-year occurrences across 401
 });
 
 test('canonical Schema v2 catalog integrity and checksum match specification', () => {
-  assert.equal(sha(catalogBytes), '5ebff938de3efc2dc839dce58e21f046b1dcbd06f8e1b55d839154cc0d8ee3d9');
+  assert.equal(sha(catalogBytes), '8228bff39dfd29f45e64f34eec020c572c13642c35a9ad2359f3ba5822cc95b1');
   assert.equal(calendarCatalog.schemaVersion, 2);
   assert.equal(calendarCatalog.dataVersion, '0.3.3');
   assert.equal(calendarCatalog.events.length, 137);
@@ -173,16 +173,16 @@ test('all 12 official government holiday calendars (2016–2027) apply public ho
   }
 
   // Verify sub-decree citations specifically
-  assert.equal(EventRepository.getYearEvents(2016).find(e => e.kind === 'HOLIDAY')?.citation, '🗎 Anukret No. 137 ANKr.BK, 01 October 2015, signed by Prime Minister Hun Sen');
-  assert.equal(EventRepository.getYearEvents(2017).find(e => e.kind === 'HOLIDAY')?.citation, '🗎 Anukret No. 223 ANKr.BK, 27 October 2016, signed by Prime Minister Hun Sen');
-  assert.equal(EventRepository.getYearEvents(2018).find(e => e.kind === 'HOLIDAY')?.citation, '🗎 Anukret No. 202 ANKr.BK, 28 November 2017, signed by Prime Minister Hun Sen');
-  assert.equal(EventRepository.getYearEvents(2019).find(e => e.kind === 'HOLIDAY')?.citation, '🗎 Anukret No. 126 ANKr.BK, 04 October 2018, signed by Prime Minister Hun Sen');
-  assert.equal(EventRepository.getYearEvents(2020).find(e => e.kind === 'HOLIDAY')?.citation, '🗎 Anukret No. 112 ANKr.BK, 02 August 2019, signed by Prime Minister Hun Sen');
-  assert.equal(EventRepository.getYearEvents(2021).find(e => e.kind === 'HOLIDAY')?.citation, '🗎 Anukret No. 131 ANKr.BK, 26 August 2020, signed by Prime Minister Hun Sen');
-  assert.equal(EventRepository.getYearEvents(2022).find(e => e.kind === 'HOLIDAY')?.citation, '🗎 Anukret No. 145 ANKr.BK, 19 August 2021, signed by Prime Minister Hun Sen');
-  assert.equal(EventRepository.getYearEvents(2023).find(e => e.kind === 'HOLIDAY')?.citation, '🗎 Anukret No. 166 ANKr.BK, 12 August 2022, signed by Prime Minister Hun Sen');
-  assert.equal(EventRepository.getYearEvents(2024).find(e => e.kind === 'HOLIDAY')?.citation, '🗎 Anukret No. 230 ANKr.BK, 18 August 2023, signed by Prime Minister Hun Sen');
-  assert.equal(EventRepository.getYearEvents(2027).find(e => e.kind === 'HOLIDAY')?.citation, '🗎 Anukret No. 198 ANKr.BK, 16 September 2026, signed by Prime Minister Hun Manet');
+  assert.equal(EventRepository.getYearEvents(2016).find(e => e.kind === 'HOLIDAY')?.citation, '📜 Anukret No. 137 ANKr.BK, 01 October 2015, signed by Prime Minister Hun Sen');
+  assert.equal(EventRepository.getYearEvents(2017).find(e => e.kind === 'HOLIDAY')?.citation, '📜 Anukret No. 223 ANKr.BK, 27 October 2016, signed by Prime Minister Hun Sen');
+  assert.equal(EventRepository.getYearEvents(2018).find(e => e.kind === 'HOLIDAY')?.citation, '📜 Anukret No. 202 ANKr.BK, 28 November 2017, signed by Prime Minister Hun Sen');
+  assert.equal(EventRepository.getYearEvents(2019).find(e => e.kind === 'HOLIDAY')?.citation, '📜 Anukret No. 126 ANKr.BK, 04 October 2018, signed by Prime Minister Hun Sen');
+  assert.equal(EventRepository.getYearEvents(2020).find(e => e.kind === 'HOLIDAY')?.citation, '📜 Anukret No. 112 ANKr.BK, 02 August 2019, signed by Prime Minister Hun Sen');
+  assert.equal(EventRepository.getYearEvents(2021).find(e => e.kind === 'HOLIDAY')?.citation, '📜 Anukret No. 131 ANKr.BK, 26 August 2020, signed by Prime Minister Hun Sen');
+  assert.equal(EventRepository.getYearEvents(2022).find(e => e.kind === 'HOLIDAY')?.citation, '📜 Anukret No. 145 ANKr.BK, 19 August 2021, signed by Prime Minister Hun Sen');
+  assert.equal(EventRepository.getYearEvents(2023).find(e => e.kind === 'HOLIDAY')?.citation, '📜 Anukret No. 166 ANKr.BK, 12 August 2022, signed by Prime Minister Hun Sen');
+  assert.equal(EventRepository.getYearEvents(2024).find(e => e.kind === 'HOLIDAY')?.citation, '📜 Anukret No. 230 ANKr.BK, 18 August 2023, signed by Prime Minister Hun Sen');
+  assert.equal(EventRepository.getYearEvents(2027).find(e => e.kind === 'HOLIDAY')?.citation, '📜 Anukret No. 198 ANKr.BK, 16 September 2026, signed by Prime Minister Hun Manet');
 
   // Verify observances and holy days do not have official citations or provenance notes
   const observances2026 = EventRepository.getYearEvents(2026).filter(e => e.kind === 'OBSERVANCE' || e.kind === 'HOLY_DAY');

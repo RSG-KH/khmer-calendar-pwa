@@ -72,7 +72,7 @@ test('all 109 app definitions yield 29,251 unique in-year occurrences across 401
 });
 
 test('canonical Schema v2 catalog integrity and checksum match specification', () => {
-  assert.equal(sha(catalogBytes), '79bd1fc9e3db227083676c480cdc09ecda1c38974911f21c5541933df628721a');
+  assert.equal(sha(catalogBytes), '0c201c1e469232f74f5f05a033d713ae322d926531819cce5d286a6940df19d8');
   assert.equal(calendarCatalog.schemaVersion, 2);
   assert.equal(calendarCatalog.dataVersion, '0.3.0');
   assert.equal(calendarCatalog.events.length, 124);

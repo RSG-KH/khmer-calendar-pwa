@@ -311,10 +311,16 @@ test('event details dialog renders clean categories and descriptions without raw
   const constDay = EventRepository.getYearEvents(2026).find(e => e.date === '2026-09-24' && e.kind === 'HOLIDAY');
   modal.open(constDay, true);
   const constHtml = modal.overlay.innerHTML;
+  assert.ok(constHtml.includes('ថ្ងៃព្រហស្បតិ៍, ២៤ ខែកញ្ញា ២០២៦'), 'Full Khmer date format matching Android');
   assert.ok(constHtml.includes('ថ្ងៃឈប់សម្រាក'));
   assert.ok(constHtml.includes('បានបញ្ជាក់ក្នុងប្រតិទិនថ្ងៃឈប់សម្រាកផ្លូវការ ឆ្នាំ២០២៦។'));
   assert.ok(constHtml.includes('អនុក្រឹត្យលេខ ១៦៧'));
   assert.ok(constHtml.includes('event-citation'));
+  const holidayIdx = constHtml.indexOf('ថ្ងៃឈប់សម្រាក');
+  const titleEnIdx = constHtml.indexOf('Constitution Day');
+  const verifiedIdx = constHtml.indexOf('បានបញ្ជាក់ក្នុងប្រតិទិនថ្ងៃឈប់សម្រាកផ្លូវការ');
+  assert.ok(holidayIdx < titleEnIdx, 'Holiday subtitle must appear before English title');
+  assert.ok(titleEnIdx < verifiedIdx, 'English title must appear directly under holiday subtitle, before verified description');
   assert.equal(constHtml.includes('<a href='), false, 'Must not render clickable URL link in event details');
   assert.equal(constHtml.includes('SHA-256'), false);
 });

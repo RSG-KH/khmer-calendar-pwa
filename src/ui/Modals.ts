@@ -230,8 +230,7 @@ export class EventDetailsDialogModal {
           <div style="display: flex; flex-direction: column; gap: 12px; font-size: calc(14px * var(--font-scale));">
             <!-- Date & Time -->
             <div style="font-weight: 500; color: var(--text-primary);">
-              ${CalendarWords.month(parts[1], isKhmer)} ${CalendarWords.number(parts[2], isKhmer)}, ${CalendarWords.number(parts[0], isKhmer)}
-              ${event.time ? ` · ${escapeHtml(event.time)}` : ''}
+              ${CalendarWords.date(parts[0], parts[1], parts[2], isKhmer)}${event.time ? ` · ${escapeHtml(event.time)}` : ''}
             </div>
 
             ${event.repeat ? `<p class="settings-subtitle">${L.text(`repeat.${event.repeat.frequency}`, isKhmer)} · ${L.text('repeat.end', isKhmer)} ${repeatDateLabel(event.repeat.until, isKhmer)}</p>` : ''}
@@ -257,6 +256,11 @@ export class EventDetailsDialogModal {
                 event.kind === 'OBSERVANCE' ? L.text('ui.observance.5b9a87', isKhmer) :
                 L.text('ui.custom.917053', isKhmer)}
             </div>
+            ${!isCustom ? `
+              <div style="font-size: calc(13px * var(--font-scale)); color: var(--on-surface-variant);">
+                ${escapeHtml(isKhmer ? event.titleEn : event.titleKm)}
+              </div>
+            ` : ''}
             ${categoryDesc ? `<div style="font-size: calc(13px * var(--font-scale)); line-height: 1.6; color: var(--on-surface-variant);">${categoryDesc}</div>` : ''}
 
             ${(event.kind === 'HOLIDAY' && ((isKhmer ? event.citationKm : event.citationEn) || event.citation)) ? `
@@ -264,11 +268,6 @@ export class EventDetailsDialogModal {
                 ${escapeHtml(((isKhmer ? event.citationKm : event.citationEn) || event.citation)!)}
               </div>
             ` : ''}
-
-            <!-- Secondary title -->
-            <div style="font-size: calc(13px * var(--font-scale)); color: var(--on-surface-variant);">
-              ${escapeHtml(isKhmer ? event.titleEn : event.titleKm)}
-            </div>
           </div>
 
           ${isCustom ? `<div class="event-delete-confirmation" hidden>

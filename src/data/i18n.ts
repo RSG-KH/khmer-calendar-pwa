@@ -38,6 +38,16 @@ export class CalendarWords {
     return khmer ? khmerNumber(value) : String(value);
   }
 
+  static date(year: number, month: number, day: number, khmer: boolean): string {
+    const dateObj = new Date(Date.UTC(year, month - 1, day));
+    const dayOfWeek = dateObj.getUTCDay() === 0 ? 7 : dateObj.getUTCDay();
+    return `${L.text('calendar.date_label', khmer, {
+      weekday: this.weekday(dayOfWeek, khmer),
+      day: this.number(day, khmer),
+      month: this.month(month, khmer)
+    })} ${this.number(year, khmer)}`;
+  }
+
   static lunarMonth(month: number, khmer: boolean): string {
     return L.text(`calendar.lunar_month.${month}`, khmer);
   }

@@ -150,7 +150,7 @@ export class EventRepository {
       }
     }
 
-    // 3. Official public holiday calendars (2020–2027)
+    // 3. Official public holiday calendars (2016–2027)
     const holidayCalendar = calendarCatalog.holidayCalendars.find(c => c.year === year);
     if (holidayCalendar) {
       for (const h of holidayCalendar.holidays) {

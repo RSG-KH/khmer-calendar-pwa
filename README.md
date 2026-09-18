@@ -75,7 +75,7 @@ See [Chrome's desktop installation guide](https://support.google.com/chrome/answ
 ## Good to know
 
 - Works offline after the first full online load in your browser or installed app.
-- Browse years **1800–2200**. Recurring observances and holy days are calculated on-device; official public-holiday calendars cover **2020–2027** and date-backed festivals and milestones **2000–2030**.
+- Browse years **1800–2200**. Recurring observances and holy days are calculated on-device; official public-holiday calendars cover **2016–2027** and date-backed festivals and milestones **2000–2030**.
 - Your events and settings stay on your device. No account or sync; clearing app/site data removes them.
 - Events can repeat every X days, weekly, monthly or yearly, with a required end date and a preview. Choose how to handle missing month-end or leap-day dates; editing or deleting applies to the whole series.
 - To update, tap **Check for update** in Settings. Available updates download and reload automatically; saved events and settings are kept.

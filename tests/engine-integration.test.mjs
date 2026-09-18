@@ -13,7 +13,7 @@ const { RecurringEvents, calendarCatalog } = await server.ssrLoadModule('/src/da
 const { EventRepository } = await server.ssrLoadModule('/src/data/EventRepository.ts');
 const { holyDayLotus } = await server.ssrLoadModule('/src/ui/HolyDayLotus.ts');
 
-const catalogBytes = await readFile(new URL('../src/data/khmer-calendar-data-0.3.1.json', import.meta.url));
+const catalogBytes = await readFile(new URL('../src/data/khmer-calendar-data-0.3.2.json', import.meta.url));
 globalThis.localStorage = { getItem: () => null };
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 
@@ -73,9 +73,9 @@ test('all 111 app definitions yield 30,371 unique in-year occurrences across 401
 });
 
 test('canonical Schema v2 catalog integrity and checksum match specification', () => {
-  assert.equal(sha(catalogBytes), '2c0243f55979737b96046fc09c26e09c4043be5c420d76bbcbc7443707e042db');
+  assert.equal(sha(catalogBytes), '79ff6539b4e5753f34209d06b342f8ef32edc6198dd7520f5bf7cac28b6143f1');
   assert.equal(calendarCatalog.schemaVersion, 2);
-  assert.equal(calendarCatalog.dataVersion, '0.3.1');
+  assert.equal(calendarCatalog.dataVersion, '0.3.2');
   assert.equal(calendarCatalog.events.length, 137);
 
   const recurring = calendarCatalog.events.filter(e => e.rule);
@@ -85,8 +85,8 @@ test('canonical Schema v2 catalog integrity and checksum match specification', (
   assert.equal(staticEvents.filter(e => e.kind === 'traditional').length, 0);
   assert.equal(staticEvents.filter(e => e.kind === 'historical').length, 26);
 
-  assert.equal(calendarCatalog.holidayCalendars.length, 8);
-  assert.deepEqual(calendarCatalog.holidayCalendars.map(c => c.year), [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027]);
+  assert.equal(calendarCatalog.holidayCalendars.length, 12);
+  assert.deepEqual(calendarCatalog.holidayCalendars.map(c => c.year), [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027]);
   assert.equal(calendarCatalog.overrides.length, 22);
   const sihamoniOverrides = calendarCatalog.overrides.filter(o => o.eventId === 'king_sihamoni_birthday');
   assert.equal(sihamoniOverrides.length, 15);
@@ -98,7 +98,7 @@ test('canonical Schema v2 catalog integrity and checksum match specification', (
     { eventId: 'chinese_qingming_festival', year: 2029 },
     { eventId: 'chinese_zongzi_festival', year: 2013 }
   ]);
-  assert.equal(calendarCatalog.sources.length, 12);
+  assert.equal(calendarCatalog.sources.length, 16);
   assert.equal(calendarCatalog.eventCalendars.length, 0);
 });
 
@@ -144,7 +144,11 @@ test('historical King Sihamoni birthday overrides apply 3-day celebrations from 
     const bday = EventRepository.getYearEvents(year).filter(e => e.id === 'king_sihamoni_birthday');
     assert.equal(bday.length, 3, `Year ${year} should have 3 birthday dates`);
     assert.deepEqual(bday.map(e => e.date), [`${year}-05-13`, `${year}-05-14`, `${year}-05-15`]);
-    assert.ok(bday.every(e => e.basis === 'corrected'));
+    if (year <= 2015) {
+      assert.ok(bday.every(e => e.basis === 'corrected'));
+    } else {
+      assert.ok(bday.every(e => e.basis === 'official'));
+    }
   }
 
   // Rule starts in 2005 (King Sihamoni crowned October 2004)
@@ -158,8 +162,8 @@ test('historical King Sihamoni birthday overrides apply 3-day celebrations from 
   }
 });
 
-test('all 8 official government holiday calendars (2020–2027) apply public holiday status and sub-decree citations', () => {
-  for (let year = 2020; year <= 2027; year++) {
+test('all 12 official government holiday calendars (2016–2027) apply public holiday status and sub-decree citations', () => {
+  for (let year = 2016; year <= 2027; year++) {
     const yearEvents = EventRepository.getYearEvents(year);
     const holidays = yearEvents.filter(e => e.kind === 'HOLIDAY');
     assert.ok(holidays.length >= 21, `Year ${year} should have at least 21 official holiday records`);
@@ -169,6 +173,10 @@ test('all 8 official government holiday calendars (2020–2027) apply public hol
   }
 
   // Verify sub-decree citations specifically
+  assert.equal(EventRepository.getYearEvents(2016).find(e => e.kind === 'HOLIDAY')?.citation, 'Anukret No. 137 ANKr.BK, 01 October 2015');
+  assert.equal(EventRepository.getYearEvents(2017).find(e => e.kind === 'HOLIDAY')?.citation, 'Anukret No. 223 ANKr.BK, 27 October 2016');
+  assert.equal(EventRepository.getYearEvents(2018).find(e => e.kind === 'HOLIDAY')?.citation, 'Anukret No. 202 ANKr.BK, 28 November 2017');
+  assert.equal(EventRepository.getYearEvents(2019).find(e => e.kind === 'HOLIDAY')?.citation, 'Anukret No. 126 ANKr.BK, 04 October 2018');
   assert.equal(EventRepository.getYearEvents(2020).find(e => e.kind === 'HOLIDAY')?.citation, 'Anukret No. 112 ANKr.BK, 02 August 2019');
   assert.equal(EventRepository.getYearEvents(2021).find(e => e.kind === 'HOLIDAY')?.citation, 'Anukret No. 131 ANKr.BK, 26 August 2020');
   assert.equal(EventRepository.getYearEvents(2022).find(e => e.kind === 'HOLIDAY')?.citation, 'Anukret No. 145 ANKr.BK, 19 August 2021');
@@ -187,7 +195,7 @@ test('all 8 official government holiday calendars (2020–2027) apply public hol
   assert.equal(kohKer.officialSourceUrl, undefined);
 
   // Verify no duplicate holiday/observance for the same event on holiday dates
-  for (const year of [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027]) {
+  for (const year of [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027]) {
     const yearEvents = EventRepository.getYearEvents(year);
     const holidays = yearEvents.filter(e => e.kind === 'HOLIDAY');
     for (const h of holidays) {
@@ -211,7 +219,7 @@ test('all 8 official government holiday calendars (2020–2027) apply public hol
   assert.equal(kny2026[2].titleEn, 'Khmer New Year - Veareak Laeung Sak');
   assert.ok(kny2026[0].titleKm.includes('១០:៤៨ AM'));
 
-  // Verify 100% explicit eventId linkage and 0 mismatches across all 8 holiday calendars
+  // Verify 100% explicit eventId linkage and 0 mismatches across all 12 holiday calendars
   const catalogEventIds = new Set(calendarCatalog.events.map(e => e.id));
   for (const cal of calendarCatalog.holidayCalendars) {
     for (const h of cal.holidays) {
@@ -229,7 +237,7 @@ test('all 8 official government holiday calendars (2020–2027) apply public hol
   }
 
   // Verify {anniversary} is always properly formatted in holiday titles
-  for (const year of [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027]) {
+  for (const year of [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027]) {
     const yearEvents = EventRepository.getYearEvents(year);
     for (const ev of yearEvents) {
       assert.ok(!ev.titleKm.includes('{anniversary}'), `Year ${year} event ${ev.id} titleKm has unreplaced {anniversary}`);

@@ -240,7 +240,7 @@ export class EventDetailsDialogModal {
 
             <!-- Lunar info -->
             <div style="color: var(--on-surface-variant);">
-              ${CalendarWords.lunarFull(info.lunar.day, info.lunar.waxing, info.lunar.month, isKhmer)}
+              ${CalendarWords.lunarSummary(info, isKhmer)}
             </div>
             <div style="color: var(--on-surface-variant); font-size: calc(13px * var(--font-scale));">
               ${L.text('ui.buddhist_era.ea617c', isKhmer)} ${CalendarWords.number(info.lunar.buddhistYear, isKhmer)}

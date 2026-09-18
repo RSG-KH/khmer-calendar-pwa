@@ -338,6 +338,7 @@ test('event details dialog renders clean categories and descriptions without raw
   modal.open(constDay, true);
   const constHtml = modal.overlay.innerHTML;
   assert.ok(constHtml.includes('ថ្ងៃព្រហស្បតិ៍, ២៤ ខែកញ្ញា ២០២៦'), 'Full Khmer date format matching Android');
+  assert.ok(constHtml.includes('១៣កើត ខែភទ្របទ ឆ្នាំមមី អដ្ឋស័ក'), 'Lunar day, month, animal year, and sak');
   assert.ok(constHtml.includes('ថ្ងៃឈប់សម្រាក'));
   assert.ok(constHtml.includes('បានបញ្ជាក់ក្នុងប្រតិទិនថ្ងៃឈប់សម្រាកផ្លូវការ ឆ្នាំ២០២៦។'));
   assert.ok(constHtml.includes('អនុក្រឹត្យលេខ ១៦៧'));

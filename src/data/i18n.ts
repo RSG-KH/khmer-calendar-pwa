@@ -81,6 +81,22 @@ export class CalendarWords {
     return L.text(`calendar.sak.${index}`, khmer);
   }
 
+  static animalLabel(d: KhmerDateDetails, khmer: boolean): string {
+    const current = this.animal(d.animalYear, khmer);
+    return d.animalYearChangesToday
+      ? `${this.animal((d.animalYear - 1 + 12) % 12, khmer)} → ${current}`
+      : current;
+  }
+
+  static lunarSummary(d: KhmerDateDetails, khmer: boolean): string {
+    const lunar = this.lunarFull(d.lunar.day, d.lunar.waxing, d.lunar.month, khmer);
+    const animal = this.animalLabel(d, khmer);
+    const sak = this.sak(d.sak, khmer);
+    return khmer
+      ? `${lunar} ឆ្នាំ${animal} ${sak}`
+      : `${lunar} · Year of the ${animal} · ${sak}`;
+  }
+
   static fullKhmerDate(d: KhmerDateDetails): string {
     const dateObj = new Date(Date.UTC(d.year, d.month - 1, d.day));
     const dayOfWeek = dateObj.getUTCDay() === 0 ? 7 : dateObj.getUTCDay();
@@ -89,14 +105,10 @@ export class CalendarWords {
       monthName = monthName.replace(/^ខែ/, '');
     }
 
-    const animalStr = d.animalYearChangesToday
-      ? `${this.animal((d.animalYear - 1 + 12) % 12, true)} → ${this.animal(d.animalYear, true)}`
-      : this.animal(d.animalYear, true);
-
     return L.text('calendar.full_date', true, {
       weekday: this.weekday(dayOfWeek, true),
       lunar: this.lunarFull(d.lunar.day, d.lunar.waxing, d.lunar.month, true),
-      animal: animalStr,
+      animal: this.animalLabel(d, true),
       sak: this.sak(d.sak, true),
       buddhist_year: this.number(d.lunar.buddhistYear, true),
       day: this.number(d.day, true),
@@ -110,14 +122,10 @@ export class CalendarWords {
     const dayOfWeek = dateObj.getUTCDay() === 0 ? 7 : dateObj.getUTCDay();
     const monthName = this.month(d.month, false);
 
-    const animalStr = d.animalYearChangesToday
-      ? `${this.animal((d.animalYear - 1 + 12) % 12, false)} → ${this.animal(d.animalYear, false)}`
-      : this.animal(d.animalYear, false);
-
     return L.text('calendar.full_date', false, {
       weekday: this.weekday(dayOfWeek, false),
       lunar: this.lunarFull(d.lunar.day, d.lunar.waxing, d.lunar.month, false),
-      animal: animalStr,
+      animal: this.animalLabel(d, false),
       sak: this.sak(d.sak, false),
       buddhist_year: this.number(d.lunar.buddhistYear, false),
       day: this.number(d.day, false),

@@ -13,7 +13,7 @@ const { RecurringEvents, calendarCatalog } = await server.ssrLoadModule('/src/da
 const { EventRepository } = await server.ssrLoadModule('/src/data/EventRepository.ts');
 const { holyDayLotus } = await server.ssrLoadModule('/src/ui/HolyDayLotus.ts');
 
-const catalogBytes = await readFile(new URL('../src/data/khmer-calendar-data-0.3.0.json', import.meta.url));
+const catalogBytes = await readFile(new URL('../src/data/khmer-calendar-data-0.3.1.json', import.meta.url));
 globalThis.localStorage = { getItem: () => null };
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 
@@ -48,10 +48,11 @@ test('second Asadh, festival offsets, weekday occurrence and anniversary rules s
   const victory = RecurringEvents.forYear(2031).find(e => e.id === 'victory_over_genocide');
   assert.equal(victory.en, 'Victory Over Genocide Day');
   assert.ok(victory.km.includes('៥២'));
-  assert.ok(!RecurringEvents.forYear(1999).some(e => e.id === victory.id));
+  assert.ok(RecurringEvents.forYear(1999).some(e => e.id === victory.id));
+  assert.ok(!RecurringEvents.forYear(1978).some(e => e.id === victory.id));
 });
 
-test('all 109 app definitions yield 29,251 unique in-year occurrences across 401 years', () => {
+test('all 111 app definitions yield 30,371 unique in-year occurrences across 401 years', () => {
   let count = 0;
   const families = new Set();
   for (let year = 1800; year <= 2200; year++) {
@@ -67,26 +68,26 @@ test('all 109 app definitions yield 29,251 unique in-year occurrences across 401
     assert.equal(result.dates.length, result.days);
     assert.equal(result.startDate, result.dates[0]);
   }
-  assert.equal(count, 29251);
+  assert.equal(count, 30371);
   assert.equal(families.size, 7);
 });
 
 test('canonical Schema v2 catalog integrity and checksum match specification', () => {
-  assert.equal(sha(catalogBytes), '0c201c1e469232f74f5f05a033d713ae322d926531819cce5d286a6940df19d8');
+  assert.equal(sha(catalogBytes), '2c0243f55979737b96046fc09c26e09c4043be5c420d76bbcbc7443707e042db');
   assert.equal(calendarCatalog.schemaVersion, 2);
-  assert.equal(calendarCatalog.dataVersion, '0.3.0');
-  assert.equal(calendarCatalog.events.length, 124);
+  assert.equal(calendarCatalog.dataVersion, '0.3.1');
+  assert.equal(calendarCatalog.events.length, 137);
 
   const recurring = calendarCatalog.events.filter(e => e.rule);
   const staticEvents = calendarCatalog.events.filter(e => e.dates);
-  assert.equal(recurring.length, 109);
-  assert.equal(staticEvents.length, 15);
+  assert.equal(recurring.length, 111);
+  assert.equal(staticEvents.length, 26);
   assert.equal(staticEvents.filter(e => e.kind === 'traditional').length, 0);
-  assert.equal(staticEvents.filter(e => e.kind === 'historical').length, 15);
+  assert.equal(staticEvents.filter(e => e.kind === 'historical').length, 26);
 
   assert.equal(calendarCatalog.holidayCalendars.length, 8);
   assert.deepEqual(calendarCatalog.holidayCalendars.map(c => c.year), [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027]);
-  assert.equal(calendarCatalog.overrides.length, 18);
+  assert.equal(calendarCatalog.overrides.length, 22);
   const sihamoniOverrides = calendarCatalog.overrides.filter(o => o.eventId === 'king_sihamoni_birthday');
   assert.equal(sihamoniOverrides.length, 15);
   assert.deepEqual(sihamoniOverrides.map(o => o.year), Array.from({ length: 15 }, (_, i) => 2005 + i));
@@ -97,7 +98,7 @@ test('canonical Schema v2 catalog integrity and checksum match specification', (
     { eventId: 'chinese_qingming_festival', year: 2029 },
     { eventId: 'chinese_zongzi_festival', year: 2013 }
   ]);
-  assert.equal(calendarCatalog.sources.length, 11);
+  assert.equal(calendarCatalog.sources.length, 12);
   assert.equal(calendarCatalog.eventCalendars.length, 0);
 });
 

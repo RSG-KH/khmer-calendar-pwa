@@ -45,7 +45,8 @@ export class DateDetailsDialogModal {
     const parts = dateStr.split('-').map(Number);
     const info = KhmerDateDetails.fromGregorian(parts[0], parts[1], parts[2]);
     const fullDate = isKhmer ? CalendarWords.fullKhmerDate(info) : CalendarWords.fullEnglishDate(info);
-    const todayStr = todayInZone(Storage.getSettings().todayTimeZone);
+    const settings = Storage.getSettings();
+    const todayStr = todayInZone(settings.todayTimeZone);
     const isToday = dateStr === todayStr;
 
     const animalImg = Zodiac.getAnimalDrawable(info.animalYear, true);
@@ -79,17 +80,17 @@ export class DateDetailsDialogModal {
           </div>
 
           <!-- Holy Day or Shaving Day label -->
-          ${info.lunar.isHolyDay ? `
+          ${settings.holyDayMarkers && (info.lunar.isHolyDay || info.lunar.isShavingDay) ? `
             <div style="font-size: calc(15px * var(--font-scale)); font-weight: 500; color: var(--secondary); display: flex; align-items: center; gap: 8px;">
-              <img src="${holyDayLotus(info.lunar)}" style="width: 22px; height: 22px; object-fit: contain;" alt="" />
-              ${L.text('ui.thngai_sil_buddhist_holy_day.89de73', isKhmer)}
+              ${info.lunar.isHolyDay ? `
+                <img src="${holyDayLotus(info.lunar)}" style="width: 22px; height: 22px; object-fit: contain;" alt="" />
+                ${L.text('ui.thngai_sil_buddhist_holy_day.89de73', isKhmer)}
+              ` : `
+                <span style="width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: calc(17px * var(--font-scale)); line-height: 1;" aria-hidden="true">🙏</span>
+                ${L.text('ui.thngai_kaor_before_a_holy_day.d02977', isKhmer)}
+              `}
             </div>
-          ` : (info.lunar.isShavingDay ? `
-            <div style="font-size: calc(15px * var(--font-scale)); font-weight: 500; color: var(--secondary); display: flex; align-items: center; gap: 8px;">
-              <img src="${holyDayLotus(info.lunar)}" style="width: 22px; height: 22px; object-fit: contain;" alt="" />
-              ${L.text('ui.thngai_kaor_before_a_holy_day.d02977', isKhmer)}
-            </div>
-          ` : '')}
+          ` : ''}
 
           <!-- Gregorian Date & Western Zodiac -->
           <div style="display: flex; flex-direction: column; gap: 3px;">
@@ -200,6 +201,7 @@ export class EventDetailsDialogModal {
     const westernImg = Zodiac.getWesternDrawable(info.zodiac);
 
     let categoryDesc = '';
+    let isEngineCalculated = false;
     if (isCustom) {
       categoryDesc = L.text('ui.a_custom_event_saved_on_your_device.96d6e7', isKhmer);
     } else if (event.kind === 'HOLY_DAY') {
@@ -208,6 +210,7 @@ export class EventDetailsDialogModal {
       categoryDesc = L.text('ui.listed_in_cambodia_s_official_year_holiday_calendar.044398', isKhmer, { year: CalendarWords.number(parts[0], isKhmer) });
     } else {
       categoryDesc = L.text('events.engine_calculations', isKhmer);
+      isEngineCalculated = true;
     }
 
     this.overlay.innerHTML = `
@@ -261,7 +264,7 @@ export class EventDetailsDialogModal {
                 ${escapeHtml(isKhmer ? event.titleEn : event.titleKm)}
               </div>
             ` : ''}
-            ${categoryDesc ? `<div style="font-size: calc(13px * var(--font-scale)); line-height: 1.6; color: var(--on-surface-variant);">${categoryDesc}</div>` : ''}
+            ${categoryDesc ? `<div style="font-size: calc(${isEngineCalculated ? '12px' : '13px'} * var(--font-scale)); line-height: 1.6; color: var(--on-surface-variant);">${categoryDesc}</div>` : ''}
 
             ${(event.kind === 'HOLIDAY' && ((isKhmer ? event.citationKm : event.citationEn) || event.citation)) ? `
               <div class="event-citation" style="font-size: calc(12.5px * var(--font-scale)); line-height: 1.5; color: var(--on-surface-variant); margin-top: 2px;">

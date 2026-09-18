@@ -60,7 +60,7 @@
     "en": "Rooster"
   },
   "calendar.date_label": {
-    "km": "{weekday}, {day} {month}",
+    "km": "{weekday} {day} {month}",
     "en": "{weekday}, {day} {month}"
   },
   "calendar.full_date": {
@@ -68,7 +68,7 @@
     "en": "{lunar}\nYear of the {animal} · {sak}\nBuddhist Era {buddhist_year}"
   },
   "calendar.gregorian_label": {
-    "km": "{month} {day}, {year}",
+    "km": "{month} {day} {year}",
     "en": "{month} {day}, {year}"
   },
   "calendar.lunar_full": {

@@ -12,9 +12,16 @@ const { KhmerNewYear } = await server.ssrLoadModule('/src/domain/KhmerNewYear.ts
 const { RecurringEvents, calendarCatalog } = await server.ssrLoadModule('/src/data/RecurringEvents.ts');
 const { EventRepository } = await server.ssrLoadModule('/src/data/EventRepository.ts');
 const { holyDayLotus } = await server.ssrLoadModule('/src/ui/HolyDayLotus.ts');
+const { Storage, DEFAULT_SETTINGS } = await server.ssrLoadModule('/src/data/Storage.ts');
 
 const catalogBytes = await readFile(new URL('../src/data/khmer-calendar-data-0.3.3.json', import.meta.url));
-globalThis.localStorage = { getItem: () => null };
+const storageMap = new Map();
+globalThis.localStorage = {
+  getItem: k => storageMap.get(k) ?? null,
+  setItem: (k, v) => storageMap.set(k, String(v)),
+  removeItem: k => storageMap.delete(k),
+  clear: () => storageMap.clear()
+};
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 
 test('pinned engine corrects 2012 dates and separate animal/Sak transitions', () => {
@@ -335,6 +342,7 @@ test('event details dialog renders clean categories and descriptions without raw
   const kohKerHtml = modal.overlay.innerHTML;
   assert.ok(kohKerHtml.includes('ព្រឹត្តិការណ៍តាមការគណនា'));
   assert.ok(kohKerHtml.includes('ការគណនាប្រតិទិនធ្វើឡើងដោយ Khmer Calendar Engine។'));
+  assert.ok(kohKerHtml.includes('font-size: calc(12px * var(--font-scale))'), 'Engine calculations description should use 12px');
   assert.ok(kohKerHtml.includes('Koh Ker inscribed on the UNESCO World Heritage List'));
   assert.equal(kohKerHtml.includes('SHA-256'), false, 'Must not contain SHA-256');
   assert.equal(kohKerHtml.includes('calendar-events.tsv'), false, 'Must not contain calendar-events.tsv');
@@ -345,7 +353,7 @@ test('event details dialog renders clean categories and descriptions without raw
   const constDay = EventRepository.getYearEvents(2026).find(e => e.date === '2026-09-24' && e.kind === 'HOLIDAY');
   modal.open(constDay, true);
   const constHtml = modal.overlay.innerHTML;
-  assert.ok(constHtml.includes('ថ្ងៃព្រហស្បតិ៍, ២៤ ខែកញ្ញា ២០២៦'), 'Full Khmer date format matching Android');
+  assert.ok(constHtml.includes('ថ្ងៃព្រហស្បតិ៍ ២៤ ខែកញ្ញា ២០២៦'), 'Full Khmer date format matching Android');
   assert.ok(constHtml.includes('១៣កើត ខែភទ្របទ ឆ្នាំមមី អដ្ឋស័ក'), 'Lunar day, month, animal year, and sak');
   assert.ok(constHtml.includes('ថ្ងៃឈប់សម្រាក'));
   assert.ok(constHtml.includes('បានបញ្ជាក់ក្នុងប្រតិទិនថ្ងៃឈប់សម្រាកផ្លូវការ ឆ្នាំ២០២៦។'));
@@ -358,5 +366,62 @@ test('event details dialog renders clean categories and descriptions without raw
   assert.ok(titleEnIdx < verifiedIdx, 'English title must appear directly under holiday subtitle, before verified description');
   assert.equal(constHtml.includes('<a href='), false, 'Must not render clickable URL link in event details');
   assert.equal(constHtml.includes('SHA-256'), false);
+
+  // 3. Date Details Dialog: Shaving Day 🙏 vs Holy Day Lotus (enabled vs disabled)
+  const { DateDetailsDialogModal } = await server.ssrLoadModule('/src/ui/Modals.ts');
+  const dateModal = new DateDetailsDialogModal(() => {}, () => {});
+
+  // When holyDayMarkers is enabled (default):
+  Storage.saveSettings({ ...DEFAULT_SETTINGS, holyDayMarkers: true });
+
+  // 2026-09-25 is Shaving Day (Eve of Buddhist Holy Day)
+  dateModal.open('2026-09-25', [], false);
+  const shavingHtmlEn = dateModal.overlay.innerHTML;
+  assert.ok(shavingHtmlEn.includes('🙏'), 'Shaving day must display prayer icon 🙏');
+  assert.ok(shavingHtmlEn.includes('Shaving Day · Eve of Buddhist Holy Day'));
+  assert.equal(shavingHtmlEn.includes('holy_day_lotus'), false, 'Shaving day must NOT display lotus image');
+
+  dateModal.open('2026-09-25', [], true);
+  const shavingHtmlKm = dateModal.overlay.innerHTML;
+  assert.ok(shavingHtmlKm.includes('🙏'), 'Shaving day in Khmer must display prayer icon 🙏');
+  assert.ok(shavingHtmlKm.includes('ថ្ងៃកោរ'));
+  assert.equal(shavingHtmlKm.includes('holy_day_lotus'), false, 'Shaving day must NOT display lotus image');
+
+  // 2026-09-26 is Holy Day
+  dateModal.open('2026-09-26', [], false);
+  const holyHtmlEn = dateModal.overlay.innerHTML;
+  assert.ok(holyHtmlEn.includes('holy_day_lotus_blossom.png'), 'Holy day must display lotus image');
+  assert.ok(holyHtmlEn.includes('Buddhist Holy Day'));
+  assert.equal(holyHtmlEn.includes('🙏'), false, 'Holy day must NOT display prayer icon 🙏');
+
+  // When holyDayMarkers is disabled:
+  Storage.saveSettings({ ...DEFAULT_SETTINGS, holyDayMarkers: false });
+
+  // Shaving Day must NOT show 🙏 or shaving day label
+  dateModal.open('2026-09-25', [], false);
+  const disabledShavingHtmlEn = dateModal.overlay.innerHTML;
+  assert.equal(disabledShavingHtmlEn.includes('🙏'), false, 'Disabled holyDayMarkers must not show 🙏 on shaving day');
+  assert.equal(disabledShavingHtmlEn.includes('Eve of Buddhist Holy Day'), false, 'Disabled holyDayMarkers must not show shaving day label');
+
+  dateModal.open('2026-09-25', [], true);
+  const disabledShavingHtmlKm = dateModal.overlay.innerHTML;
+  assert.equal(disabledShavingHtmlKm.includes('🙏'), false, 'Disabled holyDayMarkers must not show 🙏 on shaving day');
+  assert.equal(disabledShavingHtmlKm.includes('ថ្ងៃកោរ'), false, 'Disabled holyDayMarkers must not show ថ្ងៃកោរ text');
+
+  // Holy Day must NOT show lotus or holy day label
+  dateModal.open('2026-09-26', [], false);
+  const disabledHolyHtmlEn = dateModal.overlay.innerHTML;
+  assert.equal(disabledHolyHtmlEn.includes('holy_day_lotus'), false, 'Disabled holyDayMarkers must not show lotus on holy day');
+  assert.equal(disabledHolyHtmlEn.includes('Buddhist Holy Day'), false, 'Disabled holyDayMarkers must not show Buddhist Holy Day text');
+
+  dateModal.open('2026-09-26', [], true);
+  const disabledHolyHtmlKm = dateModal.overlay.innerHTML;
+  assert.equal(disabledHolyHtmlKm.includes('holy_day_lotus'), false, 'Disabled holyDayMarkers must not show lotus on holy day');
+  assert.equal(disabledHolyHtmlKm.includes('ថ្ងៃសីល'), false, 'Disabled holyDayMarkers must not show ថ្ងៃសីល text');
+
+  // Cleanup settings
+  Storage.saveSettings(DEFAULT_SETTINGS);
 });
+
+
 

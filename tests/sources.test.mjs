@@ -232,7 +232,7 @@ function createMockDom() {
   };
 }
 
-test('sources dialog renders archive credit and opens copyable URL dialog', async () => {
+test('sources dialog omits retired archive credit and renders official government websites credit and copies all URLs', async () => {
   const dom = createMockDom();
 
   // Open English Sources Dialog
@@ -240,21 +240,35 @@ test('sources dialog renders archive credit and opens copyable URL dialog', asyn
   const sourcesDialog = dom.body.querySelector('.sources-dialog');
   assert.ok(sourcesDialog, 'sources dialog should be rendered');
 
-  // Archive credit paragraph
+  // Archive credit should no longer exist
   const archiveLink = dom.body.querySelector('[data-url-source="archive"]');
-  assert.ok(archiveLink, 'archive source link should exist');
-  assert.equal(archiveLink.textContent, 'Khmer Lunar Calendar');
+  assert.equal(archiveLink, null, 'archive source link must be removed from sources dialog');
+  assert.equal(
+    sourcesDialog.textContent.includes('Khmer Lunar Calendar records'),
+    false,
+    'archive credit text must be omitted'
+  );
 
-  // Click archive source link
+  // Holiday government publications link
+  const holidayLink = dom.body.querySelector('[data-url-source="holiday"]');
+  assert.ok(holidayLink, 'holiday source link should exist');
+  assert.equal(holidayLink.textContent, 'official government publications');
+
+  // Click holiday source link
   const clickEvent = new Event('click');
   clickEvent.preventDefault = () => {};
-  archiveLink.dispatchEvent(clickEvent);
+  holidayLink.dispatchEvent(clickEvent);
 
-  // URL dialog should be open
+  // URL dialog should appear
   const urlDialog = dom.body.querySelector('.source-url-dialog');
   assert.ok(urlDialog, 'URL dialog should appear');
-  assert.equal(dom.body.querySelector('.source-url-title')?.textContent, 'Khmer Lunar Calendar');
-  assert.equal(dom.body.querySelector('.source-url-text')?.textContent, 'https://khmer-lunar-calendar.com/');
+  assert.equal(dom.body.querySelector('.source-url-title')?.textContent, 'Official government websites');
+  const urlTexts = dom.body.querySelectorAll('.source-url-text').map(el => el.textContent);
+  assert.deepEqual(urlTexts, [
+    'https://library.ncdd.gov.kh/',
+    'https://www.ocm.gov.kh/',
+    'https://www.nbc.gov.kh/'
+  ]);
 
   // Copy button
   const copyBtn = dom.body.querySelector('.source-url-copy');
@@ -263,10 +277,13 @@ test('sources dialog renders archive credit and opens copyable URL dialog', asyn
 
   copyBtn.dispatchEvent(new Event('click'));
   await new Promise(r => setTimeout(r, 10));
-  assert.equal(dom.getClipboard(), 'https://khmer-lunar-calendar.com/');
+  assert.equal(dom.getClipboard(), [
+    'https://library.ncdd.gov.kh/',
+    'https://www.ocm.gov.kh/',
+    'https://www.nbc.gov.kh/'
+  ].join('\n'));
   assert.equal(dom.body.querySelector('.source-url-dialog'), null, 'URL dialog should close after copying');
 
-  // Close main sources dialog
   closeSources();
   assert.equal(dom.body.querySelector('.sources-dialog'), null, 'Sources dialog should be closed');
 });
@@ -279,18 +296,22 @@ test('sources dialog works in Khmer and close button dismisses URL dialog', () =
   const sourcesDialog = dom.body.querySelector('.sources-dialog');
   assert.ok(sourcesDialog, 'sources dialog should be rendered in Khmer');
 
+  // Archive credit should no longer exist in Khmer dialog
   const archiveLink = dom.body.querySelector('[data-url-source="archive"]');
-  assert.ok(archiveLink, 'Khmer archive link should exist');
-  assert.equal(archiveLink.textContent, 'ប្រតិទិនចន្ទគតិខ្មែរ');
+  assert.equal(archiveLink, null, 'Khmer archive link must be removed from sources dialog');
 
-  // Click archive link
+  const holidayLink = dom.body.querySelector('[data-url-source="holiday"]');
+  assert.ok(holidayLink, 'Khmer holiday link should exist');
+  assert.equal(holidayLink.textContent, 'ឯកសារផ្លូវការរបស់រដ្ឋ');
+
+  // Click holiday link
   const clickEvent = new Event('click');
   clickEvent.preventDefault = () => {};
-  archiveLink.dispatchEvent(clickEvent);
+  holidayLink.dispatchEvent(clickEvent);
 
   const urlDialog = dom.body.querySelector('.source-url-dialog');
   assert.ok(urlDialog, 'URL dialog should appear');
-  assert.equal(dom.body.querySelector('.source-url-title')?.textContent, 'ប្រតិទិនចន្ទគតិខ្មែរ');
+  assert.equal(dom.body.querySelector('.source-url-title')?.textContent, 'គេហទំព័រផ្លូវការរបស់រដ្ឋាភិបាល');
   assert.equal(dom.body.querySelector('.source-url-copy')?.textContent, 'ចម្លង');
   assert.equal(dom.body.querySelector('.source-url-close')?.textContent, 'បិទ');
 
@@ -298,42 +319,6 @@ test('sources dialog works in Khmer and close button dismisses URL dialog', () =
   const closeBtn = dom.body.querySelector('.source-url-close');
   closeBtn.dispatchEvent(new Event('click'));
   assert.equal(dom.body.querySelector('.source-url-dialog'), null, 'Close button should dismiss URL dialog');
-
-  closeSources();
-});
-
-test('sources dialog renders official government websites credit and copies all URLs', async () => {
-  const dom = createMockDom();
-
-  const closeSources = showCalendarSources(false);
-  const holidayLink = dom.body.querySelector('[data-url-source="holiday"]');
-  assert.ok(holidayLink, 'holiday source link should exist');
-  assert.equal(holidayLink.textContent, 'official government publications');
-
-  // Click holiday source link
-  const clickEvent = new Event('click');
-  clickEvent.preventDefault = () => {};
-  holidayLink.dispatchEvent(clickEvent);
-
-  const urlDialog = dom.body.querySelector('.source-url-dialog');
-  assert.ok(urlDialog, 'URL dialog should appear');
-  assert.equal(dom.body.querySelector('.source-url-title')?.textContent, 'Official government websites');
-  const urlTexts = dom.body.querySelectorAll('.source-url-text').map(el => el.textContent);
-  assert.deepEqual(urlTexts, [
-    'https://library.ncdd.gov.kh/',
-    'https://www.ocm.gov.kh/',
-    'https://www.nbc.gov.kh/'
-  ]);
-
-  const copyBtn = dom.body.querySelector('.source-url-copy');
-  copyBtn.dispatchEvent(new Event('click'));
-  await new Promise(r => setTimeout(r, 10));
-  assert.equal(dom.getClipboard(), [
-    'https://library.ncdd.gov.kh/',
-    'https://www.ocm.gov.kh/',
-    'https://www.nbc.gov.kh/'
-  ].join('\n'));
-  assert.equal(dom.body.querySelector('.source-url-dialog'), null);
 
   closeSources();
 });

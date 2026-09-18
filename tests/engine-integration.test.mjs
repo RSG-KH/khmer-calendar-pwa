@@ -13,12 +13,12 @@ const { RecurringEvents, calendarCatalog } = await server.ssrLoadModule('/src/da
 const { EventRepository } = await server.ssrLoadModule('/src/data/EventRepository.ts');
 const { holyDayLotus } = await server.ssrLoadModule('/src/ui/HolyDayLotus.ts');
 
-const catalogBytes = await readFile(new URL('../src/data/khmer-calendar-data-0.2.0.json', import.meta.url));
+const catalogBytes = await readFile(new URL('../src/data/khmer-calendar-data-0.3.0.json', import.meta.url));
 globalThis.localStorage = { getItem: () => null };
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 
 test('pinned engine corrects 2012 dates and separate animal/Sak transitions', () => {
-  assert.equal(calendarEngine.version, '0.1.0');
+  assert.equal(calendarEngine.version, '0.2.0');
   assert.deepEqual(KhmerNewYear.forYear(2012).dates, ['2012-04-13', '2012-04-14', '2012-04-15']);
   const dates = [12, 13, 14, 15].map(day => KhmerDateDetails.fromGregorian(2012, 4, day));
   assert.equal(dates[1].animalYear, (dates[0].animalYear + 1) % 12);
@@ -51,7 +51,7 @@ test('second Asadh, festival offsets, weekday occurrence and anniversary rules s
   assert.ok(!RecurringEvents.forYear(1999).some(e => e.id === victory.id));
 });
 
-test('all 100 app definitions yield 27,040 unique in-year occurrences across 401 years', () => {
+test('all 109 app definitions yield 29,251 unique in-year occurrences across 401 years', () => {
   let count = 0;
   const families = new Set();
   for (let year = 1800; year <= 2200; year++) {
@@ -67,27 +67,36 @@ test('all 100 app definitions yield 27,040 unique in-year occurrences across 401
     assert.equal(result.dates.length, result.days);
     assert.equal(result.startDate, result.dates[0]);
   }
-  assert.equal(count, 27040);
-  assert.equal(families.size, 6);
+  assert.equal(count, 29251);
+  assert.equal(families.size, 7);
 });
 
 test('canonical Schema v2 catalog integrity and checksum match specification', () => {
-  assert.equal(sha(catalogBytes), '9d01663899a08b3f6a400440a81d562978cd0a24e2f7957ded51d6486f28db0f');
+  assert.equal(sha(catalogBytes), '79bd1fc9e3db227083676c480cdc09ecda1c38974911f21c5541933df628721a');
   assert.equal(calendarCatalog.schemaVersion, 2);
-  assert.equal(calendarCatalog.dataVersion, '0.2.0');
+  assert.equal(calendarCatalog.dataVersion, '0.3.0');
   assert.equal(calendarCatalog.events.length, 124);
 
   const recurring = calendarCatalog.events.filter(e => e.rule);
   const staticEvents = calendarCatalog.events.filter(e => e.dates);
-  assert.equal(recurring.length, 100);
-  assert.equal(staticEvents.length, 24);
-  assert.equal(staticEvents.filter(e => e.kind === 'traditional').length, 9);
+  assert.equal(recurring.length, 109);
+  assert.equal(staticEvents.length, 15);
+  assert.equal(staticEvents.filter(e => e.kind === 'traditional').length, 0);
   assert.equal(staticEvents.filter(e => e.kind === 'historical').length, 15);
 
   assert.equal(calendarCatalog.holidayCalendars.length, 8);
   assert.deepEqual(calendarCatalog.holidayCalendars.map(c => c.year), [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027]);
-  assert.equal(calendarCatalog.overrides.length, 15);
-  assert.deepEqual(calendarCatalog.overrides.map(o => o.year), Array.from({ length: 15 }, (_, i) => 2005 + i));
+  assert.equal(calendarCatalog.overrides.length, 18);
+  const sihamoniOverrides = calendarCatalog.overrides.filter(o => o.eventId === 'king_sihamoni_birthday');
+  assert.equal(sihamoniOverrides.length, 15);
+  assert.deepEqual(sihamoniOverrides.map(o => o.year), Array.from({ length: 15 }, (_, i) => 2005 + i));
+  const chineseOverrides = calendarCatalog.overrides.filter(o => o.eventId.startsWith('chinese_'));
+  assert.equal(chineseOverrides.length, 3);
+  assert.deepEqual(chineseOverrides.map(o => ({ eventId: o.eventId, year: o.year })), [
+    { eventId: 'chinese_qingming_festival', year: 2009 },
+    { eventId: 'chinese_qingming_festival', year: 2029 },
+    { eventId: 'chinese_zongzi_festival', year: 2013 }
+  ]);
   assert.equal(calendarCatalog.sources.length, 11);
   assert.equal(calendarCatalog.eventCalendars.length, 0);
 });
@@ -98,7 +107,23 @@ test('static date-backed events match their exact dates across 2000-2030', () =>
   assert.ok(chinese2000.length >= 8);
   assert.equal(chinese2000.find(e => e.id === 'chinese_kitchen_god_festival')?.date, '2000-01-30');
   assert.equal(chinese2000.find(e => e.id === 'chinese_new_year_eve')?.date, '2000-02-04');
-  assert.ok(chinese2000.every(e => e.basis === 'recorded'));
+  assert.ok(chinese2000.every(e => e.basis === 'calculated'));
+
+  // Chinese festival overrides
+  const y2009 = EventRepository.getYearEvents(2009);
+  const qingming2009 = y2009.find(e => e.id === 'chinese_qingming_festival');
+  assert.equal(qingming2009?.date, '2009-04-05');
+  assert.equal(qingming2009?.basis, 'corrected');
+
+  const y2029 = EventRepository.getYearEvents(2029);
+  const qingming2029 = y2029.find(e => e.id === 'chinese_qingming_festival');
+  assert.equal(qingming2029?.date, '2029-04-05');
+  assert.equal(qingming2029?.basis, 'corrected');
+
+  const y2013 = EventRepository.getYearEvents(2013);
+  const zongzi2013 = y2013.find(e => e.id === 'chinese_zongzi_festival');
+  assert.equal(zongzi2013?.date, '2013-06-13');
+  assert.equal(zongzi2013?.basis, 'corrected');
 
   // UNESCO milestone dates
   const y2008 = EventRepository.getYearEvents(2008);

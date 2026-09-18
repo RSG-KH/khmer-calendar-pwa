@@ -73,14 +73,6 @@ export function showCalendarSources(k: boolean): () => void {
     ? escapeHtml(holidayText)
     : `${escapeHtml(holidayText.slice(0, holidayIndex))}<a href="https://www.ocm.gov.kh/" class="source-url-link" data-url-source="holiday">${escapeHtml(holidayName)}</a>${escapeHtml(holidayText.slice(holidayIndex + holidayName.length))}`;
 
-  const archiveText = L.text('about.event_archive_source', k);
-  const archiveName = k ? 'ប្រតិទិនចន្ទគតិខ្មែរ' : 'Khmer Lunar Calendar';
-  const archiveUrl = 'https://khmer-lunar-calendar.com/';
-  const archiveIndex = archiveText.indexOf(archiveName);
-  const archiveDescription = archiveIndex < 0
-    ? escapeHtml(archiveText)
-    : `${escapeHtml(archiveText.slice(0, archiveIndex))}<a href="${archiveUrl}" class="source-url-link" data-url-source="archive">${escapeHtml(archiveName)}</a>${escapeHtml(archiveText.slice(archiveIndex + archiveName.length))}`;
-
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.innerHTML = `
@@ -90,7 +82,6 @@ export function showCalendarSources(k: boolean): () => void {
         <p class="sources-update">${text('ui.new_event_years_and_corrections_are_delivered_through_a.a6af2d')}</p>
         <p>${text('rules.source_summary')}</p>
         <p>${holidayDescription}</p>
-        <p>${archiveDescription}</p>
         <p>${engineDescription}</p>
         <details class="source-licenses">
           <summary>${text('ui.open_source_license.ab00af')}</summary>
@@ -118,11 +109,6 @@ export function showCalendarSources(k: boolean): () => void {
     event.preventDefault();
     childClose?.();
     childClose = showUrlDialog(holidayTitle, holidayUrls, k);
-  });
-  overlay.querySelector('[data-url-source="archive"]')?.addEventListener('click', event => {
-    event.preventDefault();
-    childClose?.();
-    childClose = showUrlDialog(archiveName, archiveUrl, k);
   });
   overlay.addEventListener('click', event => { if (event.target === overlay) close(); });
   document.body.appendChild(overlay);

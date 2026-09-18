@@ -7,7 +7,8 @@
 [![Deploy to GitHub Pages](https://github.com/RSG-KH/khmer-calendar-pwa/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/RSG-KH/khmer-calendar-pwa/actions/workflows/deploy-pages.yml)
 [![License: Apache-2.0](https://img.shields.io/github/license/RSG-KH/khmer-calendar-pwa?color=blue)](LICENSE)
 [![PWA · offline-first](https://img.shields.io/badge/PWA-offline--first-5a0fc8)](https://rsg-kh.github.io/khmer-calendar-pwa/)
-[![Engine 0.1.0](https://img.shields.io/badge/engine-khmer--calendar--engine%200.1.0-2b8a3e)](https://github.com/RSG-KH/khmer-calendar-engine)
+[![Engine 0.2.0](https://img.shields.io/badge/engine-khmer--calendar--engine%200.2.0-2b8a3e)](https://github.com/RSG-KH/khmer-calendar-engine)
+[![Catalog 0.3.0](https://img.shields.io/badge/catalog-khmer--calendar--manager%200.3.0-0366d6)](https://github.com/RSG-KH/khmer-calendar-manager)
 
 Khmer lunar dates, Buddhist holy days, Cambodian holidays and your own events, in Khmer and English. Made for phones, tablets and desktops, with an interface inspired by iOS.
 

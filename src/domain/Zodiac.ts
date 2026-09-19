@@ -12,7 +12,7 @@ export interface ZodiacSign {
 
 export const ZODIAC_SIGNS: Record<string, ZodiacSign> = {
   "ARIES": {
-    "symbol": "♈︎",
+    "symbol": "♈️",
     "signName": "Aries",
     "element": "Fire",
     "planet": "Mars",
@@ -21,7 +21,7 @@ export const ZODIAC_SIGNS: Record<string, ZodiacSign> = {
     "planetKm": "ព្រះអង្គារ"
   },
   "TAURUS": {
-    "symbol": "♉︎",
+    "symbol": "♉️",
     "signName": "Taurus",
     "element": "Earth",
     "planet": "Venus",
@@ -30,7 +30,7 @@ export const ZODIAC_SIGNS: Record<string, ZodiacSign> = {
     "planetKm": "ព្រះសុក្រ"
   },
   "GEMINI": {
-    "symbol": "♊︎",
+    "symbol": "♊️",
     "signName": "Gemini",
     "element": "Air",
     "planet": "Mercury",
@@ -39,7 +39,7 @@ export const ZODIAC_SIGNS: Record<string, ZodiacSign> = {
     "planetKm": "ព្រះពុធ"
   },
   "CANCER": {
-    "symbol": "♋︎",
+    "symbol": "♋️",
     "signName": "Cancer",
     "element": "Water",
     "planet": "Moon",
@@ -48,7 +48,7 @@ export const ZODIAC_SIGNS: Record<string, ZodiacSign> = {
     "planetKm": "ព្រះច័ន្ទ"
   },
   "LEO": {
-    "symbol": "♌︎",
+    "symbol": "♌️",
     "signName": "Leo",
     "element": "Fire",
     "planet": "Sun",
@@ -57,7 +57,7 @@ export const ZODIAC_SIGNS: Record<string, ZodiacSign> = {
     "planetKm": "ព្រះអាទិត្យ"
   },
   "VIRGO": {
-    "symbol": "♍︎",
+    "symbol": "♍️",
     "signName": "Virgo",
     "element": "Earth",
     "planet": "Mercury",
@@ -66,7 +66,7 @@ export const ZODIAC_SIGNS: Record<string, ZodiacSign> = {
     "planetKm": "ព្រះពុធ"
   },
   "LIBRA": {
-    "symbol": "♎︎",
+    "symbol": "♎️",
     "signName": "Libra",
     "element": "Air",
     "planet": "Venus",
@@ -75,7 +75,7 @@ export const ZODIAC_SIGNS: Record<string, ZodiacSign> = {
     "planetKm": "ព្រះសុក្រ"
   },
   "SCORPIO": {
-    "symbol": "♏︎",
+    "symbol": "♏️",
     "signName": "Scorpio",
     "element": "Water",
     "planet": "Pluto",
@@ -84,7 +84,7 @@ export const ZODIAC_SIGNS: Record<string, ZodiacSign> = {
     "planetKm": "ភ្លុយតូ"
   },
   "SAGITTARIUS": {
-    "symbol": "♐︎",
+    "symbol": "♐️",
     "signName": "Sagittarius",
     "element": "Fire",
     "planet": "Jupiter",
@@ -93,7 +93,7 @@ export const ZODIAC_SIGNS: Record<string, ZodiacSign> = {
     "planetKm": "ព្រះព្រហស្បតិ៍"
   },
   "CAPRICORN": {
-    "symbol": "♑︎",
+    "symbol": "♑️",
     "signName": "Capricorn",
     "element": "Earth",
     "planet": "Saturn",
@@ -102,7 +102,7 @@ export const ZODIAC_SIGNS: Record<string, ZodiacSign> = {
     "planetKm": "ព្រះសៅរ៍"
   },
   "AQUARIUS": {
-    "symbol": "♒︎",
+    "symbol": "♒️",
     "signName": "Aquarius",
     "element": "Air",
     "planet": "Uranus",
@@ -111,7 +111,7 @@ export const ZODIAC_SIGNS: Record<string, ZodiacSign> = {
     "planetKm": "អ៊ុយរ៉ានុស"
   },
   "PISCES": {
-    "symbol": "♓︎",
+    "symbol": "♓️",
     "signName": "Pisces",
     "element": "Water",
     "planet": "Neptune",
@@ -138,6 +138,13 @@ export class Zodiac {
       case 12: return day <= 21 ? ZODIAC_SIGNS.SAGITTARIUS : ZODIAC_SIGNS.CAPRICORN;
       default: return ZODIAC_SIGNS.CAPRICORN;
     }
+  }
+
+  static labelWithoutSymbol(sign: ZodiacSign, khmer: boolean): string {
+    if (khmer && sign.signNameKm) {
+      return `${sign.signNameKm} (${sign.elementKm} · ${sign.planetKm})`;
+    }
+    return `${sign.signName} (${sign.element} · ${sign.planet})`;
   }
 
   static label(sign: ZodiacSign, khmer: boolean): string {

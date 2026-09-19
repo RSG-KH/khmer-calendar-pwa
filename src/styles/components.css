@@ -321,9 +321,11 @@
 
 /* Card Horizontal Divider */
 .card-divider {
-  height: 1px;
-  background: var(--outline-variant);
+  height: 0;
+  border: none;
+  border-top: 1px solid var(--outline-variant);
   margin: 10px 8px 8px 8px;
+  flex-shrink: 0;
 }
 
 /* Card Legend Row */
@@ -354,7 +356,7 @@
   background: var(--bg-surface);
   border-radius: 16px;
   border: 1px solid var(--outline);
-  padding: 10px 14px;
+  padding: 8px 14px;
   margin-top: 8px;
   display: flex;
   align-items: center;

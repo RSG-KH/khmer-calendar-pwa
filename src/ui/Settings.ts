@@ -18,7 +18,7 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
   if (!fontScales.includes(settings.fontScale)) fontScales.push(settings.fontScale);
   const installUrl = 'https://rsg-kh.github.io/khmer-calendar-pwa/';
   const installLink = `<a class="about-install-link" href="${installUrl}" target="_blank" rel="noopener noreferrer">${text('app.name')}</a>`;
-  const toggle = (key: 'mondayFirst' | 'showCopyButtons' | 'highlightSunday' | 'showLunar' | 'holyDayMarkers' | 'showHolyDaysInEvents' | 'backgroundAccent' | 'showLongerWeekdayNames' | 'highlightWeekdayNames', title: string, subtitle: string) => `
+  const toggle = (key: 'mondayFirst' | 'showCopyButtons' | 'highlightSunday' | 'showLunar' | 'holyDayMarkers' | 'showHolyDaysInEvents' | 'backgroundAccent' | 'showLongerWeekdayNames' | 'highlightWeekdayNames' | 'showWesternZodiac', title: string, subtitle: string) => `
     <label class="settings-row" for="setting-${key}">
       <span class="settings-text-col"><span class="settings-title">${text(title)}</span><span class="settings-subtitle">${text(subtitle)}</span></span>
       <input class="settings-switch" type="checkbox" role="switch" id="setting-${key}" data-setting="${key}" ${settings[key] ? 'checked' : ''} />
@@ -69,6 +69,7 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
         ${toggle('showLunar', 'ui.lunar_dates_in_calendar.4dffed', 'ui.koeut_and_roach_under_each_date.f23bd7')}
         ${toggle('holyDayMarkers', 'ui.buddhist_holy_days_in_calendar.d1e9b6', 'ui.show_lotus_markers_and_holy_days.c9d0bc')}
         ${toggle('showHolyDaysInEvents', 'ui.buddhist_holy_days_in_events.53e502', 'ui.show_in_the_events_list_and_filters.425758')}
+        ${toggle('showWesternZodiac', 'ui.show_western_zodiac', 'ui.show_western_zodiac_subtitle')}
         ${toggle('mondayFirst', 'ui.start_week_on_monday.5578c3', 'ui.sunday_when_turned_off.e40816')}
       </section>
       <h2 class="section-label">${k ? 'ការជូនដំណឹង' : 'Notifications'}</h2>
@@ -78,7 +79,7 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
       <h2 class="section-label">${text('ui.for_everyone.b68901')}</h2>
       <section class="settings-card about-card">
         <h3 class="settings-title">${text('ui.free_ad_free_yours.885c91')}</h3>
-        <p class="settings-subtitle">${k ? 'មិនត្រូវការគណនី មិនប្រមូលទិន្នន័យ។ មានតែប្រតិទិនរបស់អ្នក និងថ្ងៃសំខាន់ៗ។ អាចប្រើក្រៅបណ្ដាញបាន បន្ទាប់ពីបើកប្រើលើកដំបូងជាមួយអ៊ីនធឺណិត និងរង់ចាំឱ្យផ្ទុកពេញលេញ។' : 'No account, no data collection. Just your calendar and the dates that matter. Works offline after the first full online load.'}</p>
+        <p class="settings-subtitle">${k ? 'មិនត្រូវការគណនី មិនប្រមូលទិន្នន័យ មានតែប្រតិទិន និងថ្ងៃសំខាន់ៗរបស់អ្នក។ អាចប្រើបានដោយមិនបាច់មានអ៊ីនធឺណិត បន្ទាប់ពីផ្ទុកទិន្នន័យពេញលេញលើកដំបូង។' : 'No account, no data collection, just your calendar and the dates that matter. Works offline after the first full online load.'}</p>
         <p class="settings-subtitle">${k ? `ដើម្បីដំឡើង សូមបើក ${installLink} ក្នុង Safari រួចជ្រើសរើស “Add to Home Screen” (iOS/iPadOS) ឬ “Add to Dock” (macOS 14+) ហើយជាចុងក្រោយ បើកកម្មវិធី ${text('app.name')} ពី Home Screen ឬ Dock។` : `To install, open ${installLink} in Safari and choose “Add to Home Screen” (iOS/iPadOS) or “Add to Dock” (macOS 14+), and finally, open ${text('app.name')} from the Home Screen or Dock.`}</p>
         <button class="about-sources">${text('ui.calendar_sources_licenses.c2bdb3')}</button>
         <div class="about-credits settings-subtitle">

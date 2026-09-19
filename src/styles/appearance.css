@@ -106,7 +106,7 @@ svg { flex-shrink: 0; }
 .date-summary-zodiac { font-size: calc(12px * var(--font-scale)); font-weight: 500; color: var(--accent); }
 .date-summary-right { flex: 0 1 40%; }
 .events-list-container { gap: 0; background: var(--bg-surface); border-radius: 18px; overflow: hidden; }
-.event-row-card { border: 0; border-radius: 0; margin: 0; padding: 13px 14px; min-height: 68px; text-align: left; }
+.event-row-card { border: 0; border-radius: 0; margin: 0; padding: 10.5px 14px; min-height: 58px; text-align: left; }
 .event-row-card + .event-row-card { border-top: 1px solid var(--outline); }
 .event-row-daynum { line-height: 1.4; }
 .event-row-weekday { line-height: 1.5; }
@@ -258,7 +258,7 @@ svg { flex-shrink: 0; }
 .month-picker-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .month-picker-cell { min-height: 52px; border: 0; border-radius: 12px; background: var(--bg-surface-variant); color: var(--text-primary); text-align: center; font-size: calc(14px * var(--font-scale)); cursor: pointer; }
 .month-picker-cell.active { background: var(--accent); color: var(--on-accent); }
-.dialog-event-item { border: 0; font-family: inherit; text-align: left; }
+.dialog-event-item { border: 0; font-family: inherit; text-align: left; padding: 6.5px 10px; }
 .form-error { color: var(--tertiary); font-size: calc(13px * var(--font-scale)); line-height: 1.7; }
 .event-delete-confirmation { margin-top: 24px; }
 .event-delete-confirmation .form-error { font-size: calc(14px * var(--font-scale)); font-weight: 500; }

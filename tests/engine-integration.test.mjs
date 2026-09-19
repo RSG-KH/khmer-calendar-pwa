@@ -14,7 +14,7 @@ const { EventRepository } = await server.ssrLoadModule('/src/data/EventRepositor
 const { holyDayLotus } = await server.ssrLoadModule('/src/ui/HolyDayLotus.ts');
 const { Storage, DEFAULT_SETTINGS } = await server.ssrLoadModule('/src/data/Storage.ts');
 
-const catalogBytes = await readFile(new URL('../src/data/khmer-calendar-data-0.3.3.json', import.meta.url));
+const catalogBytes = await readFile(new URL('../src/data/khmer-calendar-data-0.4.0.json', import.meta.url));
 const storageMap = new Map();
 globalThis.localStorage = {
   getItem: k => storageMap.get(k) ?? null,
@@ -25,7 +25,7 @@ globalThis.localStorage = {
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 
 test('pinned engine corrects 2012 dates and separate animal/Sak transitions', () => {
-  assert.equal(calendarEngine.version, '0.2.0');
+  assert.equal(calendarEngine.version, '0.3.0');
   assert.deepEqual(KhmerNewYear.forYear(2012).dates, ['2012-04-13', '2012-04-14', '2012-04-15']);
   const dates = [12, 13, 14, 15].map(day => KhmerDateDetails.fromGregorian(2012, 4, day));
   assert.equal(dates[1].animalYear, (dates[0].animalYear + 1) % 12);
@@ -79,10 +79,10 @@ test('all 111 app definitions yield 30,371 unique in-year occurrences across 401
   assert.equal(families.size, 7);
 });
 
-test('canonical Schema v2 catalog integrity and checksum match specification', () => {
-  assert.equal(sha(catalogBytes), '8228bff39dfd29f45e64f34eec020c572c13642c35a9ad2359f3ba5822cc95b1');
-  assert.equal(calendarCatalog.schemaVersion, 2);
-  assert.equal(calendarCatalog.dataVersion, '0.3.3');
+test('canonical Schema v3 catalog integrity and checksum match specification', () => {
+  assert.equal(sha(catalogBytes), 'a78df643d602e5ee1e2788139d2254ebc32ee07a64012de79715932441ed53a8');
+  assert.equal(calendarCatalog.schemaVersion, 3);
+  assert.equal(calendarCatalog.dataVersion, '0.4.0');
   assert.equal(calendarCatalog.events.length, 137);
 
   const recurring = calendarCatalog.events.filter(e => e.rule);
@@ -105,8 +105,16 @@ test('canonical Schema v2 catalog integrity and checksum match specification', (
     { eventId: 'chinese_qingming_festival', year: 2029 },
     { eventId: 'chinese_zongzi_festival', year: 2013 }
   ]);
-  assert.equal(calendarCatalog.sources.length, 16);
+  assert.equal(calendarCatalog.sources.length, 46);
   assert.equal(calendarCatalog.eventCalendars.length, 0);
+
+  // Schema v3 verified newYearArrivals catalog
+  assert.ok(calendarCatalog.newYearArrivals);
+  assert.equal(calendarCatalog.newYearArrivals.length, 19);
+  assert.deepEqual(
+    calendarCatalog.newYearArrivals.map(a => a.year),
+    [1997, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026]
+  );
 });
 
 test('static date-backed events match their exact dates across 2000-2030', () => {
@@ -218,13 +226,32 @@ test('all 12 official government holiday calendars (2016–2027) apply public ho
     }
   }
 
-  // Verify multi-day holidays have day-specific names applied
+  // Verify multi-day holidays have day-specific names applied and Moha Sangkran has natural arrival time
   const kny2026 = EventRepository.getYearEvents(2026).filter(e => e.id.startsWith('khmer_new_year'));
   assert.equal(kny2026.length, 3);
-  assert.equal(kny2026[0].titleEn, 'Khmer New Year - Moha Sankranta at 10:48 AM');
+  assert.equal(kny2026[0].titleEn, 'Khmer New Year – Moha Sankranta 10:48 AM (Official time)');
+  assert.equal(kny2026[0].titleKm, 'ពិធី​បុណ្យ​ចូល​ឆ្នាំ​ថ្មី ប្រពៃណី​ជាតិ – មហា​សង្ក្រាន្ត ម៉ោង ១០:៤៨ ព្រឹក (ម៉ោងផ្លូវការ)');
   assert.equal(kny2026[1].titleEn, 'Khmer New Year - Veareak Vanabat');
   assert.equal(kny2026[2].titleEn, 'Khmer New Year - Veareak Laeung Sak');
-  assert.ok(kny2026[0].titleKm.includes('១០:៤៨ AM'));
+
+  // Verify Moha Sangkran arrival time across benchmark years (evidenced TVK vs engine estimate)
+  const kny1997 = EventRepository.getYearEvents(1997).find(e => e.id === 'khmer_new_year_1');
+  assert.equal(kny1997.titleEn, 'Khmer New Year – Moha Sankranta 10:48 PM (Official time)');
+  assert.equal(kny1997.titleKm, 'ពិធី​បុណ្យ​ចូល​ឆ្នាំ​ថ្មី ប្រពៃណី​ជាតិ – មហា​សង្ក្រាន្ត ម៉ោង ១០:៤៨ យប់ (ម៉ោងផ្លូវការ)');
+  assert.ok(kny1997.sourceIds.includes('arrival-tvk-playlist'));
+
+  const kny2024 = EventRepository.getYearEvents(2024).find(e => e.id === 'khmer_new_year_1');
+  assert.equal(kny2024.titleEn, 'Khmer New Year – Moha Sankranta 10:17:24 PM (Official time)');
+  assert.equal(kny2024.titleKm, 'ពិធី​បុណ្យ​ចូល​ឆ្នាំ​ថ្មី ប្រពៃណី​ជាតិ – មហា​សង្ក្រាន្ត ម៉ោង ១០:១៧:២៤ យប់ (ម៉ោងផ្លូវការ)');
+  assert.ok(kny2024.sourceIds.includes('arrival-tvk-2024'));
+
+  const kny2027 = EventRepository.getYearEvents(2027).find(e => e.id === 'khmer_new_year_1');
+  assert.equal(kny2027.titleEn, 'Khmer New Year – Moha Sankranta 4:48 PM (Estimated time)');
+  assert.equal(kny2027.titleKm, 'ពិធី​បុណ្យ​ចូល​ឆ្នាំ​ថ្មី ប្រពៃណី​ជាតិ – មហា​សង្ក្រាន្ត ម៉ោង ០៤:៤៨ ល្ងាច (ម៉ោងប៉ាន់ស្មាន)');
+
+  // Engine v0.3.0 arrivalEstimate contract on KhmerNewYear
+  const ny2027 = KhmerNewYear.forYear(2027);
+  assert.deepEqual(ny2027.arrivalEstimate, { minuteOfDay: 1008, hour: 16, minute: 48 });
 
   // Verify 100% explicit eventId linkage and 0 mismatches across all 12 holiday calendars
   const catalogEventIds = new Set(calendarCatalog.events.map(e => e.id));
@@ -354,7 +381,7 @@ test('event details dialog renders clean categories and descriptions without raw
   modal.open(constDay, true);
   const constHtml = modal.overlay.innerHTML;
   assert.ok(constHtml.includes('ថ្ងៃព្រហស្បតិ៍ ២៤ ខែកញ្ញា ២០២៦'), 'Full Khmer date format matching Android');
-  assert.ok(constHtml.includes('១៣កើត ខែភទ្របទ ឆ្នាំមមី អដ្ឋស័ក'), 'Lunar day, month, animal year, and sak');
+  assert.ok(constHtml.includes('១៣កើត ខែភទ្របទ<br>ឆ្នាំមមី អដ្ឋស័ក'), 'Lunar day, month, animal year, and sak');
   assert.ok(constHtml.includes('ថ្ងៃឈប់សម្រាក'));
   assert.ok(constHtml.includes('បានបញ្ជាក់ក្នុងប្រតិទិនថ្ងៃឈប់សម្រាកផ្លូវការ ឆ្នាំ២០២៦។'));
   assert.ok(constHtml.includes('អនុក្រឹត្យលេខ ១៦៧'));
@@ -418,6 +445,39 @@ test('event details dialog renders clean categories and descriptions without raw
   const disabledHolyHtmlKm = dateModal.overlay.innerHTML;
   assert.equal(disabledHolyHtmlKm.includes('holy_day_lotus'), false, 'Disabled holyDayMarkers must not show lotus on holy day');
   assert.equal(disabledHolyHtmlKm.includes('ថ្ងៃសីល'), false, 'Disabled holyDayMarkers must not show ថ្ងៃសីល text');
+
+  // Cleanup settings
+  Storage.saveSettings(DEFAULT_SETTINGS);
+});
+
+test('showWesternZodiac setting defaults to true and toggles zodiac visibility in dialogs', async () => {
+  const { Storage, DEFAULT_SETTINGS } = await server.ssrLoadModule('/src/data/Storage.ts');
+  const { DateDetailsDialogModal, EventDetailsDialogModal } = await server.ssrLoadModule('/src/ui/Modals.ts');
+  const { EventRepository } = await server.ssrLoadModule('/src/data/EventRepository.ts');
+
+  assert.equal(DEFAULT_SETTINGS.showWesternZodiac, true, 'Default settings must have showWesternZodiac on');
+
+  const dateModal = new DateDetailsDialogModal(() => {}, () => {});
+  const eventModal = new EventDetailsDialogModal(() => {}, () => {});
+  const event = EventRepository.getYearEvents(2026).find(e => e.date === '2026-09-24');
+
+  // Default / on: Western zodiac is visible
+  Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: true });
+  dateModal.open('2026-09-24', [], false);
+  assert.ok(dateModal.overlay.innerHTML.includes('dialog-watermark-western'), 'Western watermark should show when showWesternZodiac is true');
+  assert.ok(dateModal.overlay.innerHTML.includes('Libra'), 'Western zodiac label should show when showWesternZodiac is true');
+
+  eventModal.open(event, false);
+  assert.ok(eventModal.overlay.innerHTML.includes('dialog-watermark-western'), 'Event details watermark should show when showWesternZodiac is true');
+
+  // Off / false: Western zodiac is hidden
+  Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: false });
+  dateModal.open('2026-09-24', [], false);
+  assert.equal(dateModal.overlay.innerHTML.includes('dialog-watermark-western'), false, 'Western watermark should be hidden when showWesternZodiac is false');
+  assert.equal(dateModal.overlay.innerHTML.includes('Libra'), false, 'Western zodiac label should be hidden when showWesternZodiac is false');
+
+  eventModal.open(event, false);
+  assert.equal(eventModal.overlay.innerHTML.includes('dialog-watermark-western'), false, 'Event details watermark should be hidden when showWesternZodiac is false');
 
   // Cleanup settings
   Storage.saveSettings(DEFAULT_SETTINGS);

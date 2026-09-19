@@ -2,6 +2,12 @@
 
 import { calendarEngine, KhmerCalendar } from './KhmerCalendar';
 
+export interface ArrivalEstimate {
+  minuteOfDay: number;
+  hour: number;
+  minute: number;
+}
+
 export interface NewYearCelebration {
   startYear: number;
   startMonth: number;
@@ -9,6 +15,7 @@ export interface NewYearCelebration {
   startDate: string;
   days: number;
   dates: string[];
+  arrivalEstimate: ArrivalEstimate;
 }
 
 export class KhmerNewYear {
@@ -17,9 +24,15 @@ export class KhmerNewYear {
       throw new RangeError('Supported years: 1800–2200.');
     }
     const result = calendarEngine.newYear(year);
+    const est = result.arrivalEstimate;
     return {
       startYear: result.start.year, startMonth: result.start.month, startDay: result.start.day,
-      startDate: result.start.iso, days: result.days, dates: result.dates.map(date => date.iso)
+      startDate: result.start.iso, days: result.days, dates: result.dates.map(date => date.iso),
+      arrivalEstimate: {
+        minuteOfDay: est.minuteOfDay,
+        hour: est.hour,
+        minute: est.minute
+      }
     };
   }
 }

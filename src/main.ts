@@ -317,9 +317,11 @@ class KhmerCalendarApp {
           <div class="date-summary-gregorian">
             ${CalendarWords.month(selectedDetails.month, false)} ${selectedDetails.day}, ${selectedDetails.year}
           </div>
-          <div class="date-summary-zodiac">
-            ${Zodiac.label(selectedDetails.zodiac, false)}
-          </div>
+          ${this.settings.showWesternZodiac ? `
+            <div class="date-summary-zodiac">
+              ${Zodiac.label(selectedDetails.zodiac, false)}
+            </div>
+          ` : ''}
         </div>
       </button>
     `;

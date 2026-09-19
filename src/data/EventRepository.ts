@@ -1,6 +1,6 @@
 // Copyright (c) 2026 RSG-KH | Apache-2.0 License
 
-import { calendarCatalog, eventNames, type CatalogEvent, type CatalogHoliday, type CatalogSource } from './RecurringEvents';
+import { calendarCatalog, eventNames, resolveNewYearArrival, type CatalogEvent, type CatalogHoliday, type CatalogSource } from './RecurringEvents';
 import { KhmerCalendar, calendarEngine, khmerNumber, toEpochDay, fromEpochDay } from '../domain/KhmerCalendar';
 import { EventDateOverride, GregorianDate, createRule, type RecurrenceRule as EngineRecurrenceRule } from 'khmer-calendar-engine';
 import { L } from './i18n';
@@ -53,6 +53,11 @@ export class EventRepository {
         km = km.replaceAll('{anniversary}', khmerNumber(anniversary));
         en = en.replaceAll('{anniversary}', String(anniversary));
       }
+    }
+    if (h.eventId === 'khmer_new_year_1' || h.id === 'khmer_new_year_1') {
+      const arrival = resolveNewYearArrival(year);
+      km = `${km} ${arrival.titleKm}`;
+      en = `${en} ${arrival.titleEn}`;
     }
     return { km, en };
   }
@@ -136,7 +141,10 @@ export class EventRepository {
         if (event.kind === 'historical' && event.originalDate && occ.date.iso < event.originalDate) continue;
 
         const isCorrected = occ.basis === 'source_override';
-        const sourceIds = isCorrected && occ.sourceId ? [occ.sourceId] : event.sourceIds;
+        let sourceIds = isCorrected && occ.sourceId ? [occ.sourceId] : event.sourceIds;
+        if (event.id === 'khmer_new_year_1') {
+          sourceIds = [...new Set([...sourceIds, ...resolveNewYearArrival(year).sourceIds])];
+        }
 
         events.push({
           id: event.id,

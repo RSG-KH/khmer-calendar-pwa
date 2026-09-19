@@ -51,12 +51,14 @@ export class DateDetailsDialogModal {
 
     const animalImg = Zodiac.getAnimalDrawable(info.animalYear, true);
     const westernImg = Zodiac.getWesternDrawable(info.zodiac);
+    const showHolyDay = settings.holyDayMarkers && (info.lunar.isHolyDay || info.lunar.isShavingDay);
+    const showWesternZodiac = settings.showWesternZodiac;
 
     this.overlay.innerHTML = `
       <div class="modal-dialog-surface date-details-dialog" style="position: relative; overflow: hidden; max-width: 480px; width: 92%;">
         <!-- Watermarks -->
         <span class="dialog-watermark-animal tinted-watermark" style="--watermark-image: url('${animalImg}')" aria-hidden="true"></span>
-        <span class="dialog-watermark-western tinted-watermark" style="--watermark-image: url('${westernImg}')" aria-hidden="true"></span>
+        ${showWesternZodiac ? `<span class="dialog-watermark-western tinted-watermark" style="--watermark-image: url('${westernImg}')" aria-hidden="true"></span>` : ''}
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; position: relative; z-index: 1;">
           <span style="font-size: calc(16px * var(--font-scale)); font-weight: 600; color: var(--text-primary);">
@@ -68,6 +70,11 @@ export class DateDetailsDialogModal {
         <div class="card-divider" style="margin: 0 0 16px 0;"></div>
 
         <div class="date-details-content" style="position: relative; z-index: 1; display: flex; flex-direction: column; gap: 14px; max-height: 60vh; overflow-y: auto;">
+          <!-- Gregorian Date -->
+          <div style="font-size: calc(15px * var(--font-scale)); color: var(--on-surface-variant);">
+            ${CalendarWords.month(info.month, false)} ${info.day}, ${info.year}
+          </div>
+
           <!-- Full Khmer Date -->
           <div class="date-description">
             <div class="date-description-row">
@@ -79,38 +86,37 @@ export class DateDetailsDialogModal {
             <p class="copy-status date-copy-status" role="status" aria-atomic="true"></p>
           </div>
 
-          <!-- Holy Day or Shaving Day label -->
-          ${settings.holyDayMarkers && (info.lunar.isHolyDay || info.lunar.isShavingDay) ? `
-            <div style="font-size: calc(15px * var(--font-scale)); font-weight: 500; color: var(--secondary); display: flex; align-items: center; gap: 8px;">
-              ${info.lunar.isHolyDay ? `
-                <img src="${holyDayLotus(info.lunar)}" style="width: 22px; height: 22px; object-fit: contain;" alt="" />
-                ${L.text('ui.thngai_sil_buddhist_holy_day.89de73', isKhmer)}
-              ` : `
-                <span style="width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: calc(17px * var(--font-scale)); line-height: 1;" aria-hidden="true">🙏</span>
-                ${L.text('ui.thngai_kaor_before_a_holy_day.d02977', isKhmer)}
-              `}
+          <!-- Holy Day & Western Zodiac -->
+          ${showHolyDay || showWesternZodiac ? `
+            <div class="card-divider" style="margin: 0;"></div>
+            <div style="display: flex; flex-direction: column; gap: 9px;">
+              ${showHolyDay ? `
+                <div style="font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--secondary); display: flex; align-items: center; gap: 8px;">
+                  ${info.lunar.isHolyDay ? `
+                    <img src="${holyDayLotus(info.lunar)}" style="width: 20px; height: 20px; object-fit: contain;" alt="" />
+                    ${L.text('ui.thngai_sil_buddhist_holy_day.89de73', isKhmer)}
+                  ` : `
+                    <span style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: calc(16px * var(--font-scale)); line-height: 1;" aria-hidden="true">🙏</span>
+                    ${L.text('ui.thngai_kaor_before_a_holy_day.d02977', isKhmer)}
+                  `}
+                </div>
+              ` : ''}
+
+              ${showWesternZodiac ? `
+                <div style="font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--accent); display: flex; align-items: center; gap: 8px;">
+                  <span style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: calc(16px * var(--font-scale)); line-height: 1;" aria-hidden="true">${info.zodiac.symbol}</span>
+                  <span>${Zodiac.labelWithoutSymbol(info.zodiac, false)}</span>
+                </div>
+              ` : ''}
             </div>
           ` : ''}
 
-          <!-- Gregorian Date & Western Zodiac -->
-          <div style="display: flex; flex-direction: column; gap: 3px;">
-            <div style="font-size: calc(15px * var(--font-scale)); color: var(--on-surface-variant);">
-              ${CalendarWords.month(info.month, false)} ${info.day}, ${info.year}
-            </div>
-            <div style="font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--accent);">
-              ${Zodiac.label(info.zodiac, false)}
-            </div>
-          </div>
-
           <!-- Events on this day -->
           ${events.length > 0 ? `
-            <div class="card-divider" style="margin: 4px 0;"></div>
-            <div style="font-size: calc(13px * var(--font-scale)); font-weight: 600; color: var(--on-surface-variant); margin-bottom: 2px;">
-              ${L.text('ui.events_on_the_day.a174fc', isKhmer)}
-            </div>
+            <div class="card-divider" style="margin: 0;"></div>
             <div style="display: flex; flex-direction: column; gap: 6px;">
               ${events.map(e => `
-                <button class="dialog-event-item" data-ev-id="${escapeHtml(e.id)}" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; background: color-mix(in srgb, var(--bg-surface-variant) 50%, transparent); cursor: pointer;">
+                <button class="dialog-event-item" data-ev-id="${escapeHtml(e.id)}" style="display: flex; align-items: center; gap: 10px; padding: 6.5px 10px; border-radius: 10px; background: color-mix(in srgb, var(--bg-surface-variant) 50%, transparent); cursor: pointer;">
                   <span class="mark-shape ${e.kind.toLowerCase()}"></span>
                   <div style="flex: 1; display: flex; flex-direction: column;">
                     <span style="font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--text-primary);">${escapeHtml(isKhmer ? e.titleKm : e.titleEn)}</span>
@@ -123,7 +129,7 @@ export class DateDetailsDialogModal {
           ` : ''}
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; position: relative; z-index: 1;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px; position: relative; z-index: 1;">
           <button class="btn-today-pill btn-dialog-add" style="border: 1px solid var(--outline); background: transparent; color: var(--text-primary);">
             + ${L.text('ui.add_event.bf2f10', isKhmer)}
           </button>
@@ -197,6 +203,7 @@ export class EventDetailsDialogModal {
     const parts = event.date.split('-').map(Number);
     const info = KhmerDateDetails.fromGregorian(parts[0], parts[1], parts[2]);
     const isCustom = event.kind === 'CUSTOM';
+    const settings = Storage.getSettings();
     const animalImg = Zodiac.getAnimalDrawable(info.animalYear, true);
     const westernImg = Zodiac.getWesternDrawable(info.zodiac);
 
@@ -216,7 +223,7 @@ export class EventDetailsDialogModal {
     this.overlay.innerHTML = `
       <div class="modal-dialog-surface" style="position: relative; overflow: hidden; max-width: 480px; width: 92%;">
         <span class="dialog-watermark-animal tinted-watermark" style="--watermark-image: url('${animalImg}')" aria-hidden="true"></span>
-        <span class="dialog-watermark-western tinted-watermark" style="--watermark-image: url('${westernImg}')" aria-hidden="true"></span>
+        ${settings.showWesternZodiac ? `<span class="dialog-watermark-western tinted-watermark" style="--watermark-image: url('${westernImg}')" aria-hidden="true"></span>` : ''}
 
         <div style="position: relative; z-index: 1;">
           <div class="event-title-copy">
@@ -242,11 +249,11 @@ export class EventDetailsDialogModal {
             ${event.notes ? `<div style="white-space: pre-wrap; overflow-wrap: anywhere; color: var(--on-surface-variant); background: var(--bg-surface-variant); padding: 10px; border-radius: 8px;">${escapeHtml(event.notes)}</div>` : ''}
 
             <!-- Lunar info -->
-            <div style="color: var(--on-surface-variant);">
-              ${CalendarWords.lunarSummary(info, isKhmer)}
-            </div>
-            <div style="color: var(--on-surface-variant); font-size: calc(13px * var(--font-scale));">
-              ${L.text('ui.buddhist_era.ea617c', isKhmer)} ${CalendarWords.number(info.lunar.buddhistYear, isKhmer)}
+            <div style="display: flex; flex-direction: column; gap: 2px;">
+              <div style="color: var(--on-surface-variant); line-height: 1.5;">${CalendarWords.lunarSummary(info, isKhmer)}</div>
+              <div style="color: var(--on-surface-variant); font-size: calc(13px * var(--font-scale));">
+                ${L.text('ui.buddhist_era.ea617c', isKhmer)} ${CalendarWords.number(info.lunar.buddhistYear, isKhmer)}
+              </div>
             </div>
 
             <div class="card-divider" style="margin: 4px 0;"></div>

@@ -1439,6 +1439,14 @@
     "km": "ក្នុងកាលបរិច្ឆេទ និងព្រឹត្តិការណ៍លម្អិត",
     "en": "In date and event details"
   },
+  "ui.show_western_zodiac": {
+    "km": "បង្ហាញតារានិករ",
+    "en": "Show Western zodiac signs"
+  },
+  "ui.show_western_zodiac_subtitle": {
+    "km": "ក្នុងកាលបរិច្ឆេទសង្ខេប និងលម្អិត",
+    "en": "In date summary and details"
+  },
   "about.calendar_engine": {
     "km": "កាលបរិច្ឆេទចន្ទគតិ ថ្ងៃសីល និងថ្ងៃចូលឆ្នាំ សម្រាប់ឆ្នាំ១៨០០–២២០០ គណនាដោយ Khmer Calendar Engine។",
     "en": "Lunar dates, holy days and New Year dates for 1800–2200 are calculated by Khmer Calendar Engine."

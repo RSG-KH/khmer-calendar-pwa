@@ -19,6 +19,7 @@ export interface AppSettings {
   showLongerWeekdayNames: boolean;
   highlightWeekdayNames: boolean;
   showCopyButtons: boolean;
+  showWesternZodiac: boolean;
   highlightSunday: boolean;
   showLunar: boolean;
   todayTimeZone: TodayTimeZone;
@@ -39,6 +40,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   showLongerWeekdayNames: false,
   highlightWeekdayNames: true,
   showCopyButtons: false,
+  showWesternZodiac: true,
   highlightSunday: true,
   showLunar: true,
   todayTimeZone: 'local',
@@ -66,7 +68,11 @@ class StorageManager {
     try {
       const stored = localStorage.getItem(LOCAL_SETTINGS_KEY);
       if (stored) {
-        return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
+        const parsed = JSON.parse(stored);
+        if (parsed.showWesternZodiac === undefined && typeof parsed.hideWesternZodiac === 'boolean') {
+          parsed.showWesternZodiac = !parsed.hideWesternZodiac;
+        }
+        return { ...DEFAULT_SETTINGS, ...parsed };
       }
     } catch (e) {
       console.warn('Failed to load settings:', e);

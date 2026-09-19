@@ -88,13 +88,18 @@ export class CalendarWords {
       : current;
   }
 
-  static lunarSummary(d: KhmerDateDetails, khmer: boolean): string {
-    const lunar = this.lunarFull(d.lunar.day, d.lunar.waxing, d.lunar.month, khmer);
+  static lunarYear(d: KhmerDateDetails, khmer: boolean): string {
     const animal = this.animalLabel(d, khmer);
     const sak = this.sak(d.sak, khmer);
     return khmer
-      ? `${lunar} ឆ្នាំ${animal} ${sak}`
-      : `${lunar} · Year of the ${animal} · ${sak}`;
+      ? `ឆ្នាំ${animal} ${sak}`
+      : `Year of the ${animal} · ${sak}`;
+  }
+
+  static lunarSummary(d: KhmerDateDetails, khmer: boolean): string {
+    const lunar = this.lunarFull(d.lunar.day, d.lunar.waxing, d.lunar.month, khmer);
+    const year = this.lunarYear(d, khmer);
+    return `${lunar}<br>${year}`;
   }
 
   static fullKhmerDate(d: KhmerDateDetails): string {

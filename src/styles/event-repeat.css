@@ -1,10 +1,32 @@
 /* Additive controls for the existing event editor. */
-.event-editor-dialog { width: 92%; max-width: 440px; }
+.event-editor-dialog {
+  width: 92%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden !important;
+}
 @media (min-width: 600px) { .event-editor-dialog { max-width: 580.8px; } }
-.event-editor-header { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 16px; }
+.event-editor-header {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
 .event-editor-title { flex: 1 1 auto; min-width: 0; font-size: calc(18px * var(--font-scale)); font-weight: 600; color: var(--text-primary); }
 .event-time-zone { max-width: 100%; margin-left: auto; color: var(--accent); font-size: calc(12px * var(--font-scale)); text-align: right; overflow-wrap: anywhere; }
 .event-time-zone-offset { white-space: nowrap; }
+.event-editor-form {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 6px 2px;
+  margin: -4px -6px 0;
+}
 .event-repeat-block { display: flex; flex-direction: column; gap: 10px; min-width: 0; padding-top: 12px; border-top: 1px solid var(--outline); }
 .event-repeat-block [hidden] { display: none !important; }
 .event-repeat-label { display: block; font-size: calc(13px * var(--font-scale)); font-weight: 500; color: var(--on-surface-variant); }

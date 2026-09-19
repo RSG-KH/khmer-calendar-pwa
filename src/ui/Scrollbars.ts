@@ -2,7 +2,7 @@
 
 const scrollContainers = '.screen-container, .calendar-col-left, .calendar-col-right, '
   + '.modal-dialog-surface, .date-details-content, .sources-content, '
-  + '.month-picker-grid, .settings-picker-menu, textarea';
+  + '.month-picker-grid, .settings-picker-menu, textarea, .event-editor-form, .event-detail-content';
 
 // Call only when Platform.prefersNativeScrollbars() is false. The attribute opts
 // into styles/scrollbars.css, including its balanced gutters and column spacing.

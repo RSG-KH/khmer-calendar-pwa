@@ -221,11 +221,11 @@ export class EventDetailsDialogModal {
     }
 
     this.overlay.innerHTML = `
-      <div class="modal-dialog-surface" style="position: relative; overflow: hidden; max-width: 480px; width: 92%;">
+      <div class="modal-dialog-surface event-detail-dialog" style="position: relative; max-width: 480px; width: 92%;">
         <span class="dialog-watermark-animal tinted-watermark" style="--watermark-image: url('${animalImg}')" aria-hidden="true"></span>
         ${settings.showWesternZodiac ? `<span class="dialog-watermark-western tinted-watermark" style="--watermark-image: url('${westernImg}')" aria-hidden="true"></span>` : ''}
 
-        <div style="position: relative; z-index: 1;">
+        <div class="event-detail-header" style="position: relative; z-index: 1;">
           <div class="event-title-copy">
             <div class="event-title-row">
               <span class="event-detail-title">${escapeHtml(title)}</span><button type="button" class="btn-copy-text btn-copy-title" aria-label="${L.text('ui.copy_event_title', isKhmer)}">
@@ -236,50 +236,52 @@ export class EventDetailsDialogModal {
           </div>
 
           <div class="card-divider" style="margin: 0 0 14px 0;"></div>
+        </div>
 
-          <div style="display: flex; flex-direction: column; gap: 12px; font-size: calc(14px * var(--font-scale));">
-            <!-- Date & Time -->
-            <div style="font-weight: 500; color: var(--text-primary);">
-              ${CalendarWords.date(parts[0], parts[1], parts[2], isKhmer)}${event.time ? ` · ${escapeHtml(event.time)}` : ''}
-            </div>
-
-            ${event.repeat ? `<p class="settings-subtitle">${L.text(`repeat.${event.repeat.frequency}`, isKhmer)} · ${L.text('repeat.end', isKhmer)} ${repeatDateLabel(event.repeat.until, isKhmer)}</p>` : ''}
-
-            <!-- Notes if any -->
-            ${event.notes ? `<div style="white-space: pre-wrap; overflow-wrap: anywhere; color: var(--on-surface-variant); background: var(--bg-surface-variant); padding: 10px; border-radius: 8px;">${escapeHtml(event.notes)}</div>` : ''}
-
-            <!-- Lunar info -->
-            <div style="display: flex; flex-direction: column; gap: 2px;">
-              <div style="color: var(--on-surface-variant); line-height: 1.5;">${CalendarWords.lunarSummary(info, isKhmer)}</div>
-              <div style="color: var(--on-surface-variant); font-size: calc(13px * var(--font-scale));">
-                ${L.text('ui.buddhist_era.ea617c', isKhmer)} ${CalendarWords.number(info.lunar.buddhistYear, isKhmer)}
-              </div>
-            </div>
-
-            <div class="card-divider" style="margin: 4px 0;"></div>
-
-            <!-- Category & Description -->
-            <div style="font-weight: 600; color: var(--accent);">
-              ${event.basis === 'calculated' ? L.text('rules.calculated_label', isKhmer) :
-                event.kind === 'HOLIDAY' ? L.text('ui.holiday.253332', isKhmer) :
-                event.kind === 'HOLY_DAY' ? L.text('ui.holy_day.28786d', isKhmer) :
-                event.kind === 'OBSERVANCE' ? L.text('ui.observance.5b9a87', isKhmer) :
-                L.text('ui.custom.917053', isKhmer)}
-            </div>
-            ${!isCustom ? `
-              <div style="font-size: calc(13px * var(--font-scale)); color: var(--on-surface-variant);">
-                ${escapeHtml(isKhmer ? event.titleEn : event.titleKm)}
-              </div>
-            ` : ''}
-            ${categoryDesc ? `<div style="font-size: calc(${isEngineCalculated ? '12px' : '13px'} * var(--font-scale)); line-height: 1.6; color: var(--on-surface-variant);">${categoryDesc}</div>` : ''}
-
-            ${(event.kind === 'HOLIDAY' && ((isKhmer ? event.citationKm : event.citationEn) || event.citation)) ? `
-              <div class="event-citation" style="font-size: calc(12.5px * var(--font-scale)); line-height: 1.5; color: var(--on-surface-variant); margin-top: 2px;">
-                ${escapeHtml(((isKhmer ? event.citationKm : event.citationEn) || event.citation)!)}
-              </div>
-            ` : ''}
+        <div class="event-detail-content" style="position: relative; z-index: 1; display: flex; flex-direction: column; gap: 12px; font-size: calc(14px * var(--font-scale));">
+          <!-- Date & Time -->
+          <div style="font-weight: 500; color: var(--text-primary);">
+            ${CalendarWords.date(parts[0], parts[1], parts[2], isKhmer)}${event.time ? ` · ${escapeHtml(event.time)}` : ''}
           </div>
 
+          ${event.repeat ? `<p class="settings-subtitle">${L.text(`repeat.${event.repeat.frequency}`, isKhmer)} · ${L.text('repeat.end', isKhmer)} ${repeatDateLabel(event.repeat.until, isKhmer)}</p>` : ''}
+
+          <!-- Notes if any -->
+          ${event.notes ? `<div style="white-space: pre-wrap; overflow-wrap: anywhere; color: var(--on-surface-variant); background: var(--bg-surface-variant); padding: 10px; border-radius: 8px;">${escapeHtml(event.notes)}</div>` : ''}
+
+          <!-- Lunar info -->
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <div style="color: var(--on-surface-variant); line-height: 1.5;">${CalendarWords.lunarSummary(info, isKhmer)}</div>
+            <div style="color: var(--on-surface-variant); font-size: calc(13px * var(--font-scale));">
+              ${L.text('ui.buddhist_era.ea617c', isKhmer)} ${CalendarWords.number(info.lunar.buddhistYear, isKhmer)}
+            </div>
+          </div>
+
+          <div class="card-divider" style="margin: 4px 0;"></div>
+
+          <!-- Category & Description -->
+          <div style="font-weight: 600; color: var(--accent);">
+            ${event.basis === 'calculated' ? L.text('rules.calculated_label', isKhmer) :
+              event.kind === 'HOLIDAY' ? L.text('ui.holiday.253332', isKhmer) :
+              event.kind === 'HOLY_DAY' ? L.text('ui.holy_day.28786d', isKhmer) :
+              event.kind === 'OBSERVANCE' ? L.text('ui.observance.5b9a87', isKhmer) :
+              L.text('ui.custom.917053', isKhmer)}
+          </div>
+          ${!isCustom ? `
+            <div style="font-size: calc(13px * var(--font-scale)); color: var(--on-surface-variant);">
+              ${escapeHtml(isKhmer ? event.titleEn : event.titleKm)}
+            </div>
+          ` : ''}
+          ${categoryDesc ? `<div style="font-size: calc(${isEngineCalculated ? '12px' : '13px'} * var(--font-scale)); line-height: 1.6; color: var(--on-surface-variant);">${categoryDesc}</div>` : ''}
+
+          ${(event.kind === 'HOLIDAY' && ((isKhmer ? event.citationKm : event.citationEn) || event.citation)) ? `
+            <div class="event-citation" style="font-size: calc(12.5px * var(--font-scale)); line-height: 1.5; color: var(--on-surface-variant); margin-top: 2px;">
+              ${escapeHtml(((isKhmer ? event.citationKm : event.citationEn) || event.citation)!)}
+            </div>
+          ` : ''}
+        </div>
+
+        <div class="event-detail-footer" style="position: relative; z-index: 1;">
           ${isCustom ? `<div class="event-delete-confirmation" hidden>
             <p class="form-error" role="alert">${L.text(event.seriesId ? 'repeat.delete_confirm' : 'ui.delete_this_event.925263', isKhmer)}</p>
             <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px;">
@@ -287,7 +289,7 @@ export class EventDetailsDialogModal {
               <button class="btn-today-pill btn-confirm-delete" style="color: var(--tertiary);">${L.text('ui.delete.4708f4', isKhmer)}</button>
             </div>
           </div>` : ''}
-          <div class="event-detail-actions" style="display: flex; justify-content: ${isCustom ? 'space-between' : 'flex-end'}; align-items: center; margin-top: 24px;">
+          <div class="event-detail-actions" style="display: flex; justify-content: ${isCustom ? 'space-between' : 'flex-end'}; align-items: center; margin-top: 16px;">
             ${isCustom ? `
               <button class="btn-today-pill btn-ev-delete" ${event.seriesId ? 'data-series' : ''} style="color: #FF5252; background: transparent; border: 1px solid #FF5252;">
                 ${L.text(event.seriesId ? 'repeat.delete_series' : 'ui.delete.4708f4', isKhmer)}
@@ -401,7 +403,7 @@ export class CustomEventModal {
           <div class="event-time-zone">${escapeHtml(zoneLabel)} <span class="event-time-zone-offset"></span></div>
         </div>
 
-        <form id="custom-event-form" style="display: flex; flex-direction: column; gap: 14px;">
+        <form id="custom-event-form" class="event-editor-form" style="display: flex; flex-direction: column; gap: 14px;">
           <div>
             <label for="ev-title" style="display: block; font-size: calc(13px * var(--font-scale)); font-weight: 500; color: var(--on-surface-variant); margin-bottom: 4px;">
               ${L.text('ui.title.a4c172', isKhmer)} <span class="required-marker">*</span>

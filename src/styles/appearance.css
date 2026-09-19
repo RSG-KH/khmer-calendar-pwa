@@ -217,6 +217,10 @@ svg { flex-shrink: 0; }
 /* Scroll the date content, keeping actions visible and clipping the watermarks. */
 .date-details-dialog { display: flex; flex-direction: column; overflow: hidden !important; }
 .date-details-content { min-height: 0; }
+.event-detail-dialog { display: flex; flex-direction: column; min-height: 0; overflow: hidden !important; }
+.event-detail-header { flex-shrink: 0; }
+.event-detail-content { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.event-detail-footer { flex-shrink: 0; }
 .date-description { position: relative; }
 .date-description-row { display: flex; align-items: flex-start; gap: 8px; }
 .full-lunar-date { flex: 1; min-width: 0; font-size: calc(17px * var(--font-scale)); line-height: 1.8; color: var(--text-primary); white-space: pre-line; overflow-wrap: anywhere; user-select: text; -webkit-user-select: text; }

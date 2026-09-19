@@ -116,7 +116,7 @@ export class DateDetailsDialogModal {
             <div class="card-divider" style="margin: 0;"></div>
             <div style="display: flex; flex-direction: column; gap: 6px;">
               ${events.map(e => `
-                <button class="dialog-event-item" data-ev-id="${escapeHtml(e.id)}" style="display: flex; align-items: center; gap: 10px; padding: 6.5px 10px; border-radius: 10px; background: color-mix(in srgb, var(--bg-surface-variant) 50%, transparent); cursor: pointer;">
+                <button class="dialog-event-item" data-ev-id="${escapeHtml(e.id)}" style="display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 10px; background: color-mix(in srgb, var(--bg-surface-variant) 50%, transparent); cursor: pointer;">
                   <span class="mark-shape ${e.kind.toLowerCase()}"></span>
                   <div style="flex: 1; display: flex; flex-direction: column;">
                     <span style="font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--text-primary);">${escapeHtml(isKhmer ? e.titleKm : e.titleEn)}</span>
@@ -275,7 +275,7 @@ export class EventDetailsDialogModal {
           ${categoryDesc ? `<div style="font-size: calc(${isEngineCalculated ? '12px' : '13px'} * var(--font-scale)); line-height: 1.6; color: var(--on-surface-variant);">${categoryDesc}</div>` : ''}
 
           ${(event.kind === 'HOLIDAY' && ((isKhmer ? event.citationKm : event.citationEn) || event.citation)) ? `
-            <div class="event-citation" style="font-size: calc(12.5px * var(--font-scale)); line-height: 1.5; color: var(--on-surface-variant); margin-top: 2px;">
+            <div class="event-citation" style="font-size: calc(13px * var(--font-scale)); line-height: 1.5; color: var(--on-surface-variant); margin-top: 2px;">
               ${escapeHtml(((isKhmer ? event.citationKm : event.citationEn) || event.citation)!)}
             </div>
           ` : ''}

@@ -219,7 +219,7 @@
 }
 
 .cal-cell.active-day:not(.today) {
-  box-shadow: inset 0 0 0 1.5px var(--accent);
+  box-shadow: inset 0 0 0 2px var(--accent);
 }
 
 .cell-day-num {
@@ -285,8 +285,8 @@
 }
 
 .mark-shape.holiday {
-  width: 6.5px;
-  height: 6.5px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--tertiary);
 }
@@ -300,9 +300,9 @@
 }
 
 .mark-shape.observance {
-  width: 6.5px;
-  height: 6.5px;
-  border-radius: 1.5px;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
   background: var(--accent);
 }
 

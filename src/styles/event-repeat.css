@@ -7,7 +7,7 @@
   min-height: 0;
   overflow: hidden !important;
 }
-@media (min-width: 600px) { .event-editor-dialog { max-width: 580.8px; } }
+@media (min-width: 600px) { .event-editor-dialog { max-width: 580px; } }
 .event-editor-header {
   display: flex;
   align-items: baseline;

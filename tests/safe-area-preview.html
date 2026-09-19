@@ -106,7 +106,7 @@
         check('Footer buttons clear side cutouts', tab.left >= (profile.left || 0) - 1 && doc.querySelector('.bottom-bar').lastElementChild.getBoundingClientRect().right <= win.innerWidth - (profile.right || 0) + 1);
       } else {
         const item = rect('.rail-item');
-        const railWidth = win.innerHeight < 600 ? 69 : 77.4;
+        const railWidth = win.innerHeight < 600 ? 69 : 77;
         check('Rail background reaches camera-side edge', near(rail.left, 0));
         check('Rail and content reach the bottom edge', near(rail.bottom, availableHeight) && near(content.bottom, availableHeight));
         check('Scrolling columns reach the top safe edge without a fixed gutter', near(rect('.calendar-col-left').top, profile.top || 0) && near(rect('.calendar-col-right').top, profile.top || 0));

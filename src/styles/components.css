@@ -623,14 +623,14 @@
 }
 
 .settings-row {
-  padding: 14px 16px;
+  padding: 11px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-top: 1px solid var(--outline);
 }
 
-.settings-row:first-of-type {
+.settings-row:first-child {
   border-top: none;
 }
 

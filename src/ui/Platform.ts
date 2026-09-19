@@ -31,12 +31,19 @@ export function prefersNativeScrollbars(client: ClientPlatform = navigator): boo
 }
 
 // Keep device-specific choices stable when rotating or resizing the app.
+export type FontScale = 0.8 | 0.9 | 1.0 | 1.1 | 1.2 | 1.3 | 1.4 | 1.5;
+
 export function isPhone(client: ClientPlatform = navigator): boolean {
   const agent = client.userAgent ?? '';
   const platform = client.userAgentData?.platform || client.platform || '';
   if (/iPhone|iPod|Windows Phone/i.test(agent)) return true;
   if (/iPad/i.test(agent) || (/Mac/i.test(platform) && (client.maxTouchPoints ?? 0) > 1)) return false;
   return client.userAgentData?.mobile ?? /Android.*Mobile/i.test(agent);
+}
+
+// Tablets and big screens default to 120% font size; phones stay at 100%.
+export function defaultFontScale(client: ClientPlatform = navigator): FontScale {
+  return isPhone(client) ? 1.0 : 1.2;
 }
 
 // Keep the native iOS/iPadOS picker. Android and desktop popups can use AM/PM

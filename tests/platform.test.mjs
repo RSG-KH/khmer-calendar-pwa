@@ -5,7 +5,7 @@ import { createServer } from 'vite';
 
 const server = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom', optimizeDeps: { noDiscovery: true, include: [] } });
 after(() => server.close());
-const { appManifestFile, isApple, isPhone, prefersNativeScrollbars, prefersNativeTimePicker } = await server.ssrLoadModule('/src/ui/Platform.ts');
+const { appManifestFile, defaultFontScale, isApple, isPhone, prefersNativeScrollbars, prefersNativeTimePicker } = await server.ssrLoadModule('/src/ui/Platform.ts');
 
 test('installation icons match Android, Apple and Windows/Linux in both languages', async () => {
   const androidClients = [
@@ -50,7 +50,10 @@ test('phone font-size choices stay limited on iPhone and Android phone browsers'
     { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)', platform: 'iPhone' },
     { userAgent: 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36' },
     { userAgentData: { platform: 'Android', mobile: true } }
-  ]) assert.equal(isPhone(client), true);
+  ]) {
+    assert.equal(isPhone(client), true);
+    assert.equal(defaultFontScale(client), 1.0);
+  }
 });
 
 test('tablet and desktop font sizes extend to 150%, including iPad desktop mode', () => {
@@ -62,7 +65,10 @@ test('tablet and desktop font sizes extend to 150%, including iPad desktop mode'
     { userAgentData: { platform: 'Windows', mobile: false }, maxTouchPoints: 10 },
     { platform: 'MacIntel', maxTouchPoints: 0 },
     { platform: 'Linux x86_64' }
-  ]) assert.equal(isPhone(client), false);
+  ]) {
+    assert.equal(isPhone(client), false);
+    assert.equal(defaultFontScale(client), 1.2);
+  }
 });
 
 test('Apple devices keep native scrollbar behavior, including desktop-mode iPadOS', () => {

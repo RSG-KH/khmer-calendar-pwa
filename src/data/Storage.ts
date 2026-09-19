@@ -2,10 +2,11 @@
 
 import { dateTimeInZone, TodayTimeZone } from '../domain/DateTime';
 import type { EventRepeat } from '../domain/EventRepeat';
+import { defaultFontScale, type FontScale } from '../ui/Platform';
 
 export type AccentColor = 'blue' | 'lavender' | 'rose' | 'amber' | 'lime';
 export type ThemeMode = 'system' | 'light' | 'dark';
-export type FontScale = 0.8 | 0.9 | 1.0 | 1.1 | 1.2 | 1.3 | 1.4 | 1.5;
+export type { FontScale };
 
 export interface AppSettings {
   language: 'km' | 'en';
@@ -33,7 +34,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   theme: 'system',
   accent: 'blue',
   backgroundAccent: true,
-  fontScale: 1.0,
+  fontScale: defaultFontScale(),
   holyDayMarkers: true,
   showHolyDaysInEvents: false,
   mondayFirst: false,

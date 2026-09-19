@@ -149,11 +149,11 @@ svg { flex-shrink: 0; }
 .settings-container { width: 100%; max-width: 640px; padding: 6px 2px 24px; }
 .section-label { padding: 0 16px 7px; font-size: calc(12px * var(--font-scale)); font-weight: 500; color: var(--on-surface-variant); }
 .settings-card { border: 0; border-radius: 14px; margin-bottom: 26px; }
-.settings-row { min-height: 56px; gap: 14px; padding: 13px 16px; }
+.settings-row { min-height: 45px; gap: 14px; padding: 10px 16px; border-top: 1px solid var(--outline); }
 .settings-row:first-child { border-top: 0; }
-.settings-text-col { min-width: 0; flex: 1; gap: 4px; }
-.settings-title { font-size: calc(15px * var(--font-scale)); font-weight: 400; line-height: 1.6; }
-.settings-subtitle { font-size: calc(12px * var(--font-scale)); line-height: 1.7; }
+.settings-text-col { min-width: 0; flex: 1; gap: 3px; }
+.settings-title { font-size: calc(15px * var(--font-scale)); font-weight: 400; line-height: 1.35; }
+.settings-subtitle { font-size: calc(12px * var(--font-scale)); line-height: 1.4; }
 .about-card { display: flex; flex-direction: column; gap: 14px; padding: 16px; }
 .about-card h3 { font-weight: 600; }
 .about-card > .settings-subtitle { font-size: calc(14px * var(--font-scale)); }
@@ -187,7 +187,7 @@ svg { flex-shrink: 0; }
 .source-url-footer { display: flex; justify-content: flex-end; gap: 8px; }
 .source-url-footer .btn-today-pill { background: transparent; border: 0; color: var(--accent); font-weight: 500; }
 .settings-picker { flex: 0 1 auto; min-width: 0; max-width: 52%; }
-.settings-select { display: flex; align-items: center; justify-content: flex-end; gap: 7px; width: 100%; min-height: 44px; border: 0; background: transparent; color: var(--accent); font-size: max(16px, calc(14px * var(--font-scale))); line-height: 1.6; text-align: right; cursor: pointer; }
+.settings-select { display: flex; align-items: center; justify-content: flex-end; gap: 7px; width: 100%; min-height: 35px; border: 0; background: transparent; color: var(--accent); font-size: max(16px, calc(14px * var(--font-scale))); line-height: 1.35; text-align: right; cursor: pointer; }
 .settings-select > span { min-width: 0; overflow-wrap: anywhere; }
 .settings-picker-menu { position: fixed; z-index: 90; width: max-content; padding: 4px; border: 1px solid var(--outline); border-radius: 14px; background: var(--bg-surface); color: var(--text-primary); box-shadow: 0 8px 36px #0003; overflow: auto; overscroll-behavior: contain; font-size: max(16px, calc(14px * var(--font-scale))); }
 .settings-picker-option { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; min-height: 44px; padding: 8px 12px; border: 0; border-radius: 9px; background: transparent; color: inherit; font-size: inherit; line-height: 1.6; cursor: pointer; }
@@ -198,10 +198,10 @@ svg { flex-shrink: 0; }
 .settings-picker-option:active { background: var(--accent-container); }
 @media (hover: hover) { .settings-picker-option:hover { background: var(--accent-container); } }
 .choice-pill-group { border-radius: 9px; flex-shrink: 0; }
-.choice-pill { border-radius: 7px; min-height: 34px; }
+.choice-pill { border-radius: 7px; min-height: 28px; }
 /* Keep 22px swatches, reducing the visible gap from 12px to 10px. */
 .accent-circles-row { gap: 0; }
-.accent-btn { width: 32px; height: 40px; border: 0; border-radius: 0; background: transparent; display: grid; place-items: center; }
+.accent-btn { width: 32px; height: 32px; border: 0; border-radius: 0; background: transparent; display: grid; place-items: center; }
 .accent-btn::before { content: ''; width: 22px; height: 22px; border-radius: 50%; background: var(--swatch); }
 .accent-btn.active { transform: none; }
 .accent-btn.active::before { outline: 2px solid var(--swatch); outline-offset: 3px; }

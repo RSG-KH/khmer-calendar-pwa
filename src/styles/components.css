@@ -356,7 +356,7 @@
   background: var(--bg-surface);
   border-radius: 16px;
   border: 1px solid var(--outline);
-  padding: 8px 14px;
+  padding: 7px 14px;
   margin-top: 8px;
   display: flex;
   align-items: center;
@@ -409,7 +409,7 @@
 
 .event-row-bar {
   width: 3px;
-  height: 28px;
+  height: 25px;
   border-radius: 2px;
   margin: 0 12px;
   flex-shrink: 0;

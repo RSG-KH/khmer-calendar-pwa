@@ -10,7 +10,7 @@
 [![Engine 0.3.0](https://img.shields.io/badge/engine-khmer--calendar--engine%200.3.0-2b8a3e)](https://github.com/RSG-KH/khmer-calendar-engine)
 [![Catalog 0.4.0](https://img.shields.io/badge/catalog-khmer--calendar--manager%200.4.0-0366d6)](https://github.com/RSG-KH/khmer-calendar-manager)
 
-Khmer lunar dates, Buddhist holy days, Cambodian holidays and your own events, in Khmer and English. Made for phones, tablets and desktops, with an interface inspired by iOS.
+Khmer lunar dates, Buddhist holy days, Cambodian holidays and your personal events, in Khmer and English. Made for phones, tablets and desktops, with an interface inspired by iOS.
 
 **Free · Ad-free · Zero tracking**
 
@@ -77,11 +77,13 @@ See [Chrome's desktop installation guide](https://support.google.com/chrome/answ
 - Works offline after the first full online load in your browser or installed app.
 - Browse years **1800–2200**. Recurring observances and holy days are calculated on-device; official public-holiday calendars cover **2016–2027** and date-backed festivals and milestones **2000–2030**.
 - Your events and settings stay on your device. No account or sync; clearing app/site data removes them.
-- Events can repeat every X days, weekly, monthly or yearly, with a required end date and a preview. Choose how to handle missing month-end or leap-day dates; editing or deleting applies to the whole series.
+- Personal events can repeat every X days, weekly, monthly or yearly, with a required end date and a preview. Choose how to handle missing month-end or leap-day dates; editing or deleting applies to the whole series.
 - To update, tap **Check for update** in Settings. Available updates download and reload automatically; saved events and settings are kept.
 - Swipe left or right on the calendar to change months.
 - Tap the month to choose a month and year, then **Go**. **This year** changes the draft year and keeps your chosen month.
-- Settings includes background tint, Light/Dark choices, longer weekday names, weekday colors and Western zodiac signs. Today stays filled; another selected date has an outline.
+- In the calendar header, **Today** returns to today's date and reflects selection status dynamically (neutral text when today is selected, and accent highlight when viewing other dates). In the calendar grid, Today stays filled; another selected date has an outline.
+- The calendar month card includes an adaptive legend for holidays, Buddhist holy days, observances, and personal events.
+- Settings includes background tint, Light/Dark choices, longer weekday names, weekday colors and Western zodiac signs.
 - Scheduled reminders are not available in PWA mode.
 
 You can also use the calendar directly in your browser without installing it.

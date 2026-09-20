@@ -915,6 +915,38 @@
     "km": "ព្រឹត្តិការណ៍ · {date}",
     "en": "Events · {date}"
   },
+  "notifications.push_custom": {
+    "km": "ជូនដំណឹងព្រឹត្តិការណ៍ផ្ទាល់ខ្លួន",
+    "en": "Push personal events"
+  },
+  "notifications.push_custom_subtitle": {
+    "km": "តាមម៉ោងព្រឹត្តិការណ៍នីមួយៗ",
+    "en": "At each event's scheduled time"
+  },
+  "notifications.push_holidays": {
+    "km": "ជូនដំណឹងថ្ងៃឈប់សម្រាក",
+    "en": "Push holidays"
+  },
+  "notifications.push_holidays_subtitle": {
+    "km": "ថ្ងៃឈប់សម្រាកផ្លូវការ",
+    "en": "Official public holidays"
+  },
+  "notifications.push_holy_days": {
+    "km": "ជូនដំណឹងថ្ងៃសីល",
+    "en": "Push Buddhist holy days"
+  },
+  "notifications.push_holy_days_subtitle": {
+    "km": "តែពេលបង្ហាញថ្ងៃសីល",
+    "en": "Only when holy days are shown"
+  },
+  "notifications.push_observances": {
+    "km": "ជូនដំណឹងទិវា និងពិធីបុណ្យ",
+    "en": "Push observances"
+  },
+  "notifications.push_observances_subtitle": {
+    "km": "ទិវា និងពិធីបុណ្យនានា",
+    "en": "Festivals and others"
+  },
   "rules.calculated_details": {
     "km": "គណនាតាមក្បួនព្រឹត្តិការណ៍កើតឡើងរៀងរាល់ឆ្នាំ។ កាលបរិច្ឆេទ និងចំនួនខួប គឺជាការប៉ាន់ស្មាន មិនមែនជាកំណត់ត្រានៃការប្រារព្ធពិធី ឬថ្ងៃឈប់សម្រាកផ្លូវការទេ។ សេចក្តីប្រកាសប្រចាំឆ្នាំអាចផ្លាស់ប្ដូរកាលវិភាគ។",
     "en": "Calculated from a recurring calendar rule. The date and any anniversary count are estimates, not a record of a celebration or an official day off. Annual announcements may change the schedule."
@@ -925,7 +957,7 @@
   },
   "rules.coverage": {
     "km": "កំណត់ត្រាព្រឹត្តិការណ៍មានសម្រាប់តែឆ្នាំ ២០០០–២០៣០ ប៉ុណ្ណោះ។ ចំពោះឆ្នាំផ្សេងទៀត នឹងបង្ហាញត្រឹមពិធីបុណ្យដែលបានគណនា ថ្ងៃសីល និងព្រឹត្តិការណ៍ផ្ទាល់ខ្លួនរបស់អ្នក។",
-    "en": "Recorded events cover 2000–2030. Other years display only calculated observances, holy days, and your custom events."
+    "en": "Recorded events cover 2000–2030. Other years display only calculated observances, holy days, and your personal events."
   },
   "rules.source_summary": {
     "km": "ទិវា និងពិធីបុណ្យប្រចាំឆ្នាំនានា ត្រូវបានគណនាដោយស្វ័យប្រវត្តិចន្លោះឆ្នាំ ១៨០០–២២០០ ផ្អែកលើប្រតិទិនសុរិយគតិ និងចន្ទគតិខ្មែរ។ ចំពោះទិវាសម័យទំនើបដែលមានកាលបរិច្ឆេទថេរ មិនត្រូវបានគណនាថយក្រោយហួសឆ្នាំបង្កើតដំបូងឡើយ។ ការគណនានេះមិនអាចយកជាការបញ្ជាក់អំពីថ្ងៃឈប់សម្រាកការងារផ្លូវការនោះទេ។",
@@ -937,7 +969,7 @@
   },
   "ui.a_custom_event_saved_on_your_device.96d6e7": {
     "km": "ព្រឹត្តិការណ៍ផ្ទាល់ខ្លួនដែលរក្សាទុកក្នុងឧបករណ៍របស់អ្នក។",
-    "en": "A custom event saved on your device."
+    "en": "A personal event saved on your device."
   },
   "ui.accent_color.97e2af": {
     "km": "ពណ៌លម្អ",
@@ -1061,7 +1093,7 @@
   },
   "ui.custom.917053": {
     "km": "ផ្ទាល់ខ្លួន",
-    "en": "Custom"
+    "en": "Personal"
   },
   "ui.dark.4ae267": {
     "km": "ងងឹត",
@@ -1097,7 +1129,7 @@
   },
   "ui.event_data_covers_2000_2030_lunar_dates_holy_days_and_y.27c235": {
     "km": "ទិន្នន័យព្រឹត្តិការណ៍មានសម្រាប់ឆ្នាំ២០០០–២០៣០។ ប្រតិទិនចន្ទគតិ ថ្ងៃសីល និងព្រឹត្តិការណ៍ផ្ទាល់ខ្លួននៅតែអាចប្រើបានសម្រាប់ឆ្នាំនេះ។",
-    "en": "Event data covers 2000–2030. Lunar dates, holy days and your custom events remain available for this year."
+    "en": "Event data covers 2000–2030. Lunar dates, holy days and your personal events remain available for this year."
   },
   "ui.events.11d867": {
     "km": "ព្រឹត្តិការណ៍",
@@ -1384,8 +1416,8 @@
     "en": "Time 24-hour (HH:mm)"
   },
   "ui.time_to_deliver_daily_reminders.7806df": {
-    "km": "ម៉ោងសម្រាប់ផ្ញើការរំលឹកប្រចាំថ្ងៃ",
-    "en": "Time to deliver daily reminders"
+    "km": "សម្រាប់ព្រឹត្តិការណ៍គ្មានម៉ោងកំណត់",
+    "en": "For events with no times"
   },
   "ui.timezone.72f68d": {
     "km": "តំបន់ម៉ោង",

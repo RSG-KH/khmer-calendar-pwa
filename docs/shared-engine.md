@@ -6,7 +6,7 @@ The PWA bundles `khmer-calendar-engine` **0.3.0** from its [versioned release](h
 
 The engine's [API contract](https://github.com/RSG-KH/khmer-calendar-engine/blob/v0.3.0/docs/api.md) defines calculation behavior. Its [reference evidence](https://github.com/RSG-KH/khmer-calendar-engine/blob/v0.3.0/docs/references.md) documents calculation sources and validation. This guide covers how the PWA consumes that engine.
 
-One `calendarEngine` instance supplies lunar dates, Buddhist Era, animal year, Sak, New Year and recurrence dates for Gregorian years 1800–2200. The PWA retains civil-date validation, local/Cambodia time zones, Western zodiac labels, translations, event titles, anniversaries and custom-event storage.
+One `calendarEngine` instance supplies lunar dates, Buddhist Era, animal year, Sak, New Year and recurrence dates for Gregorian years 1800–2200. The PWA retains civil-date validation, local/Cambodia time zones, Western zodiac labels, translations, event titles, anniversaries and personal event storage.
 
 Built-in events come from the Schema v3 catalog `src/data/khmer-calendar-data-0.4.0.json` (file name carries its `dataVersion`). The repository evaluates that catalog live through the engine — there is no generated date cache to keep fresh. Calendar cells and date details call the engine for lunar dates throughout **1800–2200**. Personal repeats use the app's `EventRepeat.ts` and their saved end date, independently of the catalog. The first day of Khmer New Year (Moha Sangkran) formats its arrival time directly in the event title and header using evidenced times from `newYearArrivals` or the engine's `arrivalEstimate`.
 
@@ -14,7 +14,7 @@ Built-in events come from the Schema v3 catalog `src/data/khmer-calendar-data-0.
 
 ## Event precedence and provenance
 
-`EventRepository.getYearEvents` builds a year in four passes, then custom events are merged per displayed range:
+`EventRepository.getYearEvents` builds a year in four passes, then personal events are merged per displayed range:
 
 | Pass | Data | Coverage | Behavior |
 | --- | --- | --- | --- |
@@ -22,7 +22,7 @@ Built-in events come from the Schema v3 catalog `src/data/khmer-calendar-data-0.
 | 2 | Engine-evaluated recurrences (109 rules) | 1800–2200, per-rule `fromYear`/`throughYear` | basis `calculated`; historical events are not back-projected before `originalDate`. Catalog `overrides[]` (e.g. King Sihamoni's 3-day birthday 2005–2019, Qingming 2009/2029, Zongzi 2013) are passed to the engine as `EventDateOverride`; overridden occurrences get basis `corrected` and the override's source citation. |
 | 3 | Official holiday calendars (`holidayCalendars`) | 2016–2027 | Matched by holiday `id`/`eventId`; a match upgrades the event to kind `HOLIDAY`, basis `official`, applying day-specific names and Sub-Decree citations. Unmatched holiday dates are added directly; `cancelled` entries are skipped. |
 | 4 | Buddhist holy days | 1800–2200 | Scanned day-by-day from lunar data; IDs `sil:YYYY-MM-DD`; basis `khmer_lunar`. |
-| 5 | Custom events | User-selected dates | Merged afterward; preserve existing IDs, storage keys and instants; basis `custom`. |
+| 5 | Personal events | User-selected dates | Merged afterward; preserve existing IDs, storage keys and instants; basis `custom`. |
 
 Repository events carry `basis: recorded | calculated | corrected | official | khmer_lunar | custom`. Details distinguish calculated observances with the calculated-observance label; official holidays link their government source. The catalog's `sources[]` (government, calendar, historical) drive those citations, and the Sources dialog credits the official government websites (library.ncdd.gov.kh, ocm.gov.kh, nbc.gov.kh) and the shared Khmer Calendar Engine.
 

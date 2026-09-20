@@ -257,6 +257,10 @@ class KhmerCalendarApp {
     const watermarkAnimal = Zodiac.getAnimalDrawable(midMonthDetails.animalYear, false);
 
     const weekdays = Array.from({ length: 7 }, (_, day) => (day + (this.settings.mondayFirst ? 1 : 0)) % 7);
+    const todayStr = todayInZone(this.settings.todayTimeZone);
+    const isTodaySelected = this.selectedDateStr === todayStr;
+    const hasCustom = monthEvents.some(e => e.kind === 'CUSTOM');
+    const tightLegend = hasCustom && this.settings.holyDayMarkers;
 
     // 1. Calendar Header
     const calendarHeaderHtml = `
@@ -281,7 +285,7 @@ class KhmerCalendarApp {
           </button>
         </div>
 
-        <button class="btn-today-pill btn-go-today">
+        <button class="btn-today-pill btn-go-today${isTodaySelected ? ' is-today-selected' : ''}">
           ${L.text('ui.today.d71ac6', k)}
         </button>
       </div>
@@ -298,11 +302,11 @@ class KhmerCalendarApp {
         </div>
         <div class="month-grid-cells" style="position: relative; z-index: 1;"></div>
         <div class="card-divider" style="position: relative; z-index: 1;"></div>
-        <div class="card-legend-row" style="position: relative; z-index: 1;">
+        <div class="card-legend-row${tightLegend ? ' tight-legend' : ''}" style="position: relative; z-index: 1;">
           <div class="legend-item"><span class="mark-shape holiday"></span>${L.text('ui.holiday.253332', k)}</div>
           ${this.settings.holyDayMarkers ? `<div class="legend-item"><span class="mark-shape holy_day"></span>${L.text('ui.holy_day.28786d', k)}</div>` : ''}
           <div class="legend-item"><span class="mark-shape observance"></span>${L.text('ui.observance.5b9a87', k)}</div>
-          ${monthEvents.some(e => e.kind === 'CUSTOM') ? `<div class="legend-item"><span class="mark-shape custom"></span>${L.text('ui.custom.917053', k)}</div>` : ''}
+          ${hasCustom ? `<div class="legend-item"><span class="mark-shape custom"></span>${L.text('ui.custom.917053', k)}</div>` : ''}
         </div>
       </div>
     `;
@@ -389,7 +393,6 @@ class KhmerCalendarApp {
     const startOffset = (firstWeekday + (this.settings.mondayFirst ? 6 : 0)) % 7;
     const daysInMonth = new Date(Date.UTC(this.currentYear, this.currentMonth, 0)).getUTCDate();
     const totalSlots = Math.ceil((startOffset + daysInMonth) / 7) * 7;
-    const todayStr = todayInZone(this.settings.todayTimeZone);
 
     const gridCellsContainer = container.querySelector('.month-grid-cells')!;
     for (let slot = 0; slot < totalSlots; slot++) {

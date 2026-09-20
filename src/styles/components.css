@@ -138,11 +138,15 @@
   cursor: pointer;
   padding: 6px 12px;
   border-radius: 16px;
-  transition: background 0.15s;
+  transition: background 0.15s, color 0.15s;
 }
 
 .btn-today-pill:active {
   background: var(--accent-container);
+}
+
+.btn-today-pill.is-today-selected {
+  color: var(--text-primary);
 }
 
 /* ==========================================================================
@@ -333,8 +337,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 4px 14px;
   padding: 4px 0 2px 0;
+}
+
+.card-legend-row.tight-legend {
+  gap: 4px 8px;
 }
 
 .legend-item {
@@ -343,6 +352,7 @@
   gap: 5px;
   font-size: calc(11px * var(--font-scale));
   color: var(--on-surface-variant);
+  white-space: nowrap;
 }
 
 /* ==========================================================================

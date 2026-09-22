@@ -253,8 +253,20 @@ class KhmerCalendarApp {
     const selectedDetails = KhmerDateDetails.fromGregorian(selectedParts[0], selectedParts[1], selectedParts[2]);
     const selectedDayEvents = monthEvents.filter(event => event.date === this.selectedDateStr);
 
-    const midMonthDetails = KhmerDateDetails.fromGregorian(this.currentYear, this.currentMonth, 15);
-    const watermarkAnimal = Zodiac.getAnimalDrawable(midMonthDetails.animalYear, false);
+    // April spans the Khmer New Year animal-year transition (13th-16th): the
+    // month card shows the outgoing animal beside the incoming one, like the
+    // Android month card; every other month uses the mid-month animal.
+    let watermarkHtml: string;
+    if (this.currentMonth === 4) {
+      const { outgoing, incoming } = Zodiac.aprilAnimalTransition(this.currentYear);
+      watermarkHtml = `
+        <span class="card-watermark-zodiac tinted-watermark april-outgoing" style="--watermark-image: url('${Zodiac.getAnimalDrawable(outgoing, true)}')" aria-hidden="true"></span>
+        <span class="card-watermark-zodiac tinted-watermark april-incoming" style="--watermark-image: url('${Zodiac.getAnimalDrawable(incoming, false)}')" aria-hidden="true"></span>`;
+    } else {
+      const midMonthAnimalYear = KhmerDateDetails.fromGregorian(this.currentYear, this.currentMonth, 15).animalYear;
+      watermarkHtml = `
+        <span class="card-watermark-zodiac tinted-watermark" style="--watermark-image: url('${Zodiac.getAnimalDrawable(midMonthAnimalYear, false)}')" aria-hidden="true"></span>`;
+    }
 
     const weekdays = Array.from({ length: 7 }, (_, day) => (day + (this.settings.mondayFirst ? 1 : 0)) % 7);
     const todayStr = todayInZone(this.settings.todayTimeZone);
@@ -295,7 +307,7 @@ class KhmerCalendarApp {
     const calendarCardHtml = `
       <div class="calendar-month-card">
         <!-- Native Animal Zodiac Background Watermark -->
-        <span class="card-watermark-zodiac tinted-watermark" style="--watermark-image: url('${watermarkAnimal}')" aria-hidden="true"></span>
+        ${watermarkHtml}
 
         <div class="weekdays-row" style="position: relative; z-index: 1;">
           ${weekdays.map(day => `<span data-weekday="${day}" class="${day === 0 && this.settings.highlightSunday ? 'sunday-header' : ''}">${CalendarWords.weekday(day, k, this.settings.showLongerWeekdayNames ? 'grid_long' : 'narrow')}</span>`).join('')}

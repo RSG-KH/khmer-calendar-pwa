@@ -164,6 +164,21 @@ export class Zodiac {
     return `${import.meta.env.BASE_URL}assets/drawables/zodiac_${name}${compact ? '_400' : ''}.png`;
   }
 
+  // The animal year of a Gregorian year after Khmer New Year (rat = 0), using
+  // the same arithmetic as the Android month card.
+  static animalYearIndex(gregorianYear: number): number {
+    return (((gregorianYear - 4) % 12) + 12) % 12;
+  }
+
+  // April spans the Khmer New Year transition (13th-16th), so the month card
+  // shows the outgoing and incoming animals together.
+  static aprilAnimalTransition(gregorianYear: number): { outgoing: number; incoming: number } {
+    return {
+      outgoing: Zodiac.animalYearIndex(gregorianYear - 1),
+      incoming: Zodiac.animalYearIndex(gregorianYear)
+    };
+  }
+
   static getWesternDrawable(sign: ZodiacSign): string {
     const signKey = sign.signName.toLowerCase();
     return `${import.meta.env.BASE_URL}assets/drawables/western_zodiac_${signKey}.png`;

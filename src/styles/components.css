@@ -772,6 +772,29 @@
   opacity: 0.06;
 }
 
+/* April's Khmer New Year (13th-16th) transitions the animal year: the outgoing
+   animal sits compact in the top-left and the incoming one large in the
+   bottom-right, mirroring the Android month card (3/7 and 4/7 card width). */
+.card-watermark-zodiac.april-outgoing {
+  top: 10px;
+  left: 10px;
+  transform: none;
+  width: calc(100% * 3 / 7);
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.card-watermark-zodiac.april-incoming {
+  top: auto;
+  left: auto;
+  right: 10px;
+  bottom: 10px;
+  transform: none;
+  width: calc(100% * 4 / 7);
+  height: auto;
+  aspect-ratio: 1;
+}
+
 .cell-lotus-img {
   position: absolute;
   top: 50%;

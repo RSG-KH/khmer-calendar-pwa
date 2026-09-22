@@ -216,3 +216,21 @@ test('month picker This year changes only the draft year and handles invalid int
     if (priorZone === undefined) delete process.env.TZ; else process.env.TZ = priorZone;
   }
 });
+
+test('April month-card watermarks show the animal-year transition pair, matching Android', async () => {
+  const { Zodiac } = await server.ssrLoadModule('/src/domain/Zodiac.ts');
+  const { KhmerDateDetails } = await server.ssrLoadModule('/src/domain/KhmerDateDetails.ts');
+  for (const [year, outgoing, incoming] of [
+    [2026, 5, 6],   // Snake -> Horse
+    [2020, 11, 0],  // Pig -> Rat
+    [1800, 7, 8],   // Goat -> Monkey (first supported April)
+    [2200, 11, 0]   // Pig -> Rat (last supported April)
+  ]) {
+    assert.deepEqual(Zodiac.aprilAnimalTransition(year), { outgoing, incoming }, String(year));
+  }
+  // The engine agrees before and after the Khmer New Year transition, which is
+  // why a single mid-April snapshot cannot represent the month.
+  assert.equal(KhmerDateDetails.fromGregorian(2026, 4, 10).animalYear, 5);
+  assert.equal(KhmerDateDetails.fromGregorian(2026, 4, 20).animalYear, 6);
+  assert.equal(KhmerDateDetails.fromGregorian(2026, 6, 15).animalYear, Zodiac.animalYearIndex(2026));
+});

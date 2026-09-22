@@ -20,7 +20,8 @@ files onto the tagged PWA source and makes one small service-worker guard patch.
 - `scripts/apply-win7.ps1` — overlays this kit onto a clean tagged PWA checkout.
 - `scripts/build-win7-release.ps1` — builds x64 and ia32 portable ZIPs.
 - `scripts/make-win-icon.ps1` — creates a multi-resolution `.ico`.
-- `scripts/patch-win-exe.mjs` — applies desktop icon/Windows EXE metadata.
+- `scripts/patch-win-exe.mjs` — applies desktop icon and the app-version
+  Windows EXE metadata.
 
 ## Important pins
 

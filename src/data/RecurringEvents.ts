@@ -1,12 +1,22 @@
 // Copyright (c) 2026 RSG-KH | Apache-2.0 License
 
 import { createRule, type RuleInput, type RecurrenceRule as EngineRecurrenceRule } from 'khmer-calendar-engine';
-import catalogData from './khmer-calendar-data-0.4.0.json';
+import catalogData from './khmer-calendar-data-0.4.4.json';
+import knowledgeData from './event-knowledge.json';
 import { calendarEngine, KhmerCalendar, khmerNumber } from '../domain/KhmerCalendar';
 
 export interface CatalogNames {
   en: string;
   km: string;
+}
+
+export interface KnowledgeEntry {
+  id: string;
+  category: string;
+  nameKm: string;
+  nameEn: string;
+  summaryKm: string;
+  summaryEn: string;
 }
 
 export interface CatalogSource {
@@ -88,6 +98,21 @@ export interface CalendarCatalog {
 }
 
 export const calendarCatalog = catalogData as CalendarCatalog;
+
+interface KnowledgeFile {
+  entries: Array<Record<string, string>>;
+}
+
+export const knowledgeById: Map<string, KnowledgeEntry> = new Map(
+  (knowledgeData as KnowledgeFile).entries.map(entry => [entry.id, {
+    id: entry.id,
+    category: entry.category,
+    nameKm: entry.name_km,
+    nameEn: entry.name_en,
+    summaryKm: entry.summary_km,
+    summaryEn: entry.summary_en,
+  }])
+);
 
 export const newYearArrivalsByYear = new Map<number, CatalogNewYearArrival>(
   calendarCatalog.newYearArrivals?.map(a => [a.year, a]) ?? []
@@ -198,12 +223,19 @@ const compiledRules = new Map<string, EngineRecurrenceRule>(
   recurrenceEvents.map(e => [e.id, createRule(e.rule!)])
 );
 
+export function ordinalSuffix(n: number): string {
+  const hundredRem = n % 100;
+  const tenRem = n % 10;
+  if (hundredRem >= 11 && hundredRem <= 13) return 'th';
+  return tenRem === 1 ? 'st' : tenRem === 2 ? 'nd' : tenRem === 3 ? 'rd' : 'th';
+}
+
 export function eventNames(event: CatalogEvent, year: number): CatalogNames {
   let names = event.names;
   if (event.anniversaryBase !== undefined) {
     const anniversary = year - event.anniversaryBase;
     names = {
-      en: event.names.en.replaceAll('{anniversary}', String(anniversary)),
+      en: event.names.en.replaceAll('{anniversary}', `${anniversary}${ordinalSuffix(anniversary)}`),
       km: event.names.km.replaceAll('{anniversary}', khmerNumber(anniversary)),
     };
   }

@@ -10,5 +10,8 @@ export const Icons = {
   close: `<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`,
   copy: `<svg viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg>`,
   delete: `<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`,
-  check: `<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`
+  check: `<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`,
+  lightbulb: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="9" r="5.4"/><line x1="9.9" y1="15.4" x2="9.9" y2="17"/><line x1="14.1" y1="15.4" x2="14.1" y2="17"/><line x1="10.3" y1="19.2" x2="13.7" y2="19.2"/><line x1="11" y1="9" x2="13" y2="9" stroke-width="1.5"/></svg>`,
+  search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="13.8" cy="10.2" r="6.2"/><line x1="9.42" y1="14.58" x2="4.5" y2="19.5"/></svg>`,
+  openInNew: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 11v9h9"/><line x1="10.5" y1="13.5" x2="19.2" y2="4.8"/><line x1="13.6" y1="4.8" x2="19.2" y2="4.8"/><line x1="19.2" y1="4.8" x2="19.2" y2="10.4"/></svg>`
 };

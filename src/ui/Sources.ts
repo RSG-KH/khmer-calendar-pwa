@@ -2,10 +2,12 @@ import { L } from '../data/i18n';
 import { escapeHtml } from './html';
 import { setupModal, showModal, hideModal } from './Modal';
 import appLicense from '../../LICENSE?raw';
-import attributionNotice from '../../public/NOTICE.txt?raw';
-import fontLicense from '../../public/fonts/OFL.txt?raw';
-import engineLicense from '../../public/engine-LICENSE.txt?raw';
-import engineNotice from '../../public/engine-NOTICE.txt?raw';
+// Bundled copies live in src/legal so Vite never imports out of the public directory;
+// a test keeps them byte-identical to the served files in public/.
+import attributionNotice from '../legal/NOTICE.txt?raw';
+import fontLicense from '../legal/OFL.txt?raw';
+import engineLicense from '../legal/engine-LICENSE.txt?raw';
+import engineNotice from '../legal/engine-NOTICE.txt?raw';
 
 function showUrlDialog(title: string, urlText: string, k: boolean): () => void {
   const overlay = document.createElement('div');

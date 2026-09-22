@@ -60,7 +60,7 @@
     "en": "Rooster"
   },
   "calendar.date_label": {
-    "km": "{weekday} {day} {month}",
+    "km": "{weekday} ទី{day} {month}",
     "en": "{weekday}, {day} {month}"
   },
   "calendar.full_date": {
@@ -1211,6 +1211,10 @@
     "km": "ស្វាយខ្ចី",
     "en": "Lavender"
   },
+  "ui.learn_more": {
+    "km": "ស្វែងយល់បន្ថែម",
+    "en": "Learn more"
+  },
   "ui.light.aa790e": {
     "km": "ភ្លឺ",
     "en": "Light"
@@ -1254,6 +1258,10 @@
   "ui.no_account_no_internet_no_tracking_just_your_calendar_a.9bc7bf": {
     "km": "មិនត្រូវការគណនី មិនត្រូវការអ៊ីនធឺណិត មិនប្រមូលទិន្នន័យ មានតែប្រតិទិនរបស់អ្នក និងថ្ងៃសំខាន់ៗ។",
     "en": "No account, no internet, no data collection. Just your calendar and the dates that matter."
+  },
+  "ui.no_browser_or_search_app": {
+    "km": "គ្មានកម្មវិធីរុករក ឬកម្មវិធីស្វែងរក",
+    "en": "No browser or search app available"
   },
   "ui.no_matching_events_try_another_filter_or_search.57812b": {
     "km": "គ្មានព្រឹត្តិការណ៍។ សាកល្បងប្ដូរតម្រង ឬពាក្យស្វែងរក។",
@@ -1299,6 +1307,10 @@
     "km": "អាជ្ញាបណ្ណប្រភពបើកចំហ",
     "en": "Open-source licenses"
   },
+  "ui.opens_in_external_browser": {
+    "km": "បើកនៅក្នុងកម្មវិធីរុករកខាងក្រៅ",
+    "en": "Opens in external browser"
+  },
   "ui.pick.971faf": {
     "km": "ជ្រើសរើស",
     "en": "Pick"
@@ -1342,6 +1354,10 @@
   "ui.search_events.08c608": {
     "km": "ស្វែងរកព្រឹត្តិការណ៍",
     "en": "Search events"
+  },
+  "ui.search_online": {
+    "km": "ស្វែងរកលើអ៊ីនធឺណិត",
+    "en": "Search online"
   },
   "ui.select_time.eacac3": {
     "km": "ជ្រើសរើសម៉ោង",

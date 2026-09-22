@@ -4,6 +4,7 @@ import { Icons } from './Icons';
 import { CalendarWords, L } from '../data/i18n';
 import { Storage, CustomEvent } from '../data/Storage';
 import { CalendarEvent } from '../data/EventRepository';
+import { knowledgeById } from '../data/RecurringEvents';
 import { KhmerDateDetails } from '../domain/KhmerDateDetails';
 import { Zodiac } from '../domain/Zodiac';
 import { eventInstant, isSupportedDate, namedTimeZone, timeZoneOffsetLabel, todayInZone } from '../domain/DateTime';
@@ -185,6 +186,7 @@ export class EventDetailsDialogModal {
   private onEdit: (event: CalendarEvent) => void;
   private onDelete: (id: string) => void;
   private cleanupTitleCopy?: () => void;
+  private learnMoreModal = new LearnMoreModal();
 
   constructor(onEdit: (event: CalendarEvent) => void, onDelete: (id: string) => void) {
     this.onEdit = onEdit;
@@ -206,6 +208,17 @@ export class EventDetailsDialogModal {
     const settings = Storage.getSettings();
     const animalImg = Zodiac.getAnimalDrawable(info.animalYear, true);
     const westernImg = Zodiac.getWesternDrawable(info.zodiac);
+    const frequencyLabel = event.repeat
+      ? (event.repeat.frequency === 'days'
+          ? (isKhmer
+              ? `រៀងរាល់ ${CalendarWords.number(event.repeat.interval || 1, true)} ថ្ងៃ`
+              : `Every ${event.repeat.interval || 1} day${(event.repeat.interval || 1) > 1 ? 's' : ''}`)
+          : L.text(`repeat.${event.repeat.frequency}`, isKhmer))
+      : '';
+    const translatedTitle = isKhmer ? event.titleEn : event.titleKm;
+    const titleWithOriginYear = event.anniversaryBase !== undefined
+      ? `${translatedTitle} (${CalendarWords.number(event.anniversaryBase, !isKhmer)})`
+      : translatedTitle;
 
     let categoryDesc = '';
     let isEngineCalculated = false;
@@ -244,7 +257,7 @@ export class EventDetailsDialogModal {
             ${CalendarWords.date(parts[0], parts[1], parts[2], isKhmer)}${event.time ? ` · ${escapeHtml(event.time)}` : ''}
           </div>
 
-          ${event.repeat ? `<p class="settings-subtitle">${L.text(`repeat.${event.repeat.frequency}`, isKhmer)} · ${L.text('repeat.end', isKhmer)} ${repeatDateLabel(event.repeat.until, isKhmer)}</p>` : ''}
+          ${event.repeat ? `<p class="settings-subtitle">${frequencyLabel} · ${L.text('repeat.end', isKhmer)} ${repeatDateLabel(event.repeat.until, isKhmer)}</p>` : ''}
 
           <!-- Notes if any -->
           ${event.notes ? `<div style="white-space: pre-wrap; overflow-wrap: anywhere; color: var(--on-surface-variant); background: var(--bg-surface-variant); padding: 10px; border-radius: 8px;">${escapeHtml(event.notes)}</div>` : ''}
@@ -268,8 +281,8 @@ export class EventDetailsDialogModal {
               L.text('ui.custom.917053', isKhmer)}
           </div>
           ${!isCustom ? `
-            <div style="font-size: calc(13px * var(--font-scale)); color: var(--on-surface-variant);">
-              ${escapeHtml(isKhmer ? event.titleEn : event.titleKm)}
+            <div style="font-size: calc(13px * var(--font-scale)); font-weight: 700; color: var(--on-surface-variant);">
+              ${escapeHtml(titleWithOriginYear)}
             </div>
           ` : ''}
           ${categoryDesc ? `<div style="font-size: calc(${isEngineCalculated ? '12px' : '13px'} * var(--font-scale)); line-height: 1.6; color: var(--on-surface-variant);">${categoryDesc}</div>` : ''}
@@ -289,7 +302,7 @@ export class EventDetailsDialogModal {
               <button class="btn-today-pill btn-confirm-delete" style="color: var(--tertiary);">${L.text('ui.delete.4708f4', isKhmer)}</button>
             </div>
           </div>` : ''}
-          <div class="event-detail-actions" style="display: flex; justify-content: ${isCustom ? 'space-between' : 'flex-end'}; align-items: center; margin-top: 16px;">
+          <div class="event-detail-actions" style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
             ${isCustom ? `
               <button class="btn-today-pill btn-ev-delete" ${event.seriesId ? 'data-series' : ''} style="color: #FF5252; background: transparent; border: 1px solid #FF5252;">
                 ${L.text(event.seriesId ? 'repeat.delete_series' : 'ui.delete.4708f4', isKhmer)}
@@ -303,6 +316,10 @@ export class EventDetailsDialogModal {
                 </button>
               </div>
             ` : `
+              <button class="btn-today-pill btn-ev-learn-more" style="border: 1px solid var(--outline); background: transparent; color: var(--text-primary);">
+                <span class="btn-icon" aria-hidden="true">${Icons.lightbulb}</span>
+                ${L.text('ui.learn_more', isKhmer)}
+              </button>
               <button class="btn-today-pill btn-ev-close" style="background: var(--accent); color: var(--on-accent); padding: 8px 20px; border-radius: 20px;">
                 ${L.text('ui.close.7df7dc', isKhmer)}
               </button>
@@ -322,6 +339,9 @@ export class EventDetailsDialogModal {
       }
     );
     this.overlay.querySelector('.btn-ev-close')!.addEventListener('click', () => this.close());
+    this.overlay.querySelector('.btn-ev-learn-more')?.addEventListener('click', () => {
+      this.learnMoreModal.open(event, isKhmer);
+    });
 
     if (isCustom) {
       this.overlay.querySelector('.btn-ev-edit')?.addEventListener('click', () => {
@@ -355,6 +375,117 @@ export class EventDetailsDialogModal {
   close() {
     this.cleanupTitleCopy?.();
     this.cleanupTitleCopy = undefined;
+    hideModal(this.overlay);
+  }
+}
+
+/* ==========================================================================
+   3b. LEARN MORE DIALOG MODAL (matching LearnMoreDialog in CalendarApp.kt)
+   ========================================================================== */
+
+/** Builds the semantic, category-aware search query: no raw dates (they steer AI mode toward dated posts), and
+ *  Cambodia-specific English searches append "Cambodia" so generic titles (Independence Day, Constitution Day)
+ *  do not collide with US or other countries' events. Returns null when the event has no searchable title. */
+export function buildOnlineSearchQuery(event: CalendarEvent, isKhmer: boolean): string | null {
+  const category = knowledgeById.get(event.id)?.category;
+  const normalize = (value: string) => value.replace(/\s+/g, ' ').trim();
+  if (isKhmer) {
+    const title = normalize(event.titleKm);
+    if (!title) return null;
+    const suffix =
+      category === 'unesco' ? 'បេតិកភណ្ឌយូណេស្កូ ប្រវត្តិ' :
+      category === 'national_history' || category === 'milestone' ? 'ប្រវត្តិ សារៈសំខាន់' :
+      category === 'royal' ? 'ព្រះរាជពិធី ប្រវត្តិ' :
+      category === 'lunar_buddhist' || category === 'cultural' ? 'ប្រវត្តិ និងទំនៀមទម្លាប់' :
+      'ប្រវត្តិ និងអត្ថន័យ';
+    return `${title} ${suffix}`;
+  }
+  const title = normalize(event.titleEn);
+  if (!title) return null;
+  const cambodiaSpecific = ['national_history', 'royal', 'unesco', 'cultural', 'lunar_buddhist', 'milestone'].includes(category || '');
+  const anchor = cambodiaSpecific ? 'Cambodia' : '';
+  const suffix =
+    category === 'unesco' ? 'UNESCO heritage history' :
+    category === 'national_history' || category === 'milestone' ? 'history and significance' :
+    category === 'royal' ? 'royal ceremony history' :
+    category === 'lunar_buddhist' || category === 'cultural' ? 'tradition and history' :
+    'history and significance';
+  return [title, anchor, suffix].filter(Boolean).join(' ');
+}
+
+/** Opens the search in a new browser tab straight to Google AI mode; the app itself never opens a network connection. */
+function launchOnlineSearch(event: CalendarEvent, isKhmer: boolean): void {
+  const query = buildOnlineSearchQuery(event, isKhmer);
+  if (!query) return;
+  // hl enforces the app's selected language for the search UI and the AI summary.
+  const searchUrl = `https://www.google.com/search?${new URLSearchParams({ q: query, hl: isKhmer ? 'km' : 'en', udm: '50' })}`;
+  // 'noopener' cannot go through window.open features: the spec makes it return null even on
+  // success, which would read as a blocked popup. Sever the opener manually instead.
+  const opened = window.open(searchUrl, '_blank');
+  if (opened) opened.opener = null;
+  else window.alert(L.text('ui.no_browser_or_search_app', isKhmer));
+}
+
+export class LearnMoreModal {
+  private overlay: HTMLElement;
+
+  constructor() {
+    this.overlay = document.createElement('div');
+    this.overlay.className = 'modal-overlay';
+    setupModal(this.overlay, () => this.close());
+    this.overlay.addEventListener('click', (e) => { if (e.target === this.overlay) this.close(); });
+    document.body.appendChild(this.overlay);
+  }
+
+  open(event: CalendarEvent, isKhmer: boolean) {
+    const entry = knowledgeById.get(event.id);
+    const title = isKhmer ? event.titleKm : event.titleEn;
+    // Both language summaries stack, app language first.
+    const summaries = entry
+      ? (isKhmer ? [entry.summaryKm, entry.summaryEn] : [entry.summaryEn, entry.summaryKm])
+      : null;
+
+    this.overlay.innerHTML = `
+      <div class="modal-dialog-surface learn-more-dialog" style="position: relative; max-width: 480px; width: 92%;">
+        <div style="display: flex; align-items: center; gap: 8px; position: relative; z-index: 1;">
+          <span class="learn-more-icon" aria-hidden="true">${Icons.lightbulb}</span>
+          <span style="font-size: calc(16px * var(--font-scale)); font-weight: 600; color: var(--accent); flex: 1;">
+            ${L.text('ui.learn_more', isKhmer)}
+          </span>
+        </div>
+
+        <div class="card-divider" style="margin: 10px 0 14px 0;"></div>
+
+        <div style="position: relative; z-index: 1; display: flex; flex-direction: column; gap: 12px; max-height: 60vh; overflow-y: auto;">
+          <div style="font-size: calc(15px * var(--font-scale)); font-weight: 500; color: var(--text-primary);">${escapeHtml(title)}</div>
+          ${summaries ? `
+            <div style="font-size: calc(14px * var(--font-scale)); line-height: 1.65; color: var(--text-primary);">${escapeHtml(summaries[0])}</div>
+            <div style="font-size: calc(14px * var(--font-scale)); line-height: 1.65; color: var(--on-surface-variant);">${escapeHtml(summaries[1])}</div>
+          ` : ''}
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; position: relative; z-index: 1;">
+          <button type="button" class="btn-today-pill btn-search-online" style="border: 1px solid var(--outline); background: transparent; color: var(--text-primary);">
+            <span class="btn-icon" aria-hidden="true">${Icons.search}</span>
+            ${L.text('ui.search_online', isKhmer)}
+            <span class="btn-icon" role="img" aria-label="${L.text('ui.opens_in_external_browser', isKhmer)}">${Icons.openInNew}</span>
+          </button>
+          <button type="button" class="btn-today-pill btn-learn-close" style="background: var(--accent); color: var(--on-accent); padding: 8px 20px; border-radius: 20px;">
+            ${L.text('ui.close.7df7dc', isKhmer)}
+          </button>
+        </div>
+      </div>
+    `;
+
+    this.overlay.querySelector('.btn-search-online')!.addEventListener('click', () => launchOnlineSearch(event, isKhmer));
+    this.overlay.querySelector('.btn-learn-close')!.addEventListener('click', () => this.close());
+
+    // Overlays share a z-index, so re-append to stack above the event dialog that opened this one.
+    document.body.appendChild(this.overlay);
+    showModal(this.overlay, `${L.text('ui.learn_more', isKhmer)} — ${title}`);
+  }
+
+  close() {
     hideModal(this.overlay);
   }
 }

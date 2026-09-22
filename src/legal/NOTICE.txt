@@ -1,0 +1,12 @@
+Khmer Calendar (PWA)
+Copyright (c) 2026 RSG-KH
+Web application based on Khmer Calendar for Android:
+https://github.com/RSG-KH/khmer-calendar
+
+Calendar data catalog curated by Khmer Calendar Manager (Apache-2.0).
+https://github.com/RSG-KH/khmer-calendar-manager
+
+Calendar calculations use Khmer Calendar Engine 0.3.0 (Apache-2.0).
+https://github.com/RSG-KH/khmer-calendar-engine
+See engine-LICENSE.txt and engine-NOTICE.txt for the complete license and
+incorporated MIT algorithm attributions. All texts are bundled offline.

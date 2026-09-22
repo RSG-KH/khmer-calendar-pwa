@@ -14,7 +14,7 @@ const { EventRepository } = await server.ssrLoadModule('/src/data/EventRepositor
 const { holyDayLotus } = await server.ssrLoadModule('/src/ui/HolyDayLotus.ts');
 const { Storage, DEFAULT_SETTINGS } = await server.ssrLoadModule('/src/data/Storage.ts');
 
-const catalogBytes = await readFile(new URL('../src/data/khmer-calendar-data-0.4.0.json', import.meta.url));
+const catalogBytes = await readFile(new URL('../src/data/khmer-calendar-data-0.4.4.json', import.meta.url));
 const storageMap = new Map();
 globalThis.localStorage = {
   getItem: k => storageMap.get(k) ?? null,
@@ -43,8 +43,10 @@ test('second Asadh, festival offsets, weekday occurrence and anniversary rules s
   assert.deepEqual(dates.get('buddhist_lent_candles_making_day'), ['2031-07-27']);
   assert.deepEqual(dates.get('the_ordained_dragon_monk'), ['2031-08-02']);
   assert.deepEqual(RecurringEvents.dates(2024).find(e => e.rule.id === 'khmer_new_year_2').dates, ['2024-04-14', '2024-04-15']);
-  const festival = RecurringEvents.dates(2026).find(e => e.rule.id === 'pchum_ben_festival');
-  assert.deepEqual(festival.dates, ['2026-10-10', '2026-10-11', '2026-10-12']);
+  // Traditional Pchum Ben structure since catalog 0.4.3: Ben 14, the single 15-roach climax, then Post Pchum Ben Festival.
+  assert.deepEqual(RecurringEvents.dates(2026).find(e => e.rule.id === 'ben_14').dates, ['2026-10-10']);
+  assert.deepEqual(RecurringEvents.dates(2026).find(e => e.rule.id === 'pchum_ben_festival').dates, ['2026-10-11']);
+  assert.deepEqual(RecurringEvents.dates(2026).find(e => e.rule.id === 'post_pchum_ben_festival').dates, ['2026-10-12']);
   const weekdays = RecurringEvents.dates(2031).filter(e => e.rule.type === 'solar_nth_weekday');
   assert.ok(weekdays.length > 0);
   for (const { rule, dates: [date] } of weekdays) {
@@ -53,13 +55,13 @@ test('second Asadh, festival offsets, weekday occurrence and anniversary rules s
     assert.equal(Math.ceil(parsed.getUTCDate() / 7), rule.occurrence ?? rule.offset);
   }
   const victory = RecurringEvents.forYear(2031).find(e => e.id === 'victory_over_genocide');
-  assert.equal(victory.en, 'Victory Over Genocide Day');
+  assert.equal(victory.en, 'Victory Over Genocide Day · 52nd');
   assert.ok(victory.km.includes('៥២'));
   assert.ok(RecurringEvents.forYear(1999).some(e => e.id === victory.id));
   assert.ok(!RecurringEvents.forYear(1978).some(e => e.id === victory.id));
 });
 
-test('all 111 app definitions yield 30,371 unique in-year occurrences across 401 years', () => {
+test('all 113 app definitions yield 30,371 unique in-year occurrences across 401 years', () => {
   let count = 0;
   const families = new Set();
   for (let year = 1800; year <= 2200; year++) {
@@ -80,14 +82,14 @@ test('all 111 app definitions yield 30,371 unique in-year occurrences across 401
 });
 
 test('canonical Schema v3 catalog integrity and checksum match specification', () => {
-  assert.equal(sha(catalogBytes), 'a78df643d602e5ee1e2788139d2254ebc32ee07a64012de79715932441ed53a8');
+  assert.equal(sha(catalogBytes), '7d5bddbe0fa2d85f0d3cc47c9c2eb39c9140e6d83e4765eb3e16f20e50ab0005');
   assert.equal(calendarCatalog.schemaVersion, 3);
-  assert.equal(calendarCatalog.dataVersion, '0.4.0');
-  assert.equal(calendarCatalog.events.length, 137);
+  assert.equal(calendarCatalog.dataVersion, '0.4.4');
+  assert.equal(calendarCatalog.events.length, 139);
 
   const recurring = calendarCatalog.events.filter(e => e.rule);
   const staticEvents = calendarCatalog.events.filter(e => e.dates);
-  assert.equal(recurring.length, 111);
+  assert.equal(recurring.length, 113);
   assert.equal(staticEvents.length, 26);
   assert.equal(staticEvents.filter(e => e.kind === 'traditional').length, 0);
   assert.equal(staticEvents.filter(e => e.kind === 'historical').length, 26);
@@ -286,6 +288,29 @@ test('all 12 official government holiday calendars (2016–2027) apply public ho
   assert.ok(women2027.titleKm.includes('១១៦'), '2027 Women Day should show 116th anniversary in Khmer');
   const labor2027 = y2027.find(e => e.id === 'international_labor_day');
   assert.ok(labor2027.titleKm.includes('១៤១'), '2027 Labor Day should show 141st anniversary in Khmer');
+
+  // English anniversary counts render with ordinal suffixes in both the holiday and rule layers.
+  const y2026 = EventRepository.getYearEvents(2026);
+  const jan7 = y2026.find(e => e.id === 'victory_over_genocide' && e.kind === 'HOLIDAY');
+  assert.equal(jan7.titleEn, 'Victory Over Genocide Day · 47th');
+  assert.equal(jan7.anniversaryBase, 1979);
+  const rights2016 = EventRepository.getYearEvents(2016).find(e => e.id === 'international_human_rights_day');
+  assert.equal(rights2016.titleEn, 'International Human Rights Day · 68th');
+  assert.equal(rights2016.anniversaryBase, 1948);
+  const nov9_2028 = EventRepository.getYearEvents(2028).find(e => e.id === 'independence_day');
+  assert.equal(nov9_2028.titleEn, 'Independence Day · 75th');
+  assert.equal(nov9_2028.anniversaryBase, 1953);
+});
+
+test('bundled knowledge covers every catalog event with complete bilingual entries', async () => {
+  const { knowledgeById } = await server.ssrLoadModule('/src/data/RecurringEvents.ts');
+  assert.deepEqual(new Set(calendarCatalog.events.map(e => e.id)), new Set(knowledgeById.keys()));
+  assert.equal(knowledgeById.size, 139);
+  for (const entry of knowledgeById.values()) {
+    assert.ok(entry.id && entry.category, `Knowledge entry ${entry.id} needs id and category`);
+    assert.ok(entry.nameKm && entry.nameEn, `Knowledge entry ${entry.id} needs both names`);
+    assert.ok(entry.summaryKm && entry.summaryEn, `Knowledge entry ${entry.id} needs both summaries`);
+  }
 });
 
 test('in-memory year cache serves subsequent requests and year boundaries enforce 1800-2200 range', () => {
@@ -380,7 +405,7 @@ test('event details dialog renders clean categories and descriptions without raw
   const constDay = EventRepository.getYearEvents(2026).find(e => e.date === '2026-09-24' && e.kind === 'HOLIDAY');
   modal.open(constDay, true);
   const constHtml = modal.overlay.innerHTML;
-  assert.ok(constHtml.includes('ថ្ងៃព្រហស្បតិ៍ ២៤ ខែកញ្ញា ២០២៦'), 'Full Khmer date format matching Android');
+  assert.ok(constHtml.includes('ថ្ងៃព្រហស្បតិ៍ ទី២៤ ខែកញ្ញា ២០២៦'), 'Full Khmer date format with ទី day prefix, matching Android');
   assert.ok(constHtml.includes('១៣កើត ខែភទ្របទ<br>ឆ្នាំមមី អដ្ឋស័ក'), 'Lunar day, month, animal year, and sak');
   assert.ok(constHtml.includes('ថ្ងៃឈប់សម្រាក'));
   assert.ok(constHtml.includes('បានបញ្ជាក់ក្នុងប្រតិទិនថ្ងៃឈប់សម្រាកផ្លូវការ ឆ្នាំ២០២៦។'));
@@ -393,6 +418,28 @@ test('event details dialog renders clean categories and descriptions without raw
   assert.ok(titleEnIdx < verifiedIdx, 'English title must appear directly under holiday subtitle, before verified description');
   assert.equal(constHtml.includes('<a href='), false, 'Must not render clickable URL link in event details');
   assert.equal(constHtml.includes('SHA-256'), false);
+  assert.ok(constHtml.includes('Constitution Day · 33rd (1993)'), 'Translated title shows ordinal count and origin year');
+  assert.ok(constHtml.includes('btn-ev-learn-more'), 'Non-custom events expose a Learn more action');
+
+  // 2b. Learn more dialog: stacked bilingual knowledge, app language first, plus the online search query
+  const { LearnMoreModal, buildOnlineSearchQuery } = await server.ssrLoadModule('/src/ui/Modals.ts');
+  const { escapeHtml } = await server.ssrLoadModule('/src/ui/html.ts');
+  const learnModal = new LearnMoreModal();
+  learnModal.open(constDay, false);
+  const learnHtml = learnModal.overlay.innerHTML;
+  const { knowledgeById } = await server.ssrLoadModule('/src/data/RecurringEvents.ts');
+  const entry = knowledgeById.get('constitution_day');
+  const summaryEnIdx = learnHtml.indexOf(escapeHtml(entry.summaryEn));
+  const summaryKmIdx = learnHtml.indexOf(escapeHtml(entry.summaryKm));
+  assert.ok(summaryEnIdx >= 0 && summaryKmIdx >= 0, 'Both language summaries render');
+  assert.ok(summaryEnIdx < summaryKmIdx, 'English summary must lead when the app is English');
+  assert.ok(learnHtml.includes('Search online'), 'Search online action present');
+  assert.ok(learnHtml.includes('Opens in external browser'), 'External-browser hint labels the open-in-new icon');
+  assert.equal(buildOnlineSearchQuery(constDay, false), 'Constitution Day · 33rd Cambodia history and significance');
+  assert.equal(buildOnlineSearchQuery(constDay, true), `${constDay.titleKm} ប្រវត្តិ សារៈសំខាន់`);
+  // Global observances must not carry the Cambodia anchor.
+  const newYearDay = EventRepository.getYearEvents(2026).find(e => e.id === 'new_year_day');
+  assert.equal(buildOnlineSearchQuery(newYearDay, false), "New Year's Day history and significance");
 
   // 3. Date Details Dialog: Shaving Day 🙏 vs Holy Day Lotus (enabled vs disabled)
   const { DateDetailsDialogModal } = await server.ssrLoadModule('/src/ui/Modals.ts');

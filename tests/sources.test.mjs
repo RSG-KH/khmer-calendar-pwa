@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test, after, beforeEach } from 'node:test';
 import { createServer } from 'vite';
+import { readFile } from 'node:fs/promises';
 
 const server = await createServer({
   server: { middlewareMode: true, ws: false },
@@ -11,6 +12,21 @@ after(() => server.close());
 
 const { L } = await server.ssrLoadModule('/src/data/i18n.ts');
 const { showCalendarSources } = await server.ssrLoadModule('/src/ui/Sources.ts');
+
+test('bundled legal texts in src/legal stay identical to the served files in public', async () => {
+  for (const [bundled, served] of [
+    ['NOTICE.txt', 'NOTICE.txt'],
+    ['OFL.txt', 'fonts/OFL.txt'],
+    ['engine-LICENSE.txt', 'engine-LICENSE.txt'],
+    ['engine-NOTICE.txt', 'engine-NOTICE.txt']
+  ]) {
+    const [bundledText, servedText] = await Promise.all([
+      readFile(new URL(`../src/legal/${bundled}`, import.meta.url), 'utf8'),
+      readFile(new URL(`../public/${served}`, import.meta.url), 'utf8')
+    ]);
+    assert.equal(bundledText, servedText, `src/legal/${bundled} must match public/${served}`);
+  }
+});
 
 test('archive and holiday sources and copy translations resolve in English and Khmer', () => {
   assert.equal(

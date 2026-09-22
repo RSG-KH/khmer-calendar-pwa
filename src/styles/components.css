@@ -916,3 +916,43 @@
   flex-direction: column;
   gap: 8px;
 }
+
+/* ==========================================================================
+   LEARN MORE DIALOG STYLES
+   ========================================================================== */
+.learn-more-icon {
+  display: flex;
+  color: var(--accent);
+}
+
+.learn-more-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
+
+.btn-today-pill .btn-icon {
+  display: flex;
+}
+
+.btn-today-pill .btn-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+
+.btn-today-pill .btn-icon + .btn-icon {
+  margin-left: 5px;
+}
+
+.btn-search-online {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-ev-learn-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

@@ -1,0 +1,1120 @@
+{
+  "provenance": {
+    "note": "Knowledge checked and written by Gemini 3.8 Flash Extended and GPT5.6 Sol High on 2026-09-22.",
+    "catalogDataVersion": "0.4.4"
+  },
+  "entries": [
+    {
+      "id": "new_year_day",
+      "category": "global_observance",
+      "name_km": "ទិវាចូលឆ្នាំសកល",
+      "name_en": "New Year's Day",
+      "summary_km": "ថ្ងៃដំបូងនៃប្រតិទិនសុរិយគតិអន្តរជាតិ ប្រារព្ធឡើងដើម្បីស្វាគមន៍ការឈានចូលមកដល់នៃឆ្នាំថ្មី និងការជួបជុំគ្រួសារ។",
+      "summary_en": "The first day of the Gregorian year, celebrated globally with gatherings and welcoming the year ahead."
+    },
+    {
+      "id": "victory_over_genocide",
+      "category": "national_history",
+      "name_km": "ទិវាជ័យជម្នះលើរបបប្រល័យពូជសាសន៍",
+      "name_en": "Victory Over Genocide Day",
+      "summary_km": "រំលឹកដល់ការផ្តួលរំលំរបបខ្មែរក្រហមនៅថ្ងៃទី៧ ខែមករា ឆ្នាំ១៩៧៩ ដែលបើកទំព័រថ្មីនៃសន្តិភាព និងការរស់រានមានជីវិតឡើងវិញ។",
+      "summary_en": "Commemorates the overthrow of the Khmer Rouge regime on January 7, 1979, and the rebirth of the Cambodian nation."
+    },
+    {
+      "id": "valentine_day",
+      "category": "global_observance",
+      "name_km": "ទិវានៃក្តីស្រឡាញ់",
+      "name_en": "Valentine's Day",
+      "summary_km": "ទិវាអន្តរជាតិបង្ហាញពីសេចក្តីស្រឡាញ់ និងការយកចិត្តទុកដាក់ចំពោះក្រុមគ្រួសារ ដៃគូជីវិត និងមិត្តភក្តិ។",
+      "summary_en": "An international day expressing affection and care among family members, couples, and friends."
+    },
+    {
+      "id": "maternal_newborn_child_health_day",
+      "category": "national_history",
+      "name_km": "ទិវាជាតិសុខភាពមាតា ទារក និងកុមារ",
+      "name_en": "National Day on Maternal, Newborn and Child Health",
+      "summary_km": "បង្កើតឡើងដើម្បីលើកកម្ពស់ការយល់ដឹងពីអាហារូបត្ថម្ភ និងការថែទាំសុខភាពមាតា និងកុមារទូទាំងប្រទេសកម្ពុជា។",
+      "summary_en": "Promotes awareness and healthcare standards for maternal, infant, and child nutrition and wellbeing across Cambodia."
+    },
+    {
+      "id": "national_mine_awareness_day",
+      "category": "national_history",
+      "name_km": "ទិវាជាតិយល់ដឹងអំពីមីន",
+      "name_en": "National Mine Awareness Day",
+      "summary_km": "រំលឹកដល់ការរួមគ្នាទប់ស្កាត់គ្រោះថ្នាក់ដោយសារគ្រាប់មីន និងយុទ្ធភណ្ឌមិនទាន់ផ្ទុះដែលសេសសល់ពីសម័យសង្គ្រាម។",
+      "summary_en": "Raises awareness to eliminate risks from landmines and unexploded ordnance (UXO) remaining from past conflicts."
+    },
+    {
+      "id": "national_culture_day",
+      "category": "cultural",
+      "name_km": "ទិវាវប្បធម៌ជាតិ",
+      "name_en": "National Culture Day",
+      "summary_km": "រៀបចំឡើងដើម្បីលើកតម្កើង អភិរក្ស និងផ្សព្វផ្សាយមរតកវប្បធម៌ ទំនៀមទម្លាប់ និងសិល្បៈដូនតាខ្មែរ។",
+      "summary_en": "Celebrates and preserves Cambodia's rich cultural heritage, performing arts, and ancestral traditions."
+    },
+    {
+      "id": "water_policy_day",
+      "category": "national_history",
+      "name_km": "ទិវាគោលនយោបាយទឹក",
+      "name_en": "Water Policy Day",
+      "summary_km": "រំលេចពីសារៈសំខាន់នៃការគ្រប់គ្រង និងបែងចែកធនធានទឹកប្រកបដោយចីរភាពសម្រាប់កសិកម្ម និងការរស់នៅ។",
+      "summary_en": "Emphasizes sustainable management and protection of Cambodia's vital water resources."
+    },
+    {
+      "id": "international_women_day",
+      "category": "global_observance",
+      "name_km": "ទិវាអន្តរជាតិនារី",
+      "name_en": "International Women's Day",
+      "summary_km": "រំលឹកការតស៊ូទាមទារសិទ្ធិ សមភាព និងការលើកកម្ពស់តួនាទីស្រ្តីនៅក្នុងសង្គមជាតិ និងសកលលោក។",
+      "summary_en": "Celebrates the social, economic, and political achievements of women while advocating for gender equality."
+    },
+    {
+      "id": "world_water_day",
+      "category": "global_observance",
+      "name_km": "ទិវាទឹកពិភពលោក",
+      "name_en": "World Water Day",
+      "summary_km": "ផ្តួចផ្តើមដោយអង្គការសហប្រជាជាតិដើម្បីក្រើនរំលឹកអំពីវិបត្តិទឹកស្អាត និងការអភិរក្សប្រភពទឹកសាប។",
+      "summary_en": "A UN day focusing on the importance of freshwater and advocating for the sustainable management of freshwater resources."
+    },
+    {
+      "id": "world_meteorological_day",
+      "category": "global_observance",
+      "name_km": "ទិវាឧតុនិយមពិភពលោក",
+      "name_en": "World Meteorological Day",
+      "summary_km": "រំលឹកពីការបង្កើតអង្គការឧតុនិយមពិភពលោក និងការតាមដានអាកាសធាតុដើម្បីកាត់បន្ថយគ្រោះមហន្តរាយធម្មជាតិ។",
+      "summary_en": "Highlights the contribution of meteorological services to safety, disaster prevention, and climate monitoring."
+    },
+    {
+      "id": "world_tuberculosis_day",
+      "category": "global_observance",
+      "name_km": "ទិវាជំងឺរបេងពិភពលោក",
+      "name_en": "World Tuberculosis Day",
+      "summary_km": "រំលេចពីកិច្ចខិតខំប្រឹងប្រែងជាសកលដើម្បីទប់ស្កាត់ និងលុបបំបាត់ជំងឺរបេងដែលបំផ្លាញសុខភាពមនុស្ស។",
+      "summary_en": "Raises public awareness about the devastating health and economic consequences of tuberculosis and efforts to end the epidemic."
+    },
+    {
+      "id": "world_health_day",
+      "category": "global_observance",
+      "name_km": "ទិវាសុខភាពពិភពលោក",
+      "name_en": "World Health Day",
+      "summary_km": "រំលឹកការបង្កើតអង្គការសុខភាពពិភពលោក (WHO) និងជំរុញឱ្យប្រជាជនគ្រប់រូបទទួលបានសេវាថែទាំសុខភាពស្មើគ្នា។",
+      "summary_en": "Marks the founding of the WHO and draws worldwide attention to a priority global health topic each year."
+    },
+    {
+      "id": "international_buddhist_day",
+      "category": "cultural",
+      "name_km": "ទិវាព្រះពុទ្ធសាសនាអន្តរជាតិ",
+      "name_en": "International Buddhist Day",
+      "summary_km": "ទិវាសាមគ្គីភាពរបស់ពុទ្ធសាសនិកជុំវិញពិភពលោក (ផ្តួចផ្តើមក្នុងកិច្ចប្រជុំកំពូលពុទ្ធសាសនាពិភពលោក) ដើម្បីផ្សព្វផ្សាយសារសន្តិភាព និងមេត្តាធម៌របស់ព្រះពុទ្ធ។",
+      "summary_en": "A day for Buddhist communities worldwide, initiated by the World Buddhist Summit, to share the Buddha's teachings of compassion and peace."
+    },
+    {
+      "id": "world_safety_and_health_at_work",
+      "category": "global_observance",
+      "name_km": "ទិវាពិភពលោកដើម្បីសុវត្ថិភាព និងសុខភាពនៅកន្លែងធ្វើការ",
+      "name_en": "World Day for Safety and Health at Work",
+      "summary_km": "លើកកម្ពស់ការទប់ស្កាត់គ្រោះថ្នាក់ការងារ និងការពារសុខុមាលភាពរបស់កម្មករនិយោជិតនៅគ្រប់វិស័យ។",
+      "summary_en": "Promotes the prevention of occupational accidents and diseases globally, advocating for safe workplaces."
+    },
+    {
+      "id": "cambodia_joined_asean",
+      "category": "national_history",
+      "name_km": "ខួបកម្ពុជាចូលជាសមាជិកអាស៊ាន",
+      "name_en": "Cambodia joined ASEAN",
+      "summary_km": "រំលឹកថ្ងៃទី៣០ ខែមេសា ឆ្នាំ១៩៩៩ ដែលកម្ពុជាបានក្លាយជាសមាជិកពេញសិទ្ធិទី១០ នៃសមាគមប្រជាជាតិអាស៊ីអាគ្នេយ៍។",
+      "summary_en": "Commemorates April 30, 1999, when Cambodia officially became the 10th member state of ASEAN."
+    },
+    {
+      "id": "international_labor_day",
+      "category": "global_observance",
+      "name_km": "ទិវាពលកម្មអន្តរជាតិ",
+      "name_en": "International Labor Day",
+      "summary_km": "ទិវាសិទ្ធិកម្មករអន្តរជាតិ រំលឹកដល់ជ័យជម្នះនៃចលនាតស៊ូដើម្បីលក្ខខណ្ឌការងារសមរម្យ និងម៉ោងធ្វើការ៨ម៉ោងក្នុងមួយថ្ងៃ។",
+      "summary_en": "Honors the historical struggles and gains made by workers and the international labor movement."
+    },
+    {
+      "id": "world_press_freedom_day",
+      "category": "global_observance",
+      "name_km": "ទិវាសេរីភាពសារព័ត៌មានពិភពលោក",
+      "name_en": "World Press Freedom Day",
+      "summary_km": "លើកកម្ពស់គោលការណ៍គ្រឹះនៃសេរីភាពសារព័ត៌មាន និងការពារសុវត្ថិភាពអ្នកសារព័ត៌មានក្នុងការបំពេញវិជ្ជាជីវៈ។",
+      "summary_en": "Celebrates fundamental principles of press freedom and assesses the state of media independence globally."
+    },
+    {
+      "id": "world_red_cross_day",
+      "category": "global_observance",
+      "name_km": "ទិវាកាកបាទក្រហម និងអឌ្ឍចន្ទក្រហមពិភពលោក",
+      "name_en": "World Red Cross and Red Crescent Day",
+      "summary_km": "រំលឹកដល់ស្ថាបនិកចលនាមនុស្សធម៌ និងការជួយសង្គ្រោះជនរងគ្រោះដោយគ្រោះមហន្តរាយដោយមិនរើសអើង។",
+      "summary_en": "Celebrates the humanitarian mission of the Red Cross and Red Crescent movement in protecting human life and dignity."
+    },
+    {
+      "id": "king_sihamoni_birthday",
+      "category": "royal",
+      "name_km": "ព្រះរាជពិធីបុណ្យចម្រើនព្រះជន្ម ព្រះករុណា ព្រះបាទសម្តេច ព្រះបរមនាថ នរោត្តម សីហមុនី",
+      "name_en": "King Sihamoni's Birthday",
+      "summary_km": "ទិវាចម្រើនព្រះជន្មព្រះមហាក្សត្រនៃព្រះរាជាណាចក្រកម្ពុជា ប្រជារាស្ត្រទូទាំងប្រទេសសម្តែងការគោរពដឹងគុណ និងថ្វាយព្រះពរ។",
+      "summary_en": "Official public holiday celebrating the birthday of His Majesty King Norodom Sihamoni of Cambodia."
+    },
+    {
+      "id": "international_day_of_families",
+      "category": "global_observance",
+      "name_km": "ទិវាគ្រួសារអន្តរជាតិ",
+      "name_en": "International Day of Families",
+      "summary_km": "លើកកម្ពស់ការយល់ដឹងពីសារៈសំខាន់នៃគ្រួសារជាគ្រឹះសង្គមក្នុងការចិញ្ចឹមបីបាច់ និងអប់រំកូនចៅ។",
+      "summary_en": "Highlights the essential role of families as foundational units of society and education."
+    },
+    {
+      "id": "birth_of_national_police",
+      "category": "national_history",
+      "name_km": "ទិវាកំណើតនគរបាលជាតិ",
+      "name_en": "Birth of the National Police",
+      "summary_km": "រំលឹកដល់ការបង្កើតកងកម្លាំងនគរបាលជាតិកម្ពុជានៅថ្ងៃទី១៦ ខែឧសភា ឆ្នាំ១៩៤៥ ដើម្បីការពារសន្តិសុខ និងសណ្តាប់ធ្នាប់សង្គម។",
+      "summary_en": "Commemorates the establishment of the Cambodian National Police force on May 16, 1945, ensuring peace and social order."
+    },
+    {
+      "id": "national_day_of_remembrance",
+      "category": "national_history",
+      "name_km": "ទិវាជាតិនៃការចងចាំ",
+      "name_en": "National Day of Remembrance",
+      "summary_km": "ទិវាបួងសួង និងរំលឹកដល់វិញ្ញាណក្ខន្ធជនរងគ្រោះប្រមាណ ១,៥ ទៅ ២ លាននាក់ដែលបានបាត់បង់ជីវិតក្នុងរបបកម្ពុជាប្រជាធិបតេយ្យ (ខ្មែរក្រហម)។",
+      "summary_en": "A solemn day commemorating the estimated 1.5 to 2 million victims who perished under the Khmer Rouge regime (1975–1979)."
+    },
+    {
+      "id": "world_no_tobacco_day",
+      "category": "global_observance",
+      "name_km": "ទិវាពិភពលោកគ្មានថ្នាំជក់",
+      "name_en": "World No Tobacco Day",
+      "summary_km": "យុទ្ធនាការសកលដើម្បីរំលឹកពីគ្រោះថ្នាក់នៃផ្សែងបារីចំពោះសុខភាព និងកាត់បន្ថយការប្រើប្រាស់ថ្នាំជក់។",
+      "summary_en": "Encourages a 24-hour period of abstinence from tobacco consumption and highlights associated health risks."
+    },
+    {
+      "id": "international_children_day",
+      "category": "global_observance",
+      "name_km": "ទិវាកុមារអន្តរជាតិ",
+      "name_en": "International Children's Day",
+      "summary_km": "លើកកម្ពស់សិទ្ធិកុមារ សុខុមាលភាព និងការពារកុមារពីការរំលោភបំពាន ការកេងប្រវ័ញ្ច និងការរើសអើង។",
+      "summary_en": "Advocates for children's rights, welfare, and protection against abuse and exploitation worldwide."
+    },
+    {
+      "id": "world_environment_day",
+      "category": "global_observance",
+      "name_km": "ទិវាបរិស្ថានជាតិ និងបរិស្ថានពិភពលោក",
+      "name_en": "National and World Environment Day",
+      "summary_km": "បំផុសចលនាការពារធម្មជាតិ កាត់បន្ថយការបំពុល និងរួមគ្នាថែរក្សាភពផែនដីឱ្យមានពណ៌បៃតង។",
+      "summary_en": "Encourages worldwide awareness and action for the protection of the environment and biodiversity."
+    },
+    {
+      "id": "world_day_against_child_labour",
+      "category": "global_observance",
+      "name_km": "ទិវាពិភពលោកប្រឆាំងពលកម្មកុមារ",
+      "name_en": "World Day Against Child Labour",
+      "summary_km": "ជំរុញឱ្យមានការលុបបំបាត់ការប្រើប្រាស់ពលកម្មកុមារ និងធានាថាកុមារគ្រប់រូបទទួលបានការអប់រំពេញលេញ។",
+      "summary_en": "Focuses global attention on the eradication of child labor and securing educational access for all children."
+    },
+    {
+      "id": "icj_preah_vihear_ownership",
+      "category": "national_history",
+      "name_km": "ទិវាសាលក្រមតុលាការអន្តរជាតិ (ICJ) ស្តីពីអធិបតេយ្យភាពប្រាសាទព្រះវិហារ",
+      "name_en": "ICJ Judgment on Cambodian Sovereignty over Preah Vihear",
+      "summary_km": "រំលឹកសាលក្រមជាប្រវត្តិសាស្ត្រថ្ងៃទី១៥ ខែមិថុនា ឆ្នាំ១៩៦២ ដែលតុលាការយុត្តិធម៌អន្តរជាតិបានសម្រេចថា ប្រាសាទព្រះវិហារស្ថិតក្នុងទឹកដីក្រោមអធិបតេយ្យភាពកម្ពុជា។",
+      "summary_en": "Marks the historic June 15, 1962 judgment by the International Court of Justice ruling that the Temple of Preah Vihear is situated in territory under Cambodian sovereignty."
+    },
+    {
+      "id": "queen_mother_birthday",
+      "category": "royal",
+      "name_km": "ព្រះរាជពិធីបុណ្យចម្រើនព្រះជន្ម សម្តេចព្រះមហាក្សត្រី នរោត្តម មុនិនាថ សីហនុ",
+      "name_en": "Queen Mother's Birthday",
+      "summary_km": "ទិវាប្រារព្ធពិធីចម្រើនព្រះជន្មសម្តេចព្រះវររាជមាតាជាតិខ្មែរ ប្រជាជនទូទាំងប្រទេសសម្តែងនូវកតញ្ញូតាធម៌ដ៏ជ្រាលជ្រៅ។",
+      "summary_en": "Public holiday celebrating the birthday of Her Majesty Queen Mother Norodom Monineath Sihanouk."
+    },
+    {
+      "id": "anti_drug_day",
+      "category": "global_observance",
+      "name_km": "ទិវាអន្តរជាតិប្រយុទ្ធប្រឆាំងគ្រឿងញៀន",
+      "name_en": "Int'l Day Against Drug Abuse and Illicit Trafficking",
+      "summary_km": "ពង្រឹងសកម្មភាពសហគមន៍ដើម្បីទប់ស្កាត់ការប្រើប្រាស់ និងការជួញដូរគ្រឿងញៀនខុសច្បាប់ក្នុងសង្គម។",
+      "summary_en": "Strengthens global action and cooperation to achieve a society free of drug abuse and illicit trafficking."
+    },
+    {
+      "id": "national_fish_day",
+      "category": "national_history",
+      "name_km": "ទិវាមច្ឆជាតិ",
+      "name_en": "National Fish Day",
+      "summary_km": "ប្រារព្ធឡើងដើម្បីលែងកូនត្រីចូលទៅក្នុងប្រភពទឹកធម្មជាតិ និងជំរុញការអភិរក្សធនធានជលផលកម្ពុជា។",
+      "summary_en": "Observed by releasing juvenile fish into natural waterways to sustain Cambodia's rich freshwater fishery."
+    },
+    {
+      "id": "cambodia_joined_unesco",
+      "category": "national_history",
+      "name_km": "ខួបកម្ពុជាចូលជាសមាជិកអង្គការយូណេស្កូ",
+      "name_en": "Cambodia joined UNESCO",
+      "summary_km": "រំលឹកថ្ងៃទី៣ ខែកក្កដា ឆ្នាំ១៩៥១ ដែលកម្ពុជាបានចូលរួមជាមួយយូណេស្កូក្នុងការអភិរក្សវប្បធម៌ និងការអប់រំ។",
+      "summary_en": "Commemorates Cambodia joining UNESCO on July 3, 1951, fostering culture, science, and education."
+    },
+    {
+      "id": "preah_vihear_unesco",
+      "category": "unesco",
+      "name_km": "ខួបប្រាសាទព្រះវិហារចុះបញ្ជីបេតិកភណ្ឌពិភពលោក",
+      "name_en": "Temple of Preah Vihear — UNESCO inscription",
+      "summary_km": "រំលឹកការចុះបញ្ជីប្រាសាទព្រះវិហារជាបេតិកភណ្ឌពិភពលោកនៅថ្ងៃទី៧ ខែកក្កដា ឆ្នាំ២០០៨ ដោយបញ្ជាក់ពីតម្លៃស្ថាបត្យកម្មដ៏ពិសិដ្ឋ។",
+      "summary_en": "Commemorates the July 7, 2008 UNESCO inscription of the spectacular cliff-top Temple of Preah Vihear."
+    },
+    {
+      "id": "sambor_prei_kuk_unesco",
+      "category": "unesco",
+      "name_km": "ខួបតំបន់ប្រាសាទសំបូរព្រៃគុកចុះបញ្ជីបេតិកភណ្ឌពិភពលោក",
+      "name_en": "Sambor Prei Kuk — UNESCO inscription",
+      "summary_km": "រំលឹកការចុះបញ្ជីរមណីយដ្ឋានសំបូរព្រៃគុក (អតីតរាជធានីឦសានបុរៈ) ជាបេតិកភណ្ឌពិភពលោកនៅថ្ងៃទី៨ ខែកក្កដា ឆ្នាំ២០១៧។",
+      "summary_en": "Marks the July 8, 2017 UNESCO inscription of Sambor Prei Kuk, the pre-Angkorian capital Ishanapura."
+    },
+    {
+      "id": "arbor_day",
+      "category": "cultural",
+      "name_km": "ពិធីបុណ្យរុក្ខទិវា",
+      "name_en": "Arbor Day",
+      "summary_km": "ពិធីបុណ្យជាតិដាំដើមឈើក្រោមព្រះរាជធិបតីភាពព្រះមហាក្សត្រ ដើម្បីការពារព្រៃឈើ និងថែរក្សាបរិស្ថានធម្មជាតិ។",
+      "summary_en": "National tree-planting day presided over by the King, encouraging reforestation and conservation."
+    },
+    {
+      "id": "m13_tuol_sleng_choeung_ek_unesco",
+      "category": "unesco",
+      "name_km": "ខួបមន្ទីរឃុំឃាំង ម-១៣ ទួលស្លែង និងជើងឯក ចុះបញ្ជីយូណេស្កូ",
+      "name_en": "M-13, Tuol Sleng & Choeung Ek — UNESCO inscription",
+      "summary_km": "រំលឹកការចុះបញ្ជីទីតាំងចងចាំប្រវត្តិសាស្ត្រទាំង៣ ជាបេតិកភណ្ឌពិភពលោកនៅថ្ងៃទី១១ ខែកក្កដា ឆ្នាំ២០២៥ ដើម្បីរក្សាសច្ចភាពប្រវត្តិសាស្ត្រ។",
+      "summary_en": "Commemorates the 2025 UNESCO inscription of Cambodia's memorial sites as monuments for peace and reflection."
+    },
+    {
+      "id": "national_population_day",
+      "category": "global_observance",
+      "name_km": "ទិវាប្រជាជនជាតិ និងពិភពលោក",
+      "name_en": "National / World Population Day",
+      "summary_km": "ផ្តោតលើបញ្ហាប្រជាសាស្ត្រ សុខភាពបន្តពូជ និងការអភិវឌ្ឍធនធានមនុស្សឱ្យសមស្របនឹងកំណើនសេដ្ឋកិច្ច។",
+      "summary_en": "Focuses on demographic shifts, reproductive health, and human capital development."
+    },
+    {
+      "id": "tuol_sleng_archives_unesco",
+      "category": "unesco",
+      "name_km": "ខួបបណ្ណសារសារមន្ទីរទួលស្លែងចុះបញ្ជីការចងចាំនៃពិភពលោក",
+      "name_en": "Tuol Sleng archives — Memory of the World",
+      "summary_km": "រំលឹកការដាក់បញ្ចូលបណ្ណសារឧក្រិដ្ឋកម្មទួលស្លែង (S-21) ក្នុងបញ្ជីការចងចាំនៃពិភពលោករបស់យូណេស្កូនៅថ្ងៃទី៣១ ខែកក្កដា ឆ្នាំ២០០៩។",
+      "summary_en": "Marks the 2009 inscription of the Tuol Sleng Genocide Museum archives into UNESCO's Memory of the World register."
+    },
+    {
+      "id": "world_ranger_day",
+      "category": "global_observance",
+      "name_km": "ទិវាឆ្មាំការពារព្រៃឈើពិភពលោក",
+      "name_en": "World Ranger Day",
+      "summary_km": "គោរពវិញ្ញាណក្ខន្ធ និងលើកទឹកចិត្តដល់មន្ត្រីឧទ្យានុរក្សដែលបានលះបង់ដើម្បីការពារសត្វព្រៃ និងព្រៃឈើ។",
+      "summary_en": "Commemorates rangers killed or injured in the line of duty and celebrates their conservation work."
+    },
+    {
+      "id": "indigenous_peoples_day",
+      "category": "global_observance",
+      "name_km": "ទិវាអន្តរជាតិជនជាតិដើមភាគតិច",
+      "name_en": "Int'l Day of the World's Indigenous Peoples",
+      "summary_km": "ការពារ និងលើកកម្ពស់សិទ្ធិ វប្បធម៌ ប្រពៃណី និងដីធ្លីសហគមន៍របស់បងប្អូនជនជាតិដើមភាគតិច។",
+      "summary_en": "Recognizes and protects the rights, languages, and unique lands of indigenous communities."
+    },
+    {
+      "id": "international_youth_day",
+      "category": "global_observance",
+      "name_km": "ទិវាយុវជនអន្តរជាតិ",
+      "name_en": "International Youth Day",
+      "summary_km": "លើកកម្ពស់សក្តានុពល និងការចូលរួមរបស់យុវជនក្នុងការកសាងសង្គមជាតិ និងដោះស្រាយបញ្ហាសកល។",
+      "summary_en": "Draws attention to youth development, civic engagement, and empowering the next generation."
+    },
+    {
+      "id": "international_literacy_day",
+      "category": "global_observance",
+      "name_km": "ទិវាអក្ខរកម្មអន្តរជាតិ",
+      "name_en": "International Literacy Day",
+      "summary_km": "រំលេចពីសារៈសំខាន់នៃអក្ខរកម្ម និងការរៀនសូត្រពេញមួយជីវិតដើម្បីអភិវឌ្ឍសង្គម និងកាត់បន្ថយភាពក្រីក្រ។",
+      "summary_en": "Highlights the importance of literacy as a human right and dignity foundation for lifelong learning."
+    },
+    {
+      "id": "ozone_layer_preservation_day",
+      "category": "global_observance",
+      "name_km": "ទិវាអន្តរជាតិការពារស្រទាប់អូហ្សូន",
+      "name_en": "Int'l Day for Preservation of the Ozone Layer",
+      "summary_km": "រំលឹកពិធីសារម៉ុងរ៉េអាល់ក្នុងការរួមគ្នាកាត់បន្ថយសារធាតុបំផ្លាញស្រទាប់អូហ្សូនដែលការពារផែនដីពីកាំរស្មីស្វាយអ៊ុលត្រា។",
+      "summary_en": "Commemorates the Montreal Protocol in phasing out substances that deplete the protective ozone layer."
+    },
+    {
+      "id": "koh_ker_unesco",
+      "category": "unesco",
+      "name_km": "ខួបរមណីយដ្ឋានប្រាសាទកោះកេរចុះបញ្ជីបេតិកភណ្ឌពិភពលោក",
+      "name_en": "Koh Ker — UNESCO inscription",
+      "summary_km": "រំលឹកការចុះបញ្ជីរមណីយដ្ឋានបុរាណវិទ្យាកោះកេរ (អតីតរាជធានីសតវត្សរ៍ទី១០) ជាបេតិកភណ្ឌពិភពលោកនៅថ្ងៃទី១៧ ខែកញ្ញា ឆ្នាំ២០២៣។",
+      "summary_en": "Marks the September 17, 2023 inscription of the 10th-century capital and pyramid temple of Koh Ker into UNESCO."
+    },
+    {
+      "id": "international_peace_day",
+      "category": "global_observance",
+      "name_km": "ទិវាសន្តិភាពអន្តរជាតិ",
+      "name_en": "International Day of Peace",
+      "summary_km": "ទិវាពិភពលោកប្តេជ្ញាបញ្ឈប់អរិភាព និងជំរុញវប្បធម៌សន្តិភាព ការអត់ឱន និងការយោគយល់គ្នា។",
+      "summary_en": "Dedicated to world peace and the cessation of all hostilities through dialogue and education."
+    },
+    {
+      "id": "constitution_day",
+      "category": "national_history",
+      "name_km": "ទិវាប្រកាសរដ្ឋធម្មនុញ្ញ",
+      "name_en": "Constitution Day",
+      "summary_km": "រំលឹកដល់ការប្រកាសឱ្យប្រើប្រាស់រដ្ឋធម្មនុញ្ញនៃព្រះរាជាណាចក្រកម្ពុជានៅថ្ងៃទី២៤ ខែកញ្ញា ឆ្នាំ១៩៩៣ របបរាជានិយមអាស្រ័យរដ្ឋធម្មនុញ្ញ។",
+      "summary_en": "Celebrates the signing and adoption of Cambodia's modern democratic Constitution on September 24, 1993."
+    },
+    {
+      "id": "world_tourism_day",
+      "category": "global_observance",
+      "name_km": "ទិវាទេសចរណ៍ពិភពលោក",
+      "name_en": "World Tourism Day",
+      "summary_km": "លើកកម្ពស់ការយល់ដឹងអំពីតម្លៃសេដ្ឋកិច្ច សង្គម និងវប្បធម៌នៃវិស័យទេសចរណ៍ប្រកបដោយនិរន្តរភាព។",
+      "summary_en": "Fosters awareness among the international community of the importance of tourism and its social-economic values."
+    },
+    {
+      "id": "cambodian_older_persons_day",
+      "category": "global_observance",
+      "name_km": "ទិវាមនុស្សចាស់កម្ពុជា និងមនុស្សចាស់អន្តរជាតិ",
+      "name_en": "Cambodian Older Persons Day / Int'l Day of Older Persons",
+      "summary_km": "សម្តែងនូវកតញ្ញូតាធម៌ចំពោះមនុស្សចាស់ និងជំរុញការថែទាំសុខភាព ព្រមទាំងសុខុមាលភាពរបស់មនុស្សវ័យចំណាស់។",
+      "summary_en": "Recognizes the contributions of older people while examining challenges related to aging and elder care."
+    },
+    {
+      "id": "world_teachers_day",
+      "category": "global_observance",
+      "name_km": "ទិវាគ្រូបង្រៀនពិភពលោក",
+      "name_en": "World Teachers' Day",
+      "summary_km": "គោរពដឹងគុណដល់លោកគ្រូអ្នកគ្រូទូទាំងពិភពលោកដែលបានលះបង់កម្លាំងកាយចិត្តក្នុងការបណ្តុះបណ្តាលធនធានមនុស្ស។",
+      "summary_en": "Expresses gratitude to educators worldwide and honors their essential role in transforming education."
+    },
+    {
+      "id": "king_father_commemoration",
+      "category": "royal",
+      "name_km": "ទិវាប្រារព្ធពិធីគោរពព្រះវិញ្ញាណក្ខន្ធ ព្រះបរមរតនកោដ្ឋ",
+      "name_en": "King Father's Commemoration Day",
+      "summary_km": "រំលឹកដល់ព្រះរាជបូជនីយកិច្ចដ៏ឧត្តុង្គឧត្តមរបស់សម្តេចព្រះនរោត្តម សីហនុ ក្នុងការទាមទារឯករាជ្យ និងបង្រួបបង្រួមជាតិ។",
+      "summary_en": "Commemorates the late King Father Norodom Sihanouk and his historic crusade for national independence and unity."
+    },
+    {
+      "id": "paris_peace_agreement",
+      "category": "national_history",
+      "name_km": "ទិវាកិច្ចព្រមព្រៀងសន្តិភាពទីក្រុងប៉ារីស",
+      "name_en": "Paris Peace Agreements Day",
+      "summary_km": "រំលឹកការចុះហត្ថលេខាលើកិច្ចព្រមព្រៀងជាប្រវត្តិសាស្ត្រនៅថ្ងៃទី២៣ ខែតុលា ឆ្នាំ១៩៩១ ដែលបង្កើតក្របខ័ណ្ឌនយោបាយឆ្ពោះទៅរកសន្តិភាព និងការបោះឆ្នោតរៀបចំដោយ UNTAC។",
+      "summary_en": "Commemorates the October 23, 1991 Paris Peace Agreements, establishing a comprehensive political settlement and the UNTAC transition framework."
+    },
+    {
+      "id": "king_coronation_day",
+      "category": "royal",
+      "name_km": "ព្រះរាជពិធីគ្រងព្រះបរមរាជសម្បត្តិ ព្រះករុណា ព្រះបាទសម្តេច ព្រះបរមនាថ នរោត្តម សីហមុនី",
+      "name_en": "King's Coronation Day",
+      "summary_km": "រំលឹកទិវាប្រវត្តិសាស្ត្រនៃការឡើងគ្រងរាជសម្បត្តិរបស់ព្រះមហាក្សត្រនៃព្រះរាជាណាចក្រកម្ពុជានៅថ្ងៃទី២៩ ខែតុលា ឆ្នាំ២០០៤។",
+      "summary_en": "Celebrates the official coronation anniversary of His Majesty King Norodom Sihamoni on October 29, 2004."
+    },
+    {
+      "id": "halloween",
+      "category": "cultural",
+      "name_km": "បុណ្យហាឡូវីន",
+      "name_en": "Halloween",
+      "summary_km": "ពិធីបុណ្យប្រពៃណីបស្ចិមប្រទេសដែលប្រារព្ធឡើងដោយការស្លៀកពាក់កម្សាន្តប្លែកៗ និងការលេងល្បែងលងបន្លាច។",
+      "summary_en": "Western cultural observance observed with costume parties, trick-or-treating, and autumn festivities."
+    },
+    {
+      "id": "royal_ballet_unesco",
+      "category": "unesco",
+      "name_km": "ខួបរបាំព្រះរាជទ្រព្យប្រកាសទទួលស្គាល់ដោយយូណេស្កូ",
+      "name_en": "Royal Ballet of Cambodia — UNESCO Proclamation",
+      "summary_km": "រំលឹកការប្រកាសទទួលស្គាល់របាំព្រះរាជទ្រព្យជាស្នាដៃឯកបេតិកភណ្ឌអរូបីមនុស្សជាតិនៅថ្ងៃទី៧ ខែវិច្ឆិកា ឆ្នាំ២០០៣ (និងចុះបញ្ជីតំណាងក្នុងឆ្នាំ២០០៨)។",
+      "summary_en": "Commemorates the November 7, 2003 UNESCO proclamation of the Royal Ballet as an Intangible Cultural Heritage Masterpiece (formally inscribed in 2008)."
+    },
+    {
+      "id": "independence_day",
+      "category": "national_history",
+      "name_km": "ទិវាបុណ្យឯករាជ្យជាតិ",
+      "name_en": "Independence Day",
+      "summary_km": "រំលឹកជ័យជម្នះជាប្រវត្តិសាស្ត្រដែលកម្ពុជាទទួលបានឯករាជ្យពេញលេញពីអាណាព្យាបាលបារាំងនៅថ្ងៃទី៩ ខែវិច្ឆិកា ឆ្នាំ១៩៥៣។",
+      "summary_en": "Celebrates Cambodia's full independence from French protectorate rule on November 9, 1953."
+    },
+    {
+      "id": "environmental_sanitation_day",
+      "category": "national_history",
+      "name_km": "ទិវាអនាម័យបរិស្ថានជាតិ",
+      "name_en": "National Environmental Sanitation Day",
+      "summary_km": "បំផុសស្មារតីសាធារណជនឱ្យចូលរួមសម្អាតបរិស្ថាន ទុកដាក់សំរាមត្រឹមត្រូវ និងរក្សាអនាម័យសហគមន៍។",
+      "summary_en": "Encourages nation-wide waste management, environmental cleanup, and sanitary living conditions."
+    },
+    {
+      "id": "khmer_shadow_theatre_unesco",
+      "category": "unesco",
+      "name_km": "ខួបល្ខោនស្រមោលស្បែកធំប្រកាសទទួលស្គាល់ដោយយូណេស្កូ",
+      "name_en": "Khmer Shadow Theatre — UNESCO Proclamation",
+      "summary_km": "រំលឹកការប្រកាសទទួលស្គាល់ល្ខោនស្បែកធំជាស្នាដៃឯកបេតិកភណ្ឌអរូបីនៃមនុស្សជាតិនៅថ្ងៃទី២៥ ខែវិច្ឆិកា ឆ្នាំ២០០៥ (និងចុះបញ្ជីតំណាងក្នុងឆ្នាំ២០០៨)។",
+      "summary_en": "Commemorates the November 25, 2005 UNESCO proclamation of Sbek Thom shadow puppetry as an Intangible Cultural Heritage Masterpiece (formally inscribed in 2008)."
+    },
+    {
+      "id": "lkhon_khol_wat_svay_andet_unesco",
+      "category": "unesco",
+      "name_km": "ខួបល្ខោនខោលវត្តស្វាយអណ្តែតចុះបញ្ជីបេតិកភណ្ឌយូណេស្កូ",
+      "name_en": "Lkhon Khol Wat Svay Andet — Urgent Safeguarding",
+      "summary_km": "រំលឹកការចុះបញ្ជីល្ខោនខោលវត្តស្វាយអណ្តែតក្នុងបញ្ជីបេតិកភណ្ឌត្រូវការការសង្គ្រោះបន្ទាន់នៅថ្ងៃទី២៨ ខែវិច្ឆិកា ឆ្នាំ២០១៨។",
+      "summary_en": "Marks the 2018 UNESCO inscription of Lkhon Khol Wat Svay Andet masked dance theatre on the Urgent Safeguarding List."
+    },
+    {
+      "id": "kun_lbokator_unesco",
+      "category": "unesco",
+      "name_km": "ខួបគុនល្បុក្កតោចុះបញ្ជីបេតិកភណ្ឌអរូបីយូណេស្កូ",
+      "name_en": "Kun Lbokator — UNESCO list",
+      "summary_km": "រំលឹកការចុះបញ្ជីក្បាច់គុនបុរាណខ្មែរ គុនល្បុក្កតោ ក្នុងបញ្ជីបេតិកភណ្ឌអរូបីនៃមនុស្សជាតិនៅថ្ងៃទី២៩ ខែវិច្ឆិកា ឆ្នាំ២០២២។",
+      "summary_en": "Commemorates the 2022 UNESCO inscription of Kun Lbokator, Cambodia's ancient martial art."
+    },
+    {
+      "id": "chapei_dang_veng_unesco",
+      "category": "unesco",
+      "name_km": "ខួបចាប៉ីដងវែងចុះបញ្ជីបេតិកភណ្ឌអរូបីយូណេស្កូ",
+      "name_en": "Chapei Dang Veng — UNESCO list",
+      "summary_km": "រំលឹកការចុះបញ្ជីឧបករណ៍តន្ត្រីប្រពៃណីចាប៉ីដងវែងក្នុងបញ្ជីសង្គ្រោះបន្ទាន់របស់យូណេស្កូនៅថ្ងៃទី២៩ ខែវិច្ឆិកា ឆ្នាំ២០១៦។",
+      "summary_en": "Marks the November 29, 2016 UNESCO inscription of Chapei Dang Veng on the Urgent Safeguarding List."
+    },
+    {
+      "id": "world_aids_day",
+      "category": "global_observance",
+      "name_km": "ទិវាពិភពលោកប្រយុទ្ធនឹងជំងឺអេដស៍",
+      "name_en": "World AIDS Day",
+      "summary_km": "រួបរួមគ្នាក្នុងការប្រយុទ្ធប្រឆាំងមេរោគអេដស៍ និងសម្តែងការគាំទ្រចំពោះអ្នកផ្ទុកមេរោគដោយគ្មានការរើសអើង។",
+      "summary_en": "Dedicated to raising awareness of the AIDS pandemic caused by HIV and mourning those who have died."
+    },
+    {
+      "id": "tug_of_war_unesco",
+      "category": "unesco",
+      "name_km": "ខួបល្បែងទាញព្រ័ត្រចុះបញ្ជីបេតិកភណ្ឌអរូបីយូណេស្កូ",
+      "name_en": "Tug of War — UNESCO list",
+      "summary_km": "រំលឹកការចុះបញ្ជីល្បែងទាញព្រ័ត្រប្រពៃណីជាបេតិកភណ្ឌវប្បធម៌អរូបីនៃមនុស្សជាតិនៅថ្ងៃទី២ ខែធ្នូ ឆ្នាំ២០១៥។",
+      "summary_en": "Commemorates the 2015 multinational UNESCO inscription of traditional Tug of War rituals and games."
+    },
+    {
+      "id": "disabled_persons_day",
+      "category": "global_observance",
+      "name_km": "ទិវាជនមានពិការភាពជាតិ និងអន្តរជាតិ",
+      "name_en": "Int'l Day of Persons with Disabilities",
+      "summary_km": "លើកកម្ពស់ការយល់ដឹងពីសិទ្ធិ កិត្តិយស និងការផ្តល់ឱកាសស្មើគ្នាក្នុងសង្គមដល់ជនមានពិការភាព។",
+      "summary_en": "Promotes the rights and well-being of persons with disabilities in all spheres of society."
+    },
+    {
+      "id": "krama_unesco",
+      "category": "unesco",
+      "name_km": "ខួបក្រមាខ្មែរចុះបញ្ជីបេតិកភណ្ឌអរូបីយូណេស្កូ",
+      "name_en": "Krama — UNESCO list",
+      "summary_km": "រំលឹកការចុះបញ្ជីប្រពៃណីត្បាញ និងប្រើប្រាស់ក្រមាខ្មែរជាបេតិកភណ្ឌអរូបីនៃមនុស្សជាតិនៅថ្ងៃទី៤ ខែធ្នូ ឆ្នាំ២០២៤។",
+      "summary_en": "Marks the December 4, 2024 UNESCO inscription of the traditional Cambodian Krama scarf craftsmanship."
+    },
+    {
+      "id": "civil_aviation_day",
+      "category": "global_observance",
+      "name_km": "ទិវាអាកាសចរណ៍ស៊ីវិលអន្តរជាតិ",
+      "name_en": "International Civil Aviation Day",
+      "summary_km": "លើកកម្ពស់ការយល់ដឹងពីសារៈសំខាន់នៃវិស័យអាកាសចរណ៍ក្នុងការតភ្ជាប់ពិភពលោក និងអភិវឌ្ឍសេដ្ឋកិច្ច។",
+      "summary_en": "Generates global awareness of the importance of international civil aviation to sustainable development."
+    },
+    {
+      "id": "national_authors_day",
+      "category": "cultural",
+      "name_km": "ទិវាអ្នកនិពន្ធជាតិ",
+      "name_en": "National Authors' Day",
+      "summary_km": "ផ្តល់កិត្តិយស និងលើកទឹកចិត្តដល់អ្នកនិពន្ធខ្មែរក្នុងការបង្កើតស្នាដៃអក្សរសិល្ប៍ដើម្បីបម្រើដល់ការអប់រំ និងវប្បធម៌។",
+      "summary_en": "Honors Cambodian writers and promotes literary creations that enrich the national cultural landscape."
+    },
+    {
+      "id": "anti_corruption_day",
+      "category": "global_observance",
+      "name_km": "ទិវាអន្តរជាតិប្រយុទ្ធប្រឆាំងអំពើពុករលួយ",
+      "name_en": "Anti-Corruption Day",
+      "summary_km": "លើកកម្ពស់តម្លាភាព គណនេយ្យភាព និងការរួមគ្នាប្រឆាំងនឹងអំពើពុករលួយដើម្បីយុត្តិធម៌សង្គម។",
+      "summary_en": "Raises awareness of corruption and the role of the UN Convention against Corruption in combating it."
+    },
+    {
+      "id": "international_human_rights_day",
+      "category": "global_observance",
+      "name_km": "ទិវាសិទ្ធិមនុស្សអន្តរជាតិ",
+      "name_en": "Human Rights Day",
+      "summary_km": "រំលឹកសេចក្តីប្រកាសជាសកលស្តីពីសិទ្ធិមនុស្សឆ្នាំ១៩៤៨ ដើម្បីការពារសេរីភាព និងសេចក្តីថ្លៃថ្នូររបស់មនុស្សគ្រប់រូប។",
+      "summary_en": "Commemorates the adoption of the Universal Declaration of Human Rights by the UN General Assembly in 1948."
+    },
+    {
+      "id": "anti_human_trafficking_day",
+      "category": "national_history",
+      "name_km": "ទិវាជាតិប្រយុទ្ធប្រឆាំងការជួញដូរមនុស្ស",
+      "name_en": "National Anti-Human Trafficking Day",
+      "summary_km": "ពង្រឹងកិច្ចការពារជនរងគ្រោះ និងបង្ក្រាបការជួញដូរមនុស្ស និងការកេងប្រវ័ញ្ចពលកម្មខុសច្បាប់។",
+      "summary_en": "Mobilizes national efforts to prevent human trafficking and protect victims of exploitation."
+    },
+    {
+      "id": "angkor_wat_unesco",
+      "category": "unesco",
+      "name_km": "ខួបរមណីយដ្ឋានអង្គរចុះបញ្ជីបេតិកភណ្ឌពិភពលោក",
+      "name_en": "Angkor — UNESCO inscription",
+      "summary_km": "រំលឹកការចុះបញ្ជីរមណីយដ្ឋានអង្គរជាបេតិកភណ្ឌពិភពលោកនៅថ្ងៃទី១៤ ខែធ្នូ ឆ្នាំ១៩៩២ ដែលជាមោទនភាពជាតិខ្មែរដ៏ធំធេង។",
+      "summary_en": "Marks the historic December 14, 1992 UNESCO inscription of the Angkor Archaeological Park."
+    },
+    {
+      "id": "cambodia_joined_un",
+      "category": "national_history",
+      "name_km": "ខួបកម្ពុជាចូលជាសមាជិកអង្គការសហប្រជាជាតិ",
+      "name_en": "Cambodia joined the UN",
+      "summary_km": "រំលឹកថ្ងៃទី១៤ ខែធ្នូ ឆ្នាំ១៩៥៥ ដែលកម្ពុជាបានចូលជាសមាជិកពេញសិទ្ធិនៃអង្គការសហប្រជាជាតិ (UN)។",
+      "summary_en": "Commemorates Cambodia's official admission as a member state of the United Nations on December 14, 1955."
+    },
+    {
+      "id": "christmas_day",
+      "category": "global_observance",
+      "name_km": "បុណ្យណូអែល",
+      "name_en": "Christmas Day",
+      "summary_km": "ពិធីបុណ្យសាសនាគ្រិស្តរំលឹកដល់ការប្រសូតរបស់ព្រះយេស៊ូគ្រិស្ត ដែលប្រារព្ធឡើងយ៉ាងទូលំទូលាយជុំវិញពិភពលោក។",
+      "summary_en": "Annual Christian festival commemorating the birth of Jesus Christ, observed widely across the globe."
+    },
+    {
+      "id": "peace_day_cambodia",
+      "category": "national_history",
+      "name_km": "ទិវាសន្តិភាពនៅកម្ពុជា",
+      "name_en": "Peace Day in Cambodia",
+      "summary_km": "ទិវាឈប់សម្រាកផ្លូវការរំលឹកដល់ការសម្រេចបាននូវសន្តិភាពពេញលេញ និងការបង្រួបបង្រួមទឹកដីកម្ពុជាទាំងស្រុង។",
+      "summary_en": "National holiday commemorating the attainment of complete peace and territorial unity in Cambodia."
+    },
+    {
+      "id": "win_win_policy_day",
+      "category": "national_history",
+      "name_km": "ទិវានយោបាយឈ្នះ-ឈ្នះ",
+      "name_en": "Win-win Policy Day",
+      "summary_km": "រំលឹកដល់ការអនុវត្តជោគជ័យនៃនយោបាយឈ្នះ-ឈ្នះនៅថ្ងៃទី២៩ ខែធ្នូ ឆ្នាំ១៩៩៨ ដែលនាំមកនូវការបង្រួបបង្រួមជាតិ និងការបញ្ចប់សង្គ្រាមស៊ីវិលនៅកម្ពុជា។",
+      "summary_en": "Commemorates December 29, 1998, celebrating the culmination of the government's Win-Win policy which integrated the remaining Khmer Rouge forces."
+    },
+    {
+      "id": "meak_bochea",
+      "category": "lunar_buddhist",
+      "name_km": "បុណ្យមាឃបូជា",
+      "name_en": "Meak Bochea",
+      "summary_km": "រំលឹកការជួបជុំនៃព្រះអរហន្ត ១.២៥០ អង្គដោយមិនណាត់ទុកជាមុន និងការប្រកាសឱវាទបាតិមោក្ខរបស់ព្រះពុទ្ធ។",
+      "summary_en": "Commemorates the spontaneous gathering of 1,250 enlightened monks and the Buddha's delivery of the Ovada Patimokkha."
+    },
+    {
+      "id": "visak_bochea",
+      "category": "lunar_buddhist",
+      "name_km": "បុណ្យវិសាខបូជា",
+      "name_en": "Visak Bochea",
+      "summary_km": "ទិវាបុណ្យដ៏ពិសិដ្ឋបំផុតក្នុងពុទ្ធសាសនា រំលឹកដល់ព្រឹត្តិការណ៍៣ គឺប្រសូត ត្រាស់ដឹង និងបរិនិព្វានរបស់ព្រះពុទ្ធ។",
+      "summary_en": "The holiest Buddhist observance, honoring the birth, enlightenment, and passing (parinirvana) of Gautama Buddha."
+    },
+    {
+      "id": "royal_ploughing_ceremony",
+      "category": "royal",
+      "name_km": "ព្រះរាជពិធីច្រត់ព្រះនង្គ័ល",
+      "name_en": "Royal Ploughing Ceremony",
+      "summary_km": "ព្រះរាជពិធីបុរាណប្រកាសបើករដូវបង្កបង្កើនផលស្រូវ និងទស្សន៍ទាយភោគផលកសិកម្មតាមរយៈការបរិភោគរបស់គោឧសភរាជ។",
+      "summary_en": "Ancient royal rite marking the start of the rice-growing season and predicting crop yields via sacred oxen."
+    },
+    {
+      "id": "the_ordained_dragon_monk",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីបំបួសនាគ",
+      "name_en": "The Ordained Dragon Monk",
+      "summary_km": "ពិធីប្រពៃណីព្រះពុទ្ធសាសនា ហែកុលបុត្រ (នាគ) ចូលទៅបួសជាព្រះសង្ឃ ដើម្បីសងគុណមាតាបិតា។",
+      "summary_en": "Traditional Buddhist ordination ritual where young men ('Nak') are ordained into monkhood to honor parents."
+    },
+    {
+      "id": "buddhist_lent_candles_making_day",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីស្លឹកទៀនវស្សា",
+      "name_en": "Buddhist Lent Candles Making Day",
+      "summary_km": "ពិធីបុណ្យចាក់ទៀនវស្សាធំៗ ដើម្បីត្រៀមវេរប្រគេនវត្តអារាមសម្រាប់បំភ្លឺក្នុងអំឡុងពេលចូលព្រះវស្សា ៣ខែ។",
+      "summary_en": "Traditional crafting of large, ornate wax candles to be offered to pagodas for light during Buddhist Lent."
+    },
+    {
+      "id": "beginning_buddhist_lent",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីបុណ្យចូលព្រះវស្សា",
+      "name_en": "Beginning of Buddhist Lent",
+      "summary_km": "ការចាប់ផ្តើមនៃការគង់ចាំព្រះវស្សារយៈពេល៣ខែរបស់ព្រះសង្ឃនៅតាមវត្តអារាម ក្នុងរដូវភ្លៀងធ្លាក់។",
+      "summary_en": "Marks the start of the three-month rains retreat during which Buddhist monks must reside within their monasteries."
+    },
+    {
+      "id": "ending_buddhist_lent",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីបុណ្យចេញព្រះវស្សា",
+      "name_en": "Ending of Buddhist Lent",
+      "summary_km": "ការបញ្ចប់ការគង់ចាំព្រះវស្សារយៈពេល៣ខែរបស់ព្រះសង្ឃ ពុទ្ធបរិស័ទជួបជុំគ្នាធ្វើបុណ្យ និងបណ្តែតប្រទីប។",
+      "summary_en": "The conclusion of the three-month monastic rains retreat, celebrated with lantern floating and offerings."
+    },
+    {
+      "id": "kathen_kal",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីបុណ្យកឋិនទាន",
+      "name_en": "Kathen Festival Period",
+      "summary_km": "រដូវកាលបុណ្យរយៈពេល២៩ថ្ងៃ ក្នុងការដង្ហែត្រៃចីវរ និងទេយ្យទានប្រគេនព្រះសង្ឃដែលបានគង់ចាំវស្សាគ្រប់៣ខែ។",
+      "summary_en": "A 29-day merit-making festival where lay followers process new robes and offerings to monks who completed Lent."
+    },
+    {
+      "id": "water_festival",
+      "category": "cultural",
+      "name_km": "ព្រះរាជពិធីបុណ្យអុំទូក បណ្តែតប្រទីប និងសំពះព្រះខែ អកអំបុក",
+      "name_en": "Water and Moon Festival",
+      "summary_km": "ពិធីបុណ្យជាតិរំលឹកការប្តូរទិសរំហូរទឹកនៃបឹងទន្លេសាប និងសម្តែងការដឹងគុណចំពោះធនធានទឹក ស្របពេលដែលទំនៀមទម្លាប់ប្រជាប្រិយភ្ជាប់ការប្រណាំងទូកទៅនឹងកងទ័ពជើងទឹកបុរាណ។",
+      "summary_en": "Marks the seasonal flow reversal of the Tonle Sap River and expresses gratitude to water; popular tradition also links the regattas to Cambodia's historic naval traditions."
+    },
+    {
+      "id": "pchum_ben_festival",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីបុណ្យភ្ជុំបិណ្ឌ (បិណ្ឌធំ)",
+      "name_en": "Pchum Ben Festival (Ancestors' Day)",
+      "summary_km": "ថ្ងៃចុងក្រោយនៃពិធីបុណ្យភ្ជុំបិណ្ឌ (១៥រោច ខែភទ្របទ) ពុទ្ធបរិស័ទជួបជុំឧទ្ទិសកុសលដ៏ធំធេងដល់វិញ្ញាណក្ខន្ធបុព្វការីជន និងញាតិទាំង៧សណ្តាន។",
+      "summary_en": "The climax of Ancestors' Day (15th waning day of Bhadrapada), dedicated to transferring merit and food to departed relatives across generations."
+    },
+    {
+      "id": "post_pchum_ben_festival",
+      "category": "cultural",
+      "name_km": "ទិវាឈប់សម្រាកបន្ទាប់ពីភ្ជុំបិណ្ឌ",
+      "name_en": "Post-Pchum Ben Public Holiday",
+      "summary_km": "ថ្ងៃឈប់សម្រាកផ្លូវការទី៣ នៃពិធីបុណ្យភ្ជុំបិណ្ឌ (១កើត ខែអស្សុជ) ដែលកំណត់ដោយរាជរដ្ឋាភិបាល ដើម្បីឱ្យពលរដ្ឋមានពេលធ្វើដំណើរត្រឡប់មកពីស្រុកកំណើត។",
+      "summary_en": "The third official public holiday in the Pchum Ben statutory leave block (1st waxing day of Asvina), providing travel time after family ancestral reunions."
+    },
+    {
+      "id": "ben_1",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីកាន់បិណ្ឌវេនទី១",
+      "name_en": "Kan Ben 1",
+      "summary_km": "ថ្ងៃទី១ នៃពិធីកាន់បិណ្ឌទាំង ១៤ ថ្ងៃ។ តាមទំនៀមទម្លាប់ ពុទ្ធបរិស័ទជួបជុំគ្នាសូត្រមន្ត និងស្តាប់ធម៌នៅពេលល្ងាច បោះបាយបិណ្ឌនៅវេលាទៀបភ្លឺ និងវេរចង្ហាន់បង្សុកូលប្រគេនព្រះសង្ឃនៅពេលព្រឹក ដើម្បីឧទ្ទិសកុសលជូនបុព្វការីជន។",
+      "summary_en": "Day 1 of the 14-day Kan Ben period. Devotees observe three daily practices: evening paritta chanting and Dhamma talks, pre-dawn Bay Ben (rice ball scattering) rituals, and morning monastic meal offerings with bangsokol merit dedications."
+    },
+    {
+      "id": "ben_2",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីកាន់បិណ្ឌវេនទី២",
+      "name_en": "Kan Ben 2",
+      "summary_km": "ថ្ងៃទី២ នៃពិធីកាន់បិណ្ឌទាំង ១៤ ថ្ងៃ។ តាមទំនៀមទម្លាប់ ពុទ្ធបរិស័ទជួបជុំគ្នាសូត្រមន្ត និងស្តាប់ធម៌នៅពេលល្ងាច បោះបាយបិណ្ឌនៅវេលាទៀបភ្លឺ និងវេរចង្ហាន់បង្សុកូលប្រគេនព្រះសង្ឃនៅពេលព្រឹក ដើម្បីឧទ្ទិសកុសលជូនបុព្វការីជន។",
+      "summary_en": "Day 2 of the 14-day Kan Ben period. Devotees observe three daily practices: evening paritta chanting and Dhamma talks, pre-dawn Bay Ben (rice ball scattering) rituals, and morning monastic meal offerings with bangsokol merit dedications."
+    },
+    {
+      "id": "ben_3",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីកាន់បិណ្ឌវេនទី៣",
+      "name_en": "Kan Ben 3",
+      "summary_km": "ថ្ងៃទី៣ នៃពិធីកាន់បិណ្ឌទាំង ១៤ ថ្ងៃ។ តាមទំនៀមទម្លាប់ ពុទ្ធបរិស័ទជួបជុំគ្នាសូត្រមន្ត និងស្តាប់ធម៌នៅពេលល្ងាច បោះបាយបិណ្ឌនៅវេលាទៀបភ្លឺ និងវេរចង្ហាន់បង្សុកូលប្រគេនព្រះសង្ឃនៅពេលព្រឹក ដើម្បីឧទ្ទិសកុសលជូនបុព្វការីជន។",
+      "summary_en": "Day 3 of the 14-day Kan Ben period. Devotees observe three daily practices: evening paritta chanting and Dhamma talks, pre-dawn Bay Ben (rice ball scattering) rituals, and morning monastic meal offerings with bangsokol merit dedications."
+    },
+    {
+      "id": "ben_4",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីកាន់បិណ្ឌវេនទី៤",
+      "name_en": "Kan Ben 4",
+      "summary_km": "ថ្ងៃទី៤ នៃពិធីកាន់បិណ្ឌទាំង ១៤ ថ្ងៃ។ តាមទំនៀមទម្លាប់ ពុទ្ធបរិស័ទជួបជុំគ្នាសូត្រមន្ត និងស្តាប់ធម៌នៅពេលល្ងាច បោះបាយបិណ្ឌនៅវេលាទៀបភ្លឺ និងវេរចង្ហាន់បង្សុកូលប្រគេនព្រះសង្ឃនៅពេលព្រឹក ដើម្បីឧទ្ទិសកុសលជូនបុព្វការីជន។",
+      "summary_en": "Day 4 of the 14-day Kan Ben period. Devotees observe three daily practices: evening paritta chanting and Dhamma talks, pre-dawn Bay Ben (rice ball scattering) rituals, and morning monastic meal offerings with bangsokol merit dedications."
+    },
+    {
+      "id": "ben_5",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីកាន់បិណ្ឌវេនទី៥",
+      "name_en": "Kan Ben 5",
+      "summary_km": "ថ្ងៃទី៥ នៃពិធីកាន់បិណ្ឌទាំង ១៤ ថ្ងៃ។ តាមទំនៀមទម្លាប់ ពុទ្ធបរិស័ទជួបជុំគ្នាសូត្រមន្ត និងស្តាប់ធម៌នៅពេលល្ងាច បោះបាយបិណ្ឌនៅវេលាទៀបភ្លឺ និងវេរចង្ហាន់បង្សុកូលប្រគេនព្រះសង្ឃនៅពេលព្រឹក ដើម្បីឧទ្ទិសកុសលជូនបុព្វការីជន។",
+      "summary_en": "Day 5 of the 14-day Kan Ben period. Devotees observe three daily practices: evening paritta chanting and Dhamma talks, pre-dawn Bay Ben (rice ball scattering) rituals, and morning monastic meal offerings with bangsokol merit dedications."
+    },
+    {
+      "id": "ben_6",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីកាន់បិណ្ឌវេនទី៦",
+      "name_en": "Kan Ben 6",
+      "summary_km": "ថ្ងៃទី៦ នៃពិធីកាន់បិណ្ឌទាំង ១៤ ថ្ងៃ។ តាមទំនៀមទម្លាប់ ពុទ្ធបរិស័ទជួបជុំគ្នាសូត្រមន្ត និងស្តាប់ធម៌នៅពេលល្ងាច បោះបាយបិណ្ឌនៅវេលាទៀបភ្លឺ និងវេរចង្ហាន់បង្សុកូលប្រគេនព្រះសង្ឃនៅពេលព្រឹក ដើម្បីឧទ្ទិសកុសលជូនបុព្វការីជន។",
+      "summary_en": "Day 6 of the 14-day Kan Ben period. Devotees observe three daily practices: evening paritta chanting and Dhamma talks, pre-dawn Bay Ben (rice ball scattering) rituals, and morning monastic meal offerings with bangsokol merit dedications."
+    },
+    {
+      "id": "ben_7",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីកាន់បិណ្ឌវេនទី៧",
+      "name_en": "Kan Ben 7",
+      "summary_km": "ថ្ងៃទី៧ នៃពិធីកាន់បិណ្ឌទាំង ១៤ ថ្ងៃ។ តាមទំនៀមទម្លាប់ ពុទ្ធបរិស័ទជួបជុំគ្នាសូត្រមន្ត និងស្តាប់ធម៌នៅពេលល្ងាច បោះបាយបិណ្ឌនៅវេលាទៀបភ្លឺ និងវេរចង្ហាន់បង្សុកូលប្រគេនព្រះសង្ឃនៅពេលព្រឹក ដើម្បីឧទ្ទិសកុសលជូនបុព្វការីជន។",
+      "summary_en": "Day 7 of the 14-day Kan Ben period. Devotees observe three daily practices: evening paritta chanting and Dhamma talks, pre-dawn Bay Ben (rice ball scattering) rituals, and morning monastic meal offerings with bangsokol merit dedications."
+    },
+    {
+      "id": "ben_8",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីកាន់បិណ្ឌវេនទី៨",
+      "name_en": "Kan Ben 8",
+      "summary_km": "ថ្ងៃទី៨ នៃពិធីកាន់បិណ្ឌទាំង ១៤ ថ្ងៃ (ត្រូវនឹងថ្ងៃឧបោសថសីល ៨រោច)។ តាមទំនៀមទម្លាប់ ពុទ្ធបរិស័ទជួបជុំគ្នាសូត្រមន្ត និងស្តាប់ធម៌នៅពេលល្ងាច បោះបាយបិណ្ឌនៅវេលាទៀបភ្លឺ និងវេរចង្ហាន់បង្សុកូលប្រគេនព្រះសង្ឃនៅពេលព្រឹក ដើម្បីឧទ្ទិសកុសលជូនបុព្វការីជន។",
+      "summary_en": "Day 8 of Kan Ben, coinciding with the Buddhist Uposatha holy day (8th waning moon). Devotees practice evening paritta chanting, pre-dawn Bay Ben rice offerings, and morning food donations with bangsokol dedications."
+    },
+    {
+      "id": "ben_9",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីកាន់បិណ្ឌវេនទី៩",
+      "name_en": "Kan Ben 9",
+      "summary_km": "ថ្ងៃទី៩ នៃពិធីកាន់បិណ្ឌទាំង ១៤ ថ្ងៃ។ តាមទំនៀមទម្លាប់ ពុទ្ធបរិស័ទជួបជុំគ្នាសូត្រមន្ត និងស្តាប់ធម៌នៅពេលល្ងាច បោះបាយបិណ្ឌនៅវេលាទៀបភ្លឺ និងវេរចង្ហាន់បង្សុកូលប្រគេនព្រះសង្ឃនៅពេលព្រឹក ដើម្បីឧទ្ទិសកុសលជូនបុព្វការីជន។",
+      "summary_en": "Day 9 of the 14-day Kan Ben period. Devotees observe three daily practices: evening paritta chanting and Dhamma talks, pre-dawn Bay Ben (rice ball scattering) rituals, and morning monastic meal offerings with bangsokol merit dedications."
+    },
+    {
+      "id": "ben_10",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីកាន់បិណ្ឌវេនទី១០",
+      "name_en": "Kan Ben 10",
+      "summary_km": "ថ្ងៃទី១០ នៃពិធីកាន់បិណ្ឌទាំង ១៤ ថ្ងៃ។ តាមទំនៀមទម្លាប់ ពុទ្ធបរិស័ទជួបជុំគ្នាសូត្រមន្ត និងស្តាប់ធម៌នៅពេលល្ងាច បោះបាយបិណ្ឌនៅវេលាទៀបភ្លឺ និងវេរចង្ហាន់បង្សុកូលប្រគេនព្រះសង្ឃនៅពេលព្រឹក ដើម្បីឧទ្ទិសកុសលជូនបុព្វការីជន។",
+      "summary_en": "Day 10 of the 14-day Kan Ben period. Devotees observe three daily practices: evening paritta chanting and Dhamma talks, pre-dawn Bay Ben (rice ball scattering) rituals, and morning monastic meal offerings with bangsokol merit dedications."
+    },
+    {
+      "id": "ben_11",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីកាន់បិណ្ឌវេនទី១១",
+      "name_en": "Kan Ben 11",
+      "summary_km": "ថ្ងៃទី១១ នៃពិធីកាន់បិណ្ឌទាំង ១៤ ថ្ងៃ។ តាមទំនៀមទម្លាប់ ពុទ្ធបរិស័ទជួបជុំគ្នាសូត្រមន្ត និងស្តាប់ធម៌នៅពេលល្ងាច បោះបាយបិណ្ឌនៅវេលាទៀបភ្លឺ និងវេរចង្ហាន់បង្សុកូលប្រគេនព្រះសង្ឃនៅពេលព្រឹក ដើម្បីឧទ្ទិសកុសលជូនបុព្វការីជន។",
+      "summary_en": "Day 11 of the 14-day Kan Ben period. Devotees observe three daily practices: evening paritta chanting and Dhamma talks, pre-dawn Bay Ben (rice ball scattering) rituals, and morning monastic meal offerings with bangsokol merit dedications."
+    },
+    {
+      "id": "ben_12",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីកាន់បិណ្ឌវេនទី១២",
+      "name_en": "Kan Ben 12",
+      "summary_km": "ថ្ងៃទី១២ នៃពិធីកាន់បិណ្ឌទាំង ១៤ ថ្ងៃ។ តាមទំនៀមទម្លាប់ ពុទ្ធបរិស័ទជួបជុំគ្នាសូត្រមន្ត និងស្តាប់ធម៌នៅពេលល្ងាច បោះបាយបិណ្ឌនៅវេលាទៀបភ្លឺ និងវេរចង្ហាន់បង្សុកូលប្រគេនព្រះសង្ឃនៅពេលព្រឹក ដើម្បីឧទ្ទិសកុសលជូនបុព្វការីជន។",
+      "summary_en": "Day 12 of the 14-day Kan Ben period. Devotees observe three daily practices: evening paritta chanting and Dhamma talks, pre-dawn Bay Ben (rice ball scattering) rituals, and morning monastic meal offerings with bangsokol merit dedications."
+    },
+    {
+      "id": "ben_13",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីកាន់បិណ្ឌវេនទី១៣",
+      "name_en": "Kan Ben 13",
+      "summary_km": "ថ្ងៃទី១៣ នៃពិធីកាន់បិណ្ឌទាំង ១៤ ថ្ងៃ។ តាមទំនៀមទម្លាប់ ពុទ្ធបរិស័ទជួបជុំគ្នាសូត្រមន្ត និងស្តាប់ធម៌នៅពេលល្ងាច បោះបាយបិណ្ឌនៅវេលាទៀបភ្លឺ និងវេរចង្ហាន់បង្សុកូលប្រគេនព្រះសង្ឃនៅពេលព្រឹក ដើម្បីឧទ្ទិសកុសលជូនបុព្វការីជន។",
+      "summary_en": "Day 13 of the 14-day Kan Ben period. Devotees observe three daily practices: evening paritta chanting and Dhamma talks, pre-dawn Bay Ben (rice ball scattering) rituals, and morning monastic meal offerings with bangsokol merit dedications."
+    },
+    {
+      "id": "ben_14",
+      "category": "lunar_buddhist",
+      "name_km": "ពិធីកាន់បិណ្ឌវេនទី១៤",
+      "name_en": "Kan Ben 14",
+      "summary_km": "ថ្ងៃទី១៤ នៃពិធីកាន់បិណ្ឌ ជាវេនបង្ហើយមុនពេលប្រារព្ធពិធីបុណ្យភ្ជុំបិណ្ឌធំ (១៥រោច)។ ពុទ្ធបរិស័ទបន្តពិធីសូត្រមន្តពេលល្ងាច បោះបាយបិណ្ឌទៀបភ្លឺ និងវេរចង្ហាន់ពេលព្រឹក ព្រមទាំងត្រៀមរៀបចំពិធីភ្ជុំបិណ្ឌនៅថ្ងៃស្អែក។",
+      "summary_en": "Day 14 of Kan Ben, the final rotational day preceding the grand Pchum Ben climax. Devotees complete the evening chanting, pre-dawn Bay Ben, and morning offerings while making final preparations for Pchum Ben."
+    },
+    {
+      "id": "mothers_day",
+      "category": "global_observance",
+      "name_km": "ទិវាអ្នកម្តាយ",
+      "name_en": "Mother's Day",
+      "summary_km": "ទិវាគោរពដឹងគុណចំពោះសេចក្តីស្រឡាញ់ និងការលះបង់ដ៏ធំធេងរបស់អ្នកម្តាយគ្រប់រូប (ប្រារព្ធនៅថ្ងៃអាទិត្យទី២ នៃខែឧសភា)។",
+      "summary_en": "Honors mothers and celebrates motherhood, maternal bonds, and the influence of mothers in society."
+    },
+    {
+      "id": "fathers_day",
+      "category": "global_observance",
+      "name_km": "ទិវាលោកឪពុក",
+      "name_en": "Father's Day",
+      "summary_km": "ទិវាគោរពដឹងគុណចំពោះការលះបង់ និងការទំនុកបម្រុងរបស់លោកឪពុកក្នុងគ្រួសារ (ប្រារព្ធនៅថ្ងៃអាទិត្យទី៣ នៃខែមិថុនា)។",
+      "summary_en": "Honors paternal bonds and the dedication of fathers and paternal figures across society."
+    },
+    {
+      "id": "international_peace_day_ga_opening",
+      "category": "global_observance",
+      "name_km": "ទិវាសន្តិភាពអន្តរជាតិ (ទម្រង់មុនឆ្នាំ២០០២)",
+      "name_en": "International Day of Peace (pre-2002)",
+      "summary_km": "ទម្រង់ដើមនៃទិវាសន្តិភាពអន្តរជាតិ ដែលធ្លាប់ប្រារព្ធនៅថ្ងៃអង្គារទី៣ នៃខែកញ្ញា ស្របពេលបើកសម័យប្រជុំមហាសន្និបាត UN។",
+      "summary_en": "The historical UN Day of Peace observed on the opening Tuesday of the UN General Assembly session."
+    },
+    {
+      "id": "khmer_new_year_1",
+      "category": "cultural",
+      "name_km": "ពិធីបុណ្យចូលឆ្នាំខ្មែរ - ថ្ងៃមហាសង្ក្រាន្ត",
+      "name_en": "Khmer New Year — Moha Sankranta (Day 1)",
+      "summary_km": "ថ្ងៃដំបូងនៃពិធីបុណ្យចូលឆ្នាំខ្មែរ ទទួលស្វាគមន៍ទេវតាតាមឆ្នាំថ្មី ដែលយាងចុះមកថែរក្សាពិភពលោក។",
+      "summary_en": "Day 1 of Cambodian New Year, welcoming the new Devata descending to protect the realm for the coming year."
+    },
+    {
+      "id": "khmer_new_year_2",
+      "category": "cultural",
+      "name_km": "ពិធីបុណ្យចូលឆ្នាំខ្មែរ - ថ្ងៃវារៈវនបត",
+      "name_en": "Khmer New Year — Veareak Vanabat (Day 2)",
+      "summary_km": "ថ្ងៃទី២ នៃពិធីបុណ្យចូលឆ្នាំខ្មែរ ថ្ងៃនៃការចែករំលែកទានដល់អ្នកក្រីក្រ និងសម្តែងការដឹងគុណដល់ឪពុកម្តាយ។",
+      "summary_en": "Day 2 of Khmer New Year, dedicated to giving charity to the needy and honoring parents and elders."
+    },
+    {
+      "id": "khmer_new_year_3",
+      "category": "cultural",
+      "name_km": "ពិធីបុណ្យចូលឆ្នាំខ្មែរ - ថ្ងៃវារៈឡើងស័ក",
+      "name_en": "Khmer New Year — Veareak Laeung Sak (Day 3)",
+      "summary_km": "ថ្ងៃចុងក្រោយនៃការចូលឆ្នាំខ្មែរ ពិធីស្រង់ព្រះពុទ្ធបដិមា ស្រង់ព្រះសង្ឃ និងឪពុកម្តាយដើម្បីទទួលពរជ័យឆ្នាំថ្មី។",
+      "summary_en": "Day 3 of Khmer New Year, featuring ceremonial lustration of Buddha statues, monks, and parents for renewal."
+    },
+    {
+      "id": "chinese_new_year_eve",
+      "category": "cultural",
+      "name_km": "ពិធីបុណ្យចូលឆ្នាំចិន - ថ្ងៃសែនចូលឆ្នាំ",
+      "name_en": "Chinese New Year's Eve",
+      "summary_km": "ថ្ងៃសែនដូនតានៃពិធីបុណ្យចូលឆ្នាំថ្មីប្រពៃណីចិន និងការជួបជុំគ្រួសារទទួលទានអាហារសាមគ្គីជុំគ្នា។",
+      "summary_en": "The eve of Chinese Lunar New Year, centered on ancestral offerings and the traditional family reunion dinner."
+    },
+    {
+      "id": "chinese_new_year_days",
+      "category": "cultural",
+      "name_km": "ពិធីបុណ្យចូលឆ្នាំប្រពៃណីចិន",
+      "name_en": "Chinese New Year",
+      "summary_km": "ពិធីបុណ្យនិទាឃរដូវប្រពៃណីចិន ប្រារព្ធឡើងដោយការជូនអាំងប៉ាវ ការជូនពរ និងការរាំម៉ុងសាយដើម្បីនាំលាភសំណាង។",
+      "summary_en": "The Spring Festival celebrating the lunar new cycle with lion dances, red envelopes, and wishes of prosperity."
+    },
+    {
+      "id": "chinese_spirit_parade",
+      "category": "cultural",
+      "name_km": "ពិធីដង្ហែក្បួនរូបសំណាកព្រះចិន",
+      "name_en": "Chinese Spirit Parade",
+      "summary_km": "ពិធីប្រពៃណីដង្ហែរូបសំណាកព្រះចិន និងទេវតាតាមដងផ្លូវ ដើម្បីបណ្តេញឧបទ្រពចង្រៃ និងនាំមកនូវសេចក្តីសុខ។",
+      "summary_en": "Street procession of Chinese deities and tutelary spirits to ward off misfortune and bless neighborhoods."
+    },
+    {
+      "id": "chinese_qingming_festival",
+      "category": "cultural",
+      "name_km": "ពិធីបុណ្យឆេងម៉េង",
+      "name_en": "Tomb-Sweeping Day (Qingming)",
+      "summary_km": "ពិធីបុណ្យប្រពៃណីចិនក្នុងការសម្អាតផ្នូរដូនតា សែនម្ហូបអាហារ និងរំលឹកគុណដល់បុព្វការីជន។",
+      "summary_en": "Traditional day for families to visit and sweep ancestral graves, offering prayers and food to departed kin."
+    },
+    {
+      "id": "chinese_zongzi_festival",
+      "category": "cultural",
+      "name_km": "ពិធីបុណ្យសែននំចាំង (បុណ្យទូកនាគ)",
+      "name_en": "Zongzi Festival (Dragon Boat Festival)",
+      "summary_km": "ពិធីបុណ្យរំលឹកអ្នកប្រាជ្ញ Qu Yuan តាមរយៈការបរិភោគនំចាំង (បាយដំណើបខ្ចប់ស្លឹកឫស្សី) និងការប្រណាំងទូកនាគ។",
+      "summary_en": "Commemorates the poet Qu Yuan, observed by eating pyramid-shaped sticky rice dumplings (Zongzi) and boat racing."
+    },
+    {
+      "id": "chinese_ghost_festival",
+      "category": "cultural",
+      "name_km": "ពិធីបុណ្យសែនក្បាលទឹក",
+      "name_en": "Hungry Ghost Festival (Zhongyuan)",
+      "summary_km": "ពិធីបុណ្យប្រពៃណីចិនដែលជឿថាទ្វារស្ថាននរកបើកឱ្យវិញ្ញាណចេញមកទទួលចំណី គេរៀបចំសែនអាហារ និងដុតក្រដាសសែន។",
+      "summary_en": "A festival honoring wandering ancestors and deceased spirits released from the afterlife via paper and food offerings."
+    },
+    {
+      "id": "chinese_mid_autumn_festival",
+      "category": "cultural",
+      "name_km": "ពិធីបុណ្យសែនលោកខែ",
+      "name_en": "Mid-Autumn Festival",
+      "summary_km": "ពិធីបុណ្យប្រពៃណីចិនប្រារព្ធឡើងក្នុងរាត្រីពេញបូណ៌មី ដោយការទទួលទាននំព្រះខែ និងការបង្ហោះគោមជួបជុំគ្រួសារ។",
+      "summary_en": "A harvest moon celebration of family unity, eating mooncakes, and admiring the autumn harvest moon."
+    },
+    {
+      "id": "chinese_winter_solstice",
+      "category": "cultural",
+      "name_km": "ពិធីបុណ្យសែនតាំងអ៊ុយ (ទិវាសុរិយគតិរដូវរងា)",
+      "name_en": "Winter Solstice Festival (Dongzhi)",
+      "summary_km": "ពិធីបុណ្យចិនរំលឹកថ្ងៃខ្លីបំផុតនៃឆ្នាំ ប្រារព្ធដោយការធ្វើ និងទទួលទានបង្អែមតាំងអ៊ុយ (បាញ់ចានីឿក) ជួបជុំគ្រួសារ។",
+      "summary_en": "Celebrates the turning of the sun toward longer daylight with family reunions and Tangyuan rice balls."
+    },
+    {
+      "id": "chinese_kitchen_god_festival",
+      "category": "cultural",
+      "name_km": "ពិធីសែនព្រះចង្ក្រាន",
+      "name_en": "Kitchen God Day",
+      "summary_km": "ពិធីសែនជូនដំណើរស្តេចចង្ក្រានឡើងទៅឋានសួគ៌ ដើម្បីរាយការណ៍អំពីទង្វើរបស់សមាជិកគ្រួសារដល់ស្តេចឋានសួគ៌។",
+      "summary_en": "Traditional send-off of the Kitchen Deity to heaven to report on household conduct before the New Year."
+    },
+    {
+      "id": "static_victory_over_genocide",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតទិវាជ័យជម្នះ ៧ មករា ១៩៧៩",
+      "name_en": "Milestone: 1979 Liberation Day Origin",
+      "summary_km": "ព្រឹត្តិការណ៍ជាប្រវត្តិសាស្ត្រនៃការរំដោះរាជធានីភ្នំពេញ និងការដួលរលំនៃរបបកម្ពុជាប្រជាធិបតេយ្យ។",
+      "summary_en": "The historic event of January 7, 1979, liberating Phnom Penh and ending the Khmer Rouge reign."
+    },
+    {
+      "id": "static_independence_day",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតទិវាឯករាជ្យជាតិ ៩ វិច្ឆិកា ១៩៥៣",
+      "name_en": "Milestone: 1953 National Independence Origin",
+      "summary_km": "ជ័យជម្នះជាប្រវត្តិសាស្ត្រនៃព្រះរាជបូជនីយកិច្ចទាមទារឯករាជ្យពីអាណាព្យាបាលបារាំងយ៉ាងពេញលេញ។",
+      "summary_en": "The sovereign achievement on November 9, 1953, restoring full national self-governance from France."
+    },
+    {
+      "id": "static_constitution_day",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតរដ្ឋធម្មនុញ្ញ ២៤ កញ្ញា ១៩៩៣",
+      "name_en": "Milestone: 1993 Constitution Origin",
+      "summary_km": "ការអនុម័តរដ្ឋធម្មនុញ្ញថ្មីដែលបានបង្កើតឡើងវិញនូវព្រះរាជាណាចក្រកម្ពុជាទីពីរ និងរបបប្រជាធិបតេយ្យ។",
+      "summary_en": "The historic promulgation of Cambodia's modern constitution on September 24, 1993, restoring the constitutional monarchy."
+    },
+    {
+      "id": "static_day_of_hatred",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតទិវាចងកំហឹង ២០ ឧសភា ១៩៨៤",
+      "name_en": "Milestone: 1984 National Day of Hatred Origin",
+      "summary_km": "ការផ្តួចផ្តើមជាផ្លូវការដំបូងក្នុងឆ្នាំ១៩៨៤ ក្នុងការកំណត់ថ្ងៃចងចាំការឈឺចាប់ និងជនរងគ្រោះនៃរបបខ្មែរក្រហម។",
+      "summary_en": "The 1984 institutional origin of national commemoration for victims of Khmer Rouge atrocities."
+    },
+    {
+      "id": "static_international_labor_day",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតទិវាពលកម្មអន្តរជាតិ ១៨៨៦",
+      "name_en": "Milestone: 1886 International Labor Movement",
+      "summary_km": "ចលនាតវ៉ាទាមទារសិទ្ធិការងារ៨ម៉ោងនៅទីក្រុងឈីកាហ្គោ ដែលបានក្លាយជាប្រភពនៃទិវាពលកម្មអន្តរជាតិ។",
+      "summary_en": "The 1886 Haymarket movement in Chicago that gave birth to the international May Day workers' holiday."
+    },
+    {
+      "id": "static_international_human_rights_day",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតសេចក្តីប្រកាសសកលស្តីពីសិទ្ធិមនុស្ស ១៩៤៨",
+      "name_en": "Milestone: 1948 Universal Declaration of Human Rights",
+      "summary_km": "មហាសន្និបាតអង្គការសហប្រជាជាតិបានអនុម័តសេចក្តីប្រកាសជាសកលស្តីពីសិទ្ធិមនុស្សនៅទីក្រុងប៉ារីស។",
+      "summary_en": "The United Nations General Assembly's adoption of the Universal Declaration of Human Rights in Paris on December 10, 1948."
+    },
+    {
+      "id": "static_birth_of_national_police",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតនគរបាលជាតិ ១៦ ឧសភា ១៩៤៥",
+      "name_en": "Milestone: 1945 Cambodian National Police Origin",
+      "summary_km": "ការបង្កើតកងកម្លាំងនគរបាលជាតិកម្ពុជាជាលើកដំបូង ដើម្បីការពារសណ្តាប់ធ្នាប់សាធារណៈ។",
+      "summary_en": "The foundational creation of Cambodia's National Police institution on May 16, 1945."
+    },
+    {
+      "id": "static_cambodia_joined_un",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតកម្ពុជាចូលអង្គការសហប្រជាជាតិ ១៩៥៥",
+      "name_en": "Milestone: 1955 UN Membership Origin",
+      "summary_km": "កម្ពុជាត្រូវបានទទួលស្គាល់ជាសមាជិកផ្លូវការនៃអង្គការសហប្រជាជាតិ បន្ទាប់ពីទទួលបានឯករាជ្យ។",
+      "summary_en": "Cambodia's post-independence diplomatic milestone of gaining admission into the United Nations in 1955."
+    },
+    {
+      "id": "static_cambodia_joined_unesco",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតកម្ពុជាចូលយូណេស្កូ ១៩៥១",
+      "name_en": "Milestone: 1951 UNESCO Membership Origin",
+      "summary_km": "ការចូលរួមជាសមាជិកយូណេស្កូ ដើម្បីអភិរក្សសម្បត្តិវប្បធម៌ និងអភិវឌ្ឍការអប់រំនៅកម្ពុជា។",
+      "summary_en": "The 1951 entry of Cambodia into UNESCO, inaugurating decades of global cultural preservation partnerships."
+    },
+    {
+      "id": "static_icj_preah_vihear_ownership",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតសាលក្រមប្រាសាទព្រះវិហារ ១៩៦២",
+      "name_en": "Milestone: 1962 Preah Vihear ICJ Judgment Origin",
+      "summary_km": "តុលាការយុត្តិធម៌អន្តរជាតិក្រុងឡាអេបានប្រកាសសាលក្រមជាផ្លូវការថា ប្រាសាទព្រះវិហារស្ថិតក្រោមអធិបតេយ្យភាពនៃព្រះរាជាណាចក្រកម្ពុជា។",
+      "summary_en": "The landmark judgment by the International Court of Justice in The Hague on June 15, 1962, determining that the Temple of Preah Vihear stands under Cambodian sovereignty."
+    },
+    {
+      "id": "static_angkor_wat_unesco",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតអង្គរចុះបញ្ជីយូណេស្កូ ១៩៩២",
+      "name_en": "Milestone: 1992 Angkor World Heritage Origin",
+      "summary_km": "រមណីយដ្ឋានអង្គរត្រូវបានចុះបញ្ជីជាបេតិកភណ្ឌពិភពលោកបន្ទាន់ ដើម្បីសង្គ្រោះ និងអភិរក្សប្រាសាទបុរាណ។",
+      "summary_en": "The inscription of the Angkor Archaeological Park on the UNESCO World Heritage List on December 14, 1992."
+    },
+    {
+      "id": "static_temple_of_preah_vihear_was_inscribed_on_the_unesco",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតប្រាសាទព្រះវិហារចុះបញ្ជីយូណេស្កូ ២០០៨",
+      "name_en": "Milestone: 2008 Preah Vihear World Heritage Origin",
+      "summary_km": "អង្គការយូណេស្កូបានសម្រេចចុះបញ្ជីប្រាសាទព្រះវិហារជាសម្បត្តិបេតិកភណ្ឌពិភពលោកជាផ្លូវការ។",
+      "summary_en": "The official UNESCO inscription of the Temple of Preah Vihear on July 7, 2008, in Quebec City."
+    },
+    {
+      "id": "static_temple_zone_of_sambor_prei_kuk_was_inscribed_on_th",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតសំបូរព្រៃគុកចុះបញ្ជីយូណេស្កូ ២០១៧",
+      "name_en": "Milestone: 2017 Sambor Prei Kuk World Heritage Origin",
+      "summary_km": "ការចុះបញ្ជីរមណីយដ្ឋានប្រាសាទសំបូរព្រៃគុកជាបេតិកភណ្ឌពិភពលោកទី៣ របស់កម្ពុជា។",
+      "summary_en": "The July 8, 2017 inscription of Sambor Prei Kuk by UNESCO as Cambodia's third World Heritage property."
+    },
+    {
+      "id": "static_royal_ballet_of_cambodia_inscribed_on_the_represen",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតរបាំព្រះរាជទ្រព្យប្រកាសទទួលស្គាល់ដោយយូណេស្កូ ២០០៣",
+      "name_en": "Milestone: 2003 Royal Ballet Proclamation Origin",
+      "summary_km": "ការប្រកាសជាលើកដំបូងដោយយូណេស្កូនូវរបាំព្រះរាជទ្រព្យជាស្នាដៃឯកនៃបេតិកភណ្ឌអរូបីមនុស្សជាតិ (ចុះបញ្ជីតំណាងផ្លូវការឆ្នាំ២០០៨)។",
+      "summary_en": "The initial proclamation of the Royal Ballet of Cambodia as an intangible cultural masterpiece in 2003 (inscribed on the Representative List in 2008)."
+    },
+    {
+      "id": "static_khmer_shadow_theatre_inscribed_on_the_representati",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតល្ខោនស្បែកធំប្រកាសទទួលស្គាល់ដោយយូណេស្កូ ២០០៥",
+      "name_en": "Milestone: 2005 Shadow Theatre Proclamation Origin",
+      "summary_km": "ការប្រកាសទទួលស្គាល់ល្ខោនស្រមោលស្បែកធំជាស្នាដៃឯកបេតិកភណ្ឌអរូបីដោយអង្គការយូណេស្កូ (ចុះបញ្ជីតំណាងផ្លូវការឆ្នាំ២០០៨)។",
+      "summary_en": "The 2005 UNESCO proclamation of Khmer Sbek Thom shadow theatre as a masterpiece of intangible heritage (inscribed on the Representative List in 2008)."
+    },
+    {
+      "id": "static_chapei_dang_veng_inscribed_on_the_list_of_intangib",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតចាប៉ីដងវែងចុះបញ្ជីយូណេស្កូ ២០១៦",
+      "name_en": "Milestone: 2016 Chapei Safeguarding Origin",
+      "summary_km": "ការចុះបញ្ជីចាប៉ីដងវែងក្នុងបញ្ជីបេតិកភណ្ឌត្រូវការការសង្គ្រោះបន្ទាន់នៅថ្ងៃទី២៩ ខែវិច្ឆិកា ឆ្នាំ២០១៦ នៅទីក្រុងអាឌីសអាបាបា។",
+      "summary_en": "The November 29, 2016 inscription of Chapei Dang Veng onto the UNESCO Urgent Safeguarding List in Addis Ababa."
+    },
+    {
+      "id": "static_lkhon_khol_wat_svay_andet_inscribed_on_the_list_of",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតល្ខោនខោលចុះបញ្ជីយូណេស្កូ ២០១៨",
+      "name_en": "Milestone: 2018 Lkhon Khol Safeguarding Origin",
+      "summary_km": "ការដាក់បញ្ចូលល្ខោនខោលវត្តស្វាយអណ្តែតក្នុងបញ្ជីបេតិកភណ្ឌអរូបីត្រូវការសង្គ្រោះបន្ទាន់របស់យូណេស្កូ។",
+      "summary_en": "The 2018 inscription of Lkhon Khol Wat Svay Andet onto the UNESCO Urgent Safeguarding List in Port Louis, Mauritius."
+    },
+    {
+      "id": "static_kun_lbokator_inscribed_on_the_representative_list_",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតគុនល្បុក្កតោចុះបញ្ជីយូណេស្កូ ២០២២",
+      "name_en": "Milestone: 2022 Kun Lbokator Inscription Origin",
+      "summary_km": "ការសម្រេចចុះបញ្ជីក្បាច់គុនបុរាណល្បុក្កតោក្នុងបញ្ជីបេតិកភណ្ឌវប្បធម៌អរូបីនៃមនុស្សជាតិនៅប្រទេសម៉ារ៉ុក។",
+      "summary_en": "The November 29, 2022 UNESCO inscription of Kun Lbokator martial arts in Rabat, Morocco."
+    },
+    {
+      "id": "static_koh_ker_inscribed_on_the_unesco_world_heritage_lis",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតប្រាសាទកោះកេរចុះបញ្ជីយូណេស្កូ ២០២៣",
+      "name_en": "Milestone: 2023 Koh Ker Inscription Origin",
+      "summary_km": "ការចុះបញ្ជីរមណីយដ្ឋានប្រាសាទកោះកេរជាបេតិកភណ្ឌពិភពលោកទី៤ របស់កម្ពុជានៅទីក្រុងរីយ៉ាដ។",
+      "summary_en": "The September 17, 2023 inscription of Koh Ker on the UNESCO World Heritage List in Riyadh, Saudi Arabia."
+    },
+    {
+      "id": "static_krama_inscribed_on_the_representative_list_of_the_",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតក្រមាខ្មែរចុះបញ្ជីយូណេស្កូ ២០២៤",
+      "name_en": "Milestone: 2024 Krama Inscription Origin",
+      "summary_km": "ការចុះបញ្ជីក្រមាខ្មែរជាបេតិកភណ្ឌវប្បធម៌អរូបីនៃមនុស្សជាតិជាផ្លូវការនៅប្រទេសប៉ារ៉ាហ្គាយ។",
+      "summary_en": "The December 4, 2024 UNESCO inscription of the Cambodian Krama scarf tradition in Asunción, Paraguay."
+    },
+    {
+      "id": "static_tug_of_war_inscribed_on_the_representative_list_of",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតទាញព្រ័ត្រចុះបញ្ជីយូណេស្កូ ២០១៥",
+      "name_en": "Milestone: 2015 Tug of War Inscription Origin",
+      "summary_km": "ការចុះបញ្ជីរួមគ្នានៃល្បែងទាញព្រ័ត្រប្រពៃណីរបស់កម្ពុជាជាមួយបណ្តាប្រទេសក្នុងតំបន់អាស៊ី។",
+      "summary_en": "The multinational inscription of Tug of War rituals and games onto UNESCO's Representative List in 2015."
+    },
+    {
+      "id": "static_the_archives_of_tuol_sleng_genocide_museum_are_reg",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតបណ្ណសារទួលស្លែងចុះបញ្ជីយូណេស្កូ ២០០៩",
+      "name_en": "Milestone: 2009 Tuol Sleng Archives Origin",
+      "summary_km": "ការទទួលស្គាល់ឯកសារសារមន្ទីរទួលស្លែងក្នុងបញ្ជីការចងចាំនៃពិភពលោក ដើម្បីការពារភស្តុតាងប្រវត្តិសាស្ត្រ។",
+      "summary_en": "The official 2009 UNESCO recognition of the S-21 Tuol Sleng photographic and confession archives."
+    },
+    {
+      "id": "static_m_13_tuol_sleng_genocide_museum_and_choeung_ek_wer",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតទីតាំងចងចាំប្រវត្តិសាស្ត្រចុះបញ្ជីយូណេស្កូ ២០២៥",
+      "name_en": "Milestone: 2025 Memorial Sites Inscription Origin",
+      "summary_km": "ការសម្រេចចុះបញ្ជីមន្ទីរឃុំឃាំង ម-១៣ ទួលស្លែង និងជើងឯក ជាបេតិកភណ្ឌពិភពលោកដើម្បីសន្តិភាព។",
+      "summary_en": "The July 11, 2025 UNESCO World Heritage inscription of Cambodia's memorial sites (M-13, Tuol Sleng, and Choeung Ek)."
+    },
+    {
+      "id": "static_world_day_for_safety_and_health_at_work",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតទិវាសុវត្ថិភាពការងារ ២០០៣",
+      "name_en": "Milestone: 2003 Safety at Work Day Origin",
+      "summary_km": "អង្គការអន្តរជាតិខាងការងារ (ILO) បានកំណត់ប្រារព្ធទិវាសុវត្ថិភាព និងសុខភាពនៅកន្លែងធ្វើការជាលើកដំបូង។",
+      "summary_en": "The International Labour Organization's 2003 formal declaration establishing April 28 as World Day for Safety and Health at Work."
+    },
+    {
+      "id": "world_ranger_day_inaugural",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតទិវាឆ្មាំព្រៃឈើ ២០០៧",
+      "name_en": "Milestone: 2007 World Ranger Day Origin",
+      "summary_km": "ការបង្កើតទិវាឆ្មាំការពារព្រៃឈើពិភពលោកជាលើកដំបូងក្នុងខួបទី១៥ នៃសហព័ន្ធឆ្មាំអន្តរជាតិ (IRF)។",
+      "summary_en": "The 2007 inception of World Ranger Day marking the 15th anniversary of the International Ranger Federation."
+    },
+    {
+      "id": "static_happy_world_day_against_child_labour",
+      "category": "milestone",
+      "name_km": "ខួបកំណើតទិវាប្រឆាំងពលកម្មកុមារ ២០០២",
+      "name_en": "Milestone: 2002 World Day Against Child Labour Origin",
+      "summary_km": "អង្គការអន្តរជាតិខាងការងារ (ILO) បានចាប់ផ្តើមប្រារព្ធទិវាពិភពលោកប្រឆាំងពលកម្មកុមារជាលើកដំបូងនៅថ្ងៃទី១២ ខែមិថុនា ឆ្នាំ២០០២។",
+      "summary_en": "The International Labour Organization (ILO) officially launched the first World Day Against Child Labour on June 12, 2002."
+    }
+  ]
+}

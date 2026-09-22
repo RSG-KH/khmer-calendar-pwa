@@ -8,7 +8,7 @@ The engine's [API contract](https://github.com/RSG-KH/khmer-calendar-engine/blob
 
 One `calendarEngine` instance supplies lunar dates, Buddhist Era, animal year, Sak, New Year and recurrence dates for Gregorian years 1800–2200. The PWA retains civil-date validation, local/Cambodia time zones, Western zodiac labels, translations, event titles, anniversaries and personal event storage.
 
-Built-in events come from the Schema v3 catalog `src/data/khmer-calendar-data-0.4.0.json` (file name carries its `dataVersion`). The repository evaluates that catalog live through the engine — there is no generated date cache to keep fresh. Calendar cells and date details call the engine for lunar dates throughout **1800–2200**. Personal repeats use the app's `EventRepeat.ts` and their saved end date, independently of the catalog. The first day of Khmer New Year (Moha Sangkran) formats its arrival time directly in the event title and header using evidenced times from `newYearArrivals` or the engine's `arrivalEstimate`.
+Built-in events come from the Schema v3 catalog `src/data/khmer-calendar-data-0.4.4.json` (file name carries its `dataVersion`). The repository evaluates that catalog live through the engine — there is no generated date cache to keep fresh. Calendar cells and date details call the engine for lunar dates throughout **1800–2200**. Personal repeats use the app's `EventRepeat.ts` and their saved end date, independently of the catalog. The first day of Khmer New Year (Moha Sangkran) formats its arrival time directly in the event title and header using evidenced times from `newYearArrivals` or the engine's `arrivalEstimate`.
 
 `RecurringEvents.ts` compiles each catalog `rule` (engine-native `RuleInput`, including `monthPolicy: ordinary_or_second_asadh` and `cn-reference-utc8`) through `createRule` once, then evaluates per year. Engine recurrence evaluation uses an **anchor year**, which is not necessarily the year of every returned occurrence. The adapter throws if a rule produces dates outside its anchor year, and the repository skips occurrences from other anchor years; current catalog rules all stay inside the anchor year. A future cross-year rule needs an explicit repository design change.
 
@@ -18,29 +18,32 @@ Built-in events come from the Schema v3 catalog `src/data/khmer-calendar-data-0.
 
 | Pass | Data | Coverage | Behavior |
 | --- | --- | --- | --- |
-| 1 | Recorded catalog dates (`dates[]`) | Historical milestones | 15 static date-backed events (UNESCO milestones); basis `recorded`. |
-| 2 | Engine-evaluated recurrences (109 rules) | 1800–2200, per-rule `fromYear`/`throughYear` | basis `calculated`; historical events are not back-projected before `originalDate`. Catalog `overrides[]` (e.g. King Sihamoni's 3-day birthday 2005–2019, Qingming 2009/2029, Zongzi 2013) are passed to the engine as `EventDateOverride`; overridden occurrences get basis `corrected` and the override's source citation. |
+| 1 | Recorded catalog dates (`dates[]`) | Historical milestones | 26 static date-backed events (historical milestones); basis `recorded`. |
+| 2 | Engine-evaluated recurrences (113 rules) | 1800–2200, per-rule `fromYear`/`throughYear` | basis `calculated`; historical events are not back-projected before `originalDate`. Catalog `overrides[]` (e.g. King Sihamoni's 3-day birthday 2005–2019, Qingming 2009/2029, Zongzi 2013) are passed to the engine as `EventDateOverride`; overridden occurrences get basis `corrected` and the override's source citation. |
 | 3 | Official holiday calendars (`holidayCalendars`) | 2016–2027 | Matched by holiday `id`/`eventId`; a match upgrades the event to kind `HOLIDAY`, basis `official`, applying day-specific names and Sub-Decree citations. Unmatched holiday dates are added directly; `cancelled` entries are skipped. |
 | 4 | Buddhist holy days | 1800–2200 | Scanned day-by-day from lunar data; IDs `sil:YYYY-MM-DD`; basis `khmer_lunar`. |
 | 5 | Personal events | User-selected dates | Merged afterward; preserve existing IDs, storage keys and instants; basis `custom`. |
 
+Anniversary counts resolve from catalog `{anniversary}` placeholders (English ordinals, Khmer numerals) and events keep their `anniversaryBase` origin year for event details and online search anchoring. The bundled bilingual knowledge companion `src/data/event-knowledge.json` (one entry per catalog event) powers the Learn more dialog.
+
 Repository events carry `basis: recorded | calculated | corrected | official | khmer_lunar | custom`. Details distinguish calculated observances with the calculated-observance label; official holidays link their government source. The catalog's `sources[]` (government, calendar, historical) drive those citations, and the Sources dialog credits the official government websites (library.ncdd.gov.kh, ocm.gov.kh, nbc.gov.kh) and the shared Khmer Calendar Engine.
 
-The catalog is app-owned data distilled from the reviewed reference-event database, exported via Calendar Data Catalog v0.4.0 and evaluated dynamically by Khmer Calendar Engine. Engine adoption does not certify official holiday coverage beyond the catalog's holiday calendars; calculations do not confirm official leave outside them.
+The catalog is app-owned data distilled from the reviewed reference-event database, exported via Calendar Data Catalog v0.4.4 and evaluated dynamically by Khmer Calendar Engine. Engine adoption does not certify official holiday coverage beyond the catalog's holiday calendars; calculations do not confirm official leave outside them.
 
 ## Updating the event catalog
 
 There is no generator script. To adopt a new dataset release:
 
 1. Replace `src/data/khmer-calendar-data-<version>.json` with the new release (keep the versioned file name) and update the import in `RecurringEvents.ts`.
-2. Extend the pinned expectations in `tests/engine-integration.test.mjs` (recorded dates, rule evaluation, overrides, official holiday matching) and the Sources-dialog assertions in `tests/sources.test.mjs`.
-3. Run `npm test` for root and GitHub Pages paths. Review calendar corrections against explicit date anchors before changing any expectation.
+2. Replace `src/data/event-knowledge.json` in the same change: the knowledge companion must carry exactly one bilingual entry per catalog event, and a unit test enforces that one-to-one coverage.
+3. Extend the pinned expectations in `tests/engine-integration.test.mjs` (recorded dates, rule evaluation, overrides, official holiday matching) and the Sources-dialog assertions in `tests/sources.test.mjs`.
+4. Run `npm test` for root and GitHub Pages paths. Review calendar corrections against explicit date anchors before changing any expectation.
 
 ## Upgrading the dependency
 
 1. Download the intended release archive and `SHA256SUMS` from the engine's release page. Verify the archive before installing. The 0.3.0 archive SHA-256 is `3921da447c0ad9f258aa47dcf398e0e32d65fd9f926d23f29ad15f8e4befb5e7`.
 2. Install the exact versioned GitHub release URL with `npm install --save-exact <url>`. Review both package files and the release's API changes.
-3. Copy that release's `LICENSE` and `NOTICE` into `public/engine-LICENSE.txt` and `public/engine-NOTICE.txt` without removing upstream credits. Update the app notice/version references where needed.
+3. Copy that release's `LICENSE` and `NOTICE` into `public/engine-LICENSE.txt` and `public/engine-NOTICE.txt` **and into `src/legal/`** without removing upstream credits; a test keeps the bundled and served copies byte-identical. Update the app notice/version references where needed.
 4. Re-run the full test suite: recurrences are evaluated live, so engine changes surface directly as date differences against the catalog expectations. Review any diff against explicit date anchors.
 5. Verify production update, offline reopening and saved events. A dependency update alone does not authorize publishing or a PWA version bump.
 

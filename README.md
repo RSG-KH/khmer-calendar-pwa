@@ -8,7 +8,7 @@
 [![License: Apache-2.0](https://img.shields.io/github/license/RSG-KH/khmer-calendar-pwa?color=blue)](LICENSE)
 [![PWA · offline-first](https://img.shields.io/badge/PWA-offline--first-5a0fc8)](https://rsg-kh.github.io/khmer-calendar-pwa/)
 [![Engine 0.3.0](https://img.shields.io/badge/engine-khmer--calendar--engine%200.3.0-2b8a3e)](https://github.com/RSG-KH/khmer-calendar-engine)
-[![Catalog 0.4.0](https://img.shields.io/badge/catalog-khmer--calendar--manager%200.4.0-0366d6)](https://github.com/RSG-KH/khmer-calendar-manager)
+[![Catalog 0.4.4](https://img.shields.io/badge/catalog-khmer--calendar--manager%200.4.4-0366d6)](https://github.com/RSG-KH/khmer-calendar-manager)
 
 Khmer lunar dates, Buddhist holy days, Cambodian holidays and your personal events, in Khmer and English. Made for phones, tablets and desktops, with an interface inspired by iOS.
 
@@ -75,7 +75,9 @@ See [Chrome's desktop installation guide](https://support.google.com/chrome/answ
 ## Good to know
 
 - Works offline after the first full online load in your browser or installed app.
-- Browse years **1800–2200**. Recurring observances and holy days are calculated on-device; official public-holiday calendars cover **2016–2027** and date-backed festivals and milestones **2000–2030**.
+- Browse years **1800–2200**. Recurring observances and holy days are calculated on-device; official public-holiday calendars cover **2016–2027**, and date-backed historical milestones appear at their recorded dates (**1886–2025** in catalog 0.4.4).
+- Commemorations show their anniversary count in both languages — ខួបលើកទី៤៧ in Khmer and **· 47th** with English ordinal suffixes.
+- Every built-in event carries a curated bilingual knowledge summary: tap an event, then **Learn more**. **Search online** opens your browser on an AI-mode search for that event; it only ever runs when you tap it — the app itself makes no network requests.
 - Your events and settings stay on your device. No account or sync; clearing app/site data removes them.
 - Personal events can repeat every X days, weekly, monthly or yearly, with a required end date and a preview. Choose how to handle missing month-end or leap-day dates; editing or deleting applies to the whole series.
 - To update, tap **Check for update** in Settings. Available updates download and reload automatically; saved events and settings are kept.

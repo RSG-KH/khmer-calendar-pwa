@@ -1,6 +1,6 @@
 // Copyright (c) 2026 RSG-KH | Apache-2.0 License
 
-import { calendarCatalog, eventNames, resolveNewYearArrival, type CatalogEvent, type CatalogHoliday, type CatalogSource } from './RecurringEvents';
+import { calendarCatalog, eventNames, ordinalSuffix, resolveNewYearArrival, type CatalogEvent, type CatalogHoliday, type CatalogSource } from './RecurringEvents';
 import { KhmerCalendar, calendarEngine, khmerNumber, toEpochDay, fromEpochDay } from '../domain/KhmerCalendar';
 import { EventDateOverride, GregorianDate, createRule, type RecurrenceRule as EngineRecurrenceRule } from 'khmer-calendar-engine';
 import { L } from './i18n';
@@ -28,6 +28,7 @@ export interface CalendarEvent {
   instant?: string;
   seriesId?: string;
   repeat?: EventRepeat;
+  anniversaryBase?: number;
 }
 
 export class EventRepository {
@@ -51,7 +52,7 @@ export class EventRepository {
       if (base !== undefined) {
         const anniversary = year - base;
         km = km.replaceAll('{anniversary}', khmerNumber(anniversary));
-        en = en.replaceAll('{anniversary}', String(anniversary));
+        en = en.replaceAll('{anniversary}', `${anniversary}${ordinalSuffix(anniversary)}`);
       }
     }
     if (h.eventId === 'khmer_new_year_1' || h.id === 'khmer_new_year_1') {
@@ -108,7 +109,8 @@ export class EventRepository {
           titleEn: event.names.en,
           kind: 'OBSERVANCE',
           basis: 'recorded',
-          sourceIds: event.sourceIds
+          sourceIds: event.sourceIds,
+          anniversaryBase: event.anniversaryBase
         });
       }
     }
@@ -153,7 +155,8 @@ export class EventRepository {
           titleEn: names.en,
           kind: 'OBSERVANCE',
           basis: isCorrected ? 'corrected' : 'calculated',
-          sourceIds
+          sourceIds,
+          anniversaryBase: event.anniversaryBase
         });
       }
     }
@@ -178,6 +181,7 @@ export class EventRepository {
             existing.basis = 'official';
             if (holidayNames.km) existing.titleKm = holidayNames.km;
             if (holidayNames.en) existing.titleEn = holidayNames.en;
+            existing.anniversaryBase = existing.anniversaryBase ?? this.eventsMap.get(h.eventId || h.id)?.anniversaryBase;
             existing.sourceIds = [...new Set([...(existing.sourceIds || []), ...h.sourceIds])];
             if (url) existing.officialSourceUrl = url;
             if (citationEn) existing.citation = citationEn;
@@ -195,7 +199,8 @@ export class EventRepository {
               citation: citationEn,
               citationEn,
               citationKm,
-              sourceIds: h.sourceIds
+              sourceIds: h.sourceIds,
+              anniversaryBase: this.eventsMap.get(h.eventId || h.id)?.anniversaryBase
             });
           }
         }

@@ -46,6 +46,12 @@ export function defaultFontScale(client: ClientPlatform = navigator): FontScale 
   return isPhone(client) ? 1.0 : 1.2;
 }
 
+// Every device offers the full picker range, matching the Android app's
+// in-app font sizes; only the default differs by device.
+export function fontScaleOptions(): FontScale[] {
+  return [0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5];
+}
+
 // Keep the native iOS/iPadOS picker. Android and desktop popups can use AM/PM
 // despite the app's 24-hour label, so use our explicit hour/minute controls there.
 export function prefersNativeTimePicker(client: ClientPlatform = navigator): boolean {

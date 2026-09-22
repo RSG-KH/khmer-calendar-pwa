@@ -5,7 +5,7 @@ import { settingsPicker, setupSettingsPickers } from './SettingsPicker';
 import { showCalendarSources } from './Sources';
 import { appVersion as version } from '../../package.json';
 import { AppUpdater, AppUpdateState } from './AppUpdater';
-import { isPhone } from './Platform';
+import { fontScaleOptions } from './Platform';
 import { effectiveTheme } from './Appearance';
 
 export function renderSettings(container: HTMLElement, settings: AppSettings, onChange: (settings: AppSettings) => void, updater: AppUpdater) {
@@ -13,8 +13,8 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
   const text = (key: string) => L.text(key, k);
   const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
   const currentTheme = effectiveTheme(settings.theme, systemTheme.matches);
-  const fontScales: FontScale[] = isPhone() ? [0.8, 0.9, 1, 1.1, 1.2] : [0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5];
-  // Preserve a saved larger selection if the browser switches out of desktop mode.
+  const fontScales: FontScale[] = fontScaleOptions();
+  // Show a stored value verbatim even if it falls outside the known options.
   if (!fontScales.includes(settings.fontScale)) fontScales.push(settings.fontScale);
   const installUrl = 'https://rsg-kh.github.io/khmer-calendar-pwa/';
   const installLink = `<a class="about-install-link" href="${installUrl}" target="_blank" rel="noopener noreferrer">${text('app.name')}</a>`;

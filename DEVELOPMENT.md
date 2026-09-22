@@ -32,7 +32,7 @@ The PWA shares one visual design across platforms. `main.ts` imports [src/styles
 - [event-repeat.css](src/styles/event-repeat.css): repeat controls inside the existing event editor.
 - [scrollbars.css](src/styles/scrollbars.css): custom scrollbar appearance, centering and column spacing, scoped to `[data-auto-hide-scrollbars]`.
 
-[Platform.ts](src/ui/Platform.ts) owns device-specific choices for native time pickers, native scrollbars and phone font-size limits. [Scrollbars.ts](src/ui/Scrollbars.ts) enables the scrollbar attribute and manages the idle fade on selected desktop platforms; Android and Apple devices keep native scrollbars. Keep platform exceptions explicit instead of naming shared controls after an OS.
+[Platform.ts](src/ui/Platform.ts) owns device-specific choices for native time pickers, native scrollbars and per-device font-size defaults; the font-size picker itself offers the same 80-150% range on every device. [Scrollbars.ts](src/ui/Scrollbars.ts) enables the scrollbar attribute and manages the idle fade on selected desktop platforms; Android and Apple devices keep native scrollbars. Keep platform exceptions explicit instead of naming shared controls after an OS.
 
 The app root stays in normal flow. Browser tabs use `100dvh` (with a `100%` fallback) to follow browser toolbars; installed apps use `100vh` on `html`, `body` and `#app`. With the `black-translucent` status bar, WebKit can undercount `dvh` by the status bar height while still starting the page behind that bar. Fixed bottom anchoring also left a blank strip on installed iPads. Do not add a hardcoded screen height or add safe-area insets to the viewport height.
 

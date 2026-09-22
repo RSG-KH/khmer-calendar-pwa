@@ -5,7 +5,7 @@ import { createServer } from 'vite';
 
 const server = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom', optimizeDeps: { noDiscovery: true, include: [] } });
 after(() => server.close());
-const { appManifestFile, defaultFontScale, isApple, isPhone, prefersNativeScrollbars, prefersNativeTimePicker } = await server.ssrLoadModule('/src/ui/Platform.ts');
+const { appManifestFile, defaultFontScale, fontScaleOptions, isApple, isPhone, prefersNativeScrollbars, prefersNativeTimePicker } = await server.ssrLoadModule('/src/ui/Platform.ts');
 
 test('installation icons match Android, Apple and Windows/Linux in both languages', async () => {
   const androidClients = [
@@ -45,7 +45,11 @@ test('installation icons match Android, Apple and Windows/Linux in both language
   }
 });
 
-test('phone font-size choices stay limited on iPhone and Android phone browsers', () => {
+test('font size picker offers the full 80-150% range on phones as well as larger screens', () => {
+  assert.deepEqual(fontScaleOptions(), [0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5]);
+});
+
+test('phones keep the 100% default font size on iPhone and Android browsers', () => {
   for (const client of [
     { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)', platform: 'iPhone' },
     { userAgent: 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36' },
@@ -56,7 +60,7 @@ test('phone font-size choices stay limited on iPhone and Android phone browsers'
   }
 });
 
-test('tablet and desktop font sizes extend to 150%, including iPad desktop mode', () => {
+test('tablets and desktops keep the 120% default font size, including iPad desktop mode', () => {
   for (const client of [
     { userAgent: 'Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS X) Mobile Safari/604.1', platform: 'iPad' },
     { userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)', platform: 'MacIntel', maxTouchPoints: 5 },

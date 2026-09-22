@@ -61,6 +61,8 @@ The tests cover full-range calendar continuity and recurrence mapping, event cat
 
 The four-part version shown in Settings comes from `appVersion` in `package.json`. Change it only when a version bump is explicitly requested; committing or pushing changes does not finalize a release. The last component is for bug fixes only (for example, `0.1.8.1`). Feature releases advance the feature version and reset the last component to zero (for example, `0.1.7.5` → `0.1.8.0`). If the first three parts change, also update npm's three-part `version` and the lockfile with `npm version X.Y.Z --no-git-tag-version`. The service worker cache hash is generated automatically for every build.
 
+Releases are tagged with the **app version** (for example `v0.9.1.1`) on the app-version bump commit, never with npm's three-part `version`. Publishing a GitHub Release from that tag automatically builds and attaches the Windows 7 portable ZIPs through [build-win7-release.yml](.github/workflows/build-win7-release.yml); the workflow overlays the [`win7-portable`](https://github.com/RSG-KH/khmer-calendar-pwa/tree/win7-portable) tooling branch onto the tagged source and stamps the EXE with the same app version. A tag push alone does not run the workflow — publishing the release does.
+
 ## GitHub Pages
 
 The included [workflow](.github/workflows/deploy-pages.yml) builds, tests and publishes the site:

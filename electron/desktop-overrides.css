@@ -1,0 +1,97 @@
+/*
+ * Electron 22 / Windows 7 desktop-only visual compatibility overrides.
+ *
+ * These styles are injected by electron/main.cjs and therefore DO NOT change
+ * the normal PWA on GitHub Pages, Android, iOS, Linux, or modern browsers.
+ *
+ * The web app intentionally uses grouped list surfaces. In the old Chromium
+ * runtime we make those list surfaces explicitly translucent and keep the
+ * individual rows transparent so the selected app background/accent remains
+ * visible through them.
+ */
+
+/* Events grouped list */
+.events-list-container {
+  background: rgba(255, 255, 255, 0.72) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  backdrop-filter: blur(18px) saturate(120%);
+}
+
+.event-row-card:not(:active) {
+  background: transparent !important;
+}
+
+/* Settings uses the same grouped-list visual language. */
+.settings-card {
+  /*
+   * v12: plain alpha surface, intentionally without a blur/filter layer.
+   *
+   * This keeps the Settings cards translucent but avoids both legacy Chromium
+   * bugs from the previous pseudo-layer approach:
+   *   - fixed picker menus being trapped by a filtered ancestor
+   *   - the pseudo background painting above normal card contents
+   */
+  background: rgba(255, 255, 255, 0.72) !important;
+}
+
+.settings-row {
+  background: transparent !important;
+}
+
+/* Dark mode needs a dark translucent surface rather than translucent white. */
+[data-theme="dark"] .events-list-container {
+  background: rgba(28, 28, 30, 0.72) !important;
+}
+
+[data-theme="dark"] .settings-card {
+  background: rgba(28, 28, 30, 0.72) !important;
+}
+
+
+/*
+ * Electron 22 / Chromium 108 fallback for popup event-row transparency.
+ *
+ * The PWA uses:
+ *   background: color-mix(in srgb, var(--bg-surface-variant) 50%, transparent)
+ *
+ * color-mix() is not supported by Chromium 108, so the declaration is dropped
+ * and the date-details event rows become fully transparent.
+ *
+ * Recreate the same visual result with a pseudo-layer: the real PWA surface
+ * variant color at 50% opacity. This follows light/dark theme variables
+ * automatically and does not affect row text/icons.
+ */
+.dialog-event-item {
+  position: relative;
+  isolation: isolate;
+  background: transparent !important;
+}
+
+.dialog-event-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: var(--bg-surface-variant);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.dialog-event-item > * {
+  position: relative;
+  z-index: 1;
+}
+
+
+/*
+ * v11: Settings picker stacking fix.
+ *
+ * Do not create a stacking context on .settings-card or .settings-row.
+ * The picker menu is position: fixed and must be able to participate in the
+ * page/root stacking context so it can paint above later Settings cards.
+ */
+.settings-picker-menu {
+  z-index: 1000 !important;
+}
+

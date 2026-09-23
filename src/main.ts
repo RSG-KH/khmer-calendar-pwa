@@ -5,6 +5,7 @@ import './styles/index.css';
 import { KhmerCalendar, toEpochDay, khmerNumber } from './domain/KhmerCalendar';
 import { KhmerDateDetails } from './domain/KhmerDateDetails';
 import { Zodiac } from './domain/Zodiac';
+import { ganzhiEmojiSummary } from './domain/Ganzhi';
 import { CalendarWords, L } from './data/i18n';
 import { EventRepository, CalendarEvent } from './data/EventRepository';
 import { Storage, AppSettings } from './data/Storage';
@@ -13,7 +14,7 @@ import { MonthPickerModal, CustomEventModal, DateDetailsDialogModal, EventDetail
 import { dateTimeInZone, todayInZone } from './domain/DateTime';
 import { escapeHtml } from './ui/html';
 import { renderSettings } from './ui/Settings';
-import { isAndroid, prefersNativeScrollbars } from './ui/Platform';
+import { isAndroid, isPhone, prefersNativeScrollbars } from './ui/Platform';
 import { applyInstallMetadata } from './ui/InstallMetadata';
 import { bindAutoHideScrollbars } from './ui/Scrollbars';
 import { adjacentMonth, bindMonthSwipe, MonthDirection } from './ui/MonthSwipe';
@@ -68,6 +69,8 @@ class KhmerCalendarApp {
 
   constructor() {
     document.documentElement.toggleAttribute('data-android', isAndroid());
+    // Maintainer-certified row sizes use this to keep wide phone landscape at phone height.
+    document.documentElement.toggleAttribute('data-phone', isPhone());
     if (!prefersNativeScrollbars()) bindAutoHideScrollbars();
     this.settings = Storage.getSettings();
     this.selectedDateStr = todayInZone(this.settings.todayTimeZone);
@@ -248,7 +251,9 @@ class KhmerCalendarApp {
 
   private renderCalendarScreen(container: HTMLElement, k: boolean) {
     const allMonthEvents = EventRepository.forMonth(this.currentYear, this.currentMonth);
-    const monthEvents = allMonthEvents.filter(event => this.settings.showHolyDaysInEvents || event.kind !== 'HOLY_DAY');
+    const monthEvents = allMonthEvents.filter(event =>
+      (this.settings.showHolyDaysInEvents || event.kind !== 'HOLY_DAY') &&
+      (this.settings.showObservances || event.kind !== 'OBSERVANCE'));
     const selectedParts = this.selectedDateStr.split('-').map(Number);
     const selectedDetails = KhmerDateDetails.fromGregorian(selectedParts[0], selectedParts[1], selectedParts[2]);
     const selectedDayEvents = monthEvents.filter(event => event.date === this.selectedDateStr);
@@ -317,13 +322,20 @@ class KhmerCalendarApp {
         <div class="card-legend-row${tightLegend ? ' tight-legend' : ''}" style="position: relative; z-index: 1;">
           <div class="legend-item"><span class="mark-shape holiday"></span>${L.text('ui.holiday.253332', k)}</div>
           ${this.settings.holyDayMarkers ? `<div class="legend-item"><span class="mark-shape holy_day"></span>${L.text('ui.holy_day.28786d', k)}</div>` : ''}
-          <div class="legend-item"><span class="mark-shape observance"></span>${L.text('ui.observance.5b9a87', k)}</div>
+          ${this.settings.showObservances ? `<div class="legend-item"><span class="mark-shape observance"></span>${L.text('ui.observance.5b9a87', k)}</div>` : ''}
           ${hasCustom ? `<div class="legend-item"><span class="mark-shape custom"></span>${L.text('ui.custom.917053', k)}</div>` : ''}
         </div>
       </div>
     `;
 
-    // 3. Consolidated Date Card (Clicking opens DateDetailsDialog)
+    /**
+     * Maintainer-certified PWA summary (docs/maintainer-certified-calendar-ui.md).
+     * Gregorian date, optional Western zodiac, then optional always-emoji Ganzhi;
+     * keep the two toggles independent and the detail table's emoji mode separate.
+     */
+    const ganzhiSummary = this.settings.showGanzhi
+      ? ganzhiEmojiSummary(selectedDetails.year, selectedDetails.month, selectedDetails.day)
+      : null;
     const dateSummaryHtml = `
       <button class="date-summary-card" title="${L.text('ui.date_details.e26d78', k)}">
         <div class="date-summary-left">
@@ -338,6 +350,7 @@ class KhmerCalendarApp {
               ${Zodiac.label(selectedDetails.zodiac, false)}
             </div>
           ` : ''}
+          ${ganzhiSummary ? `<div class="date-summary-ganzhi">${ganzhiSummary}</div>` : ''}
         </div>
       </button>
     `;
@@ -421,7 +434,9 @@ class KhmerCalendarApp {
       const isActive = dateStr === this.selectedDateStr;
       const isToday = dateStr === todayStr;
       const dayOfWeek = (firstWeekday + dayNum - 1) % 7;
-      const dayEvents = allMonthEvents.filter(e => e.date === dateStr && (this.settings.holyDayMarkers || e.kind !== 'HOLY_DAY'));
+      const dayEvents = allMonthEvents.filter(e => e.date === dateStr &&
+        (this.settings.holyDayMarkers || e.kind !== 'HOLY_DAY') &&
+        (this.settings.showObservances || e.kind !== 'OBSERVANCE'));
       const isHoliday = dayEvents.some(e => e.kind === 'HOLIDAY') || (this.settings.highlightSunday && dayOfWeek === 0);
 
       const cell = document.createElement('button');
@@ -506,6 +521,7 @@ class KhmerCalendarApp {
     // Apply Filter & Search Query
     const filteredEvents = rawEvents.filter(e => {
       if (!this.settings.showHolyDaysInEvents && e.kind === 'HOLY_DAY') return false;
+      if (!this.settings.showObservances && e.kind === 'OBSERVANCE') return false;
       if (this.eventsFilter === 1 && e.kind !== 'HOLIDAY') return false;
       if (this.eventsFilter === 2 && e.kind !== 'OBSERVANCE') return false;
       if (this.eventsFilter === 3 && e.kind !== 'HOLY_DAY') return false;
@@ -610,7 +626,7 @@ class KhmerCalendarApp {
           <button class="filter-chip ${this.eventsFilter === 0 ? 'active' : ''}" data-filter="0">${L.text('ui.all.c10205', k)}</button>
           <button class="filter-chip ${this.eventsFilter === 4 ? 'active' : ''}" data-filter="4">${L.text('ui.custom.917053', k)}</button>
           <button class="filter-chip ${this.eventsFilter === 1 ? 'active' : ''}" data-filter="1">${L.text('ui.holidays.8a894c', k)}</button>
-          <button class="filter-chip ${this.eventsFilter === 2 ? 'active' : ''}" data-filter="2">${L.text('ui.observances.e4454c', k)}</button>
+          ${this.settings.showObservances ? `<button class="filter-chip ${this.eventsFilter === 2 ? 'active' : ''}" data-filter="2">${L.text('ui.observances.e4454c', k)}</button>` : ''}
           ${this.settings.showHolyDaysInEvents ? `<button class="filter-chip ${this.eventsFilter === 3 ? 'active' : ''}" data-filter="3">${L.text('ui.holy_days.9569a6', k)}</button>` : ''}
         </div>
 
@@ -672,6 +688,7 @@ class KhmerCalendarApp {
       this.settings = settings;
       this.todayRefresh?.reset();
       if (!settings.showHolyDaysInEvents && this.eventsFilter === 3) this.eventsFilter = 0;
+      if (!settings.showObservances && this.eventsFilter === 2) this.eventsFilter = 0;
       Storage.saveSettings(settings);
       this.applySettings();
       this.render();

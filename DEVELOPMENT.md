@@ -4,6 +4,8 @@ This TypeScript/Vite project is the web port of [Khmer Calendar for Android](htt
 
 The [engine integration guide](docs/shared-engine.md) covers the pinned dependency, PWA adapters and the event catalog. Calendar algorithms, calculation sources and reference evidence are maintained in [Khmer Calendar Engine](https://github.com/RSG-KH/khmer-calendar-engine).
 
+The [maintainer-certified calendar UI contract](docs/maintainer-certified-calendar-ui.md) records the PWA month-grid row heights, summary card and Ganzhi table decisions. Preserve these PWA-specific choices when reviewing later Android releases.
+
 [KhmerCalendar.ts](src/domain/KhmerCalendar.ts) validates civil dates and adapts the engine result. Personal event repeats are implemented separately in [EventRepeat.ts](src/domain/EventRepeat.ts). The app's built-in observance definitions are passed to the engine through [RecurringEvents.ts](src/data/RecurringEvents.ts).
 
 ## Local development
@@ -38,7 +40,7 @@ The app root stays in normal flow. Browser tabs use `100dvh` (with a `100%` fall
 
 Safe-area insets protect content and navigation controls; navigation backgrounds extend to the available screen edges. The bottom bar sizes itself from the controls, with a 60 px minimum, and uses the Home indicator inset as bottom padding instead of adding it to a fixed-height row. Keep these insets out of font scaling and leave OS-reserved screen regions to the browser. Landscape calendar top padding belongs inside the two scrolling columns so it scrolls away with their content, instead of creating a fixed empty gutter.
 
-`main.ts` marks Android with `data-android`, using the shared platform detection. Android portrait screens omit the extra 8 px content gutter above the header; scaffold safe-area handling remains separate. A camera strip outside the web viewport is controlled by Chrome/Android's window layout and cannot be reclaimed by subtracting CSS padding.
+`main.ts` marks Android with `data-android` and phones with `data-phone`, using the shared platform detection. `data-phone` keeps the certified phone calendar-row heights separate from tablet/desktop landscape heights. Android portrait screens omit the extra 8 px content gutter above the header; scaffold safe-area handling remains separate. A camera strip outside the web viewport is controlled by Chrome/Android's window layout and cannot be reclaimed by subtracting CSS padding.
 
 `Platform.ts` selects installation icons through the manifest: Android keeps the original `manifest.webmanifest` / `manifest.km.webmanifest` URLs and transparent artwork; Apple uses `manifest.white.webmanifest` / `manifest.white.km.webmanifest`; Windows and Linux use `manifest.desktop.webmanifest` / `manifest.desktop.km.webmanifest`. Other platforms keep the white fallback. All six manifests share the same app ID, scope and start URL.
 

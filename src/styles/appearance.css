@@ -92,6 +92,15 @@ svg { flex-shrink: 0; }
 .cal-cell:has(.cell-lunar-label) .cell-day-num { line-height: 1.2; }
 .cell-lunar-label { line-height: 1.25; margin-top: 0.5px; }
 .cell-day-num, .cell-lunar-label, .cell-event-marks { position: relative; z-index: 1; }
+/* Certified compact calendar-row spacing: docs/maintainer-certified-calendar-ui.md. */
+@media (min-width: 740px) and (orientation: landscape) and (max-height: 599px) {
+  :root:not([data-phone]) .cal-cell:has(.cell-lunar-label) .cell-day-num { line-height: 1.1; }
+  :root:not([data-phone]) .cell-lunar-label { line-height: 1.1; margin-top: 0; }
+  :root:not([data-phone]) .cell-event-marks { height: 5px; margin-top: 0; }
+  :root:not([data-phone]) :is(.mark-shape.holiday, .mark-shape.observance, .mark-shape.custom) { width: 5px; height: 5px; }
+  :root:not([data-phone]) .mark-shape.holy_day { border-left-width: 3px; border-right-width: 3px; border-bottom-width: 5px; }
+  :root:not([data-phone]) .mark-shape.custom { transform: scale(1.2); }
+}
 .cell-lotus-img { width: 100%; height: 100%; }
 .card-watermark-zodiac { width: 90%; height: 90%; }
 .tinted-watermark { background: var(--accent); -webkit-mask: var(--watermark-image) center / contain no-repeat; mask: var(--watermark-image) center / contain no-repeat; }
@@ -104,12 +113,18 @@ svg { flex-shrink: 0; }
   .card-legend-row.tight-legend { gap: 4px 6px; }
 }
 .cal-cell.today .mark-shape.holy_day { background: transparent !important; border-bottom-color: var(--on-accent); }
+/* Certified summary sizing and stacking: docs/maintainer-certified-calendar-ui.md. */
 .date-summary-card { text-align: left; gap: 18px; border: 0; border-radius: 16px; padding: 16px; }
 .date-summary-left, .date-summary-right { min-width: 0; gap: 0; line-height: calc(20px * var(--font-scale)); }
 .date-summary-lunar { font-size: calc(13px * var(--font-scale)); font-weight: 500; color: var(--text-primary); }
 .date-summary-gregorian { font-size: calc(13px * var(--font-scale)); color: var(--on-surface-variant); }
-.date-summary-zodiac { font-size: calc(12px * var(--font-scale)); font-weight: 500; color: var(--accent); }
-.date-summary-right { flex: 0 1 40%; }
+.date-summary-zodiac { font-size: calc(11px * var(--font-scale)); font-weight: 500; color: var(--accent); white-space: nowrap; }
+.date-summary-ganzhi { font-size: calc(11px * var(--font-scale)); font-weight: 500; color: var(--accent); white-space: nowrap; }
+.date-summary-right { flex: 0 0 auto; }
+@media (min-width: 960px) and (max-width: 1159px) and (min-height: 600px) and (orientation: landscape) {
+  .date-summary-card { flex-direction: column; gap: 4px; }
+  .date-summary-right { align-items: flex-start; }
+}
 .events-list-container { gap: 0; background: var(--bg-surface); border-radius: 18px; overflow: hidden; }
 .event-row-card { border: 0; border-radius: 0; margin: 0; padding: 9px 14px; min-height: 50px; text-align: left; }
 .event-row-card + .event-row-card { border-top: 1px solid var(--outline); }
@@ -222,6 +237,21 @@ svg { flex-shrink: 0; }
 /* Scroll the date content, keeping actions visible and clipping the watermarks. */
 .date-details-dialog { display: flex; flex-direction: column; overflow: hidden !important; }
 .date-details-content { min-height: 0; }
+.date-details-symbol-row { display: flex; align-items: center; gap: 6px; }
+.date-details-symbol { flex: 0 0 24px; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; font-size: calc(15px * var(--font-scale)); line-height: 1; }
+.date-details-symbol img { display: block; width: 20px; height: 20px; object-fit: contain; }
+/* Certified Ganzhi header, icon alignment and emoji sizing: docs/maintainer-certified-calendar-ui.md. */
+.ganzhi-table-wrap { max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; }
+.ganzhi-table { width: 100%; border-collapse: collapse; text-align: center; font-size: calc(12px * var(--font-scale)); }
+.ganzhi-heading { display: inline-flex; align-items: center; gap: 6px; }
+.ganzhi-table th, .ganzhi-table td { min-width: 52px; padding: 7px 5px; white-space: nowrap; }
+.ganzhi-table th:first-child { min-width: 65px; text-align: left; }
+.ganzhi-table thead th { border-bottom: 1px solid var(--outline); color: var(--accent); font-weight: 600; }
+.ganzhi-table thead th:first-child { padding-left: 0; }
+.ganzhi-table tbody th { color: var(--on-surface-variant); font-weight: 400; text-align: center; }
+.ganzhi-table td { color: var(--text-primary); }
+.ganzhi-table.emoji-animals td { font-size: calc(19px * var(--font-scale)); }
+.ganzhi-range-note { margin: 5px 0 0; font-size: calc(10px * var(--font-scale)); color: var(--on-surface-variant); }
 .event-detail-dialog { display: flex; flex-direction: column; min-height: 0; overflow: hidden !important; }
 .event-detail-header { flex-shrink: 0; }
 .event-detail-content { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }

@@ -7,7 +7,7 @@ import { CalendarEvent } from '../data/EventRepository';
 import { knowledgeById } from '../data/RecurringEvents';
 import { KhmerDateDetails } from '../domain/KhmerDateDetails';
 import { Zodiac } from '../domain/Zodiac';
-import { eventInstant, isSupportedDate, namedTimeZone, timeZoneOffsetLabel, todayInZone } from '../domain/DateTime';
+import { dateTimeInZone, eventInstant, isSupportedDate, namedTimeZone, timeZoneOffsetLabel, todayInZone } from '../domain/DateTime';
 import { escapeHtml } from './html';
 import { setupModal, showModal, hideModal } from './Modal';
 import { prefersNativeTimePicker } from './Platform';
@@ -15,6 +15,36 @@ import { setupTimeField } from './TimeField';
 import { setupCopyButton } from './CopyButton';
 import { holyDayLotus } from './HolyDayLotus';
 import { EventRepeatField, repeatDateLabel } from './EventRepeatField';
+import { ganzhiAnimalLabel, ganzhiColumns } from '../domain/Ganzhi';
+
+/**
+ * Maintainer-certified PWA date-details table (docs/maintainer-certified-calendar-ui.md).
+ * Keep `☯️ 干支` in the first column header, followed by year/month/day and
+ * the optional Today hour; the two body rows are sign and clash. `useEmoji`
+ * controls this table only, while the date summary always uses emoji.
+ */
+function renderGanzhiTable(year: number, month: number, day: number, hour: number | undefined, khmer: boolean, useEmoji: boolean): string {
+  const columns = ganzhiColumns(year, month, day, hour);
+  const label = (key: string) => L.text(`ui.ganzhi_${key}`, khmer);
+  const animal = (index: number, clash: boolean) => {
+    const pillar = columns[index].pillar;
+    if (!pillar) return '—';
+    const branch = clash ? pillar.clashBranch : pillar.branch;
+    const name = ganzhiAnimalLabel(branch, khmer, useEmoji);
+    return `<span title="${escapeHtml(khmer ? branch.khmerAnimal : branch.animal)}">${escapeHtml(name)}</span>`;
+  };
+  return `
+    <div class="ganzhi-table-wrap">
+      <table class="ganzhi-table${useEmoji ? ' emoji-animals' : ''}" aria-label="干支">
+        <thead><tr><th scope="col"><span class="ganzhi-heading"><span class="date-details-symbol" aria-hidden="true">☯️</span><span>干支</span></span></th>${columns.map(column => `<th scope="col">${label(column.key === 'day' ? 'day_column' : column.key === 'hour' ? 'hour_column' : column.key)}</th>`).join('')}</tr></thead>
+        <tbody>
+          <tr><th scope="row">${label('sign')}</th>${columns.map((_, index) => `<td>${animal(index, false)}</td>`).join('')}</tr>
+          <tr><th scope="row">${label('clash')}</th>${columns.map((_, index) => `<td>${animal(index, true)}</td>`).join('')}</tr>
+        </tbody>
+      </table>
+      ${year < 1900 || year > 2100 ? `<p class="ganzhi-range-note">${label('solar_range')}</p>` : ''}
+    </div>`;
+}
 
 /* ==========================================================================
    1. MONTH / YEAR PICKER MODAL
@@ -29,6 +59,7 @@ export class DateDetailsDialogModal {
   private onOpenEvent: (event: CalendarEvent) => void;
   private onAddEvent: (dateStr: string) => void;
   private cleanupDateCopy?: () => void;
+  private hourRefreshTimer?: number;
 
   constructor(onOpenEvent: (event: CalendarEvent) => void, onAddEvent: (dateStr: string) => void) {
     this.onOpenEvent = onOpenEvent;
@@ -43,6 +74,8 @@ export class DateDetailsDialogModal {
 
   open(dateStr: string, events: CalendarEvent[], isKhmer: boolean) {
     this.cleanupDateCopy?.();
+    if (this.hourRefreshTimer !== undefined) window.clearTimeout(this.hourRefreshTimer);
+    this.hourRefreshTimer = undefined;
     const parts = dateStr.split('-').map(Number);
     const info = KhmerDateDetails.fromGregorian(parts[0], parts[1], parts[2]);
     const fullDate = isKhmer ? CalendarWords.fullKhmerDate(info) : CalendarWords.fullEnglishDate(info);
@@ -54,6 +87,16 @@ export class DateDetailsDialogModal {
     const westernImg = Zodiac.getWesternDrawable(info.zodiac);
     const showHolyDay = settings.holyDayMarkers && (info.lunar.isHolyDay || info.lunar.isShavingDay);
     const showWesternZodiac = settings.showWesternZodiac;
+    const dateTitle = L.text('calendar.gregorian_label', false, {
+      month: CalendarWords.month(info.month, false),
+      day: info.day,
+      year: info.year
+    });
+    const dialogTitle = isKhmer ? dateTitle : `${CalendarWords.weekday(new Date(`${dateStr}T00:00:00Z`).getUTCDay(), false)}, ${dateTitle}`;
+    const currentHour = isToday ? Number(dateTimeInZone(new Date(), settings.todayTimeZone).time.slice(0, 2)) : undefined;
+    const ganzhiHtml = settings.showGanzhi
+      ? renderGanzhiTable(info.year, info.month, info.day, currentHour, isKhmer, settings.useEmojiForGanzhiAnimals)
+      : '';
 
     this.overlay.innerHTML = `
       <div class="modal-dialog-surface date-details-dialog" style="position: relative; overflow: hidden; max-width: 480px; width: 92%;">
@@ -63,19 +106,14 @@ export class DateDetailsDialogModal {
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; position: relative; z-index: 1;">
           <span style="font-size: calc(16px * var(--font-scale)); font-weight: 600; color: var(--text-primary);">
-            ${L.text('ui.date_details.e26d78', isKhmer)}
+            ${escapeHtml(dialogTitle)}
           </span>
-          ${isToday ? `<span style="font-size: calc(12px * var(--font-scale)); font-weight: 600; color: var(--accent);">${L.text('ui.today.d71ac6', isKhmer)}</span>` : ''}
+          ${isToday ? `<span class="date-details-today-badge" style="font-size: calc(12px * var(--font-scale)); font-weight: 600; color: var(--accent);">${L.text('ui.today.d71ac6', isKhmer)}</span>` : ''}
         </div>
 
         <div class="card-divider" style="margin: 0 0 16px 0;"></div>
 
         <div class="date-details-content" style="position: relative; z-index: 1; display: flex; flex-direction: column; gap: 14px; max-height: 60vh; overflow-y: auto;">
-          <!-- Gregorian Date -->
-          <div style="font-size: calc(15px * var(--font-scale)); color: var(--on-surface-variant);">
-            ${CalendarWords.month(info.month, false)} ${info.day}, ${info.year}
-          </div>
-
           <!-- Full Khmer Date -->
           <div class="date-description">
             <div class="date-description-row">
@@ -88,27 +126,28 @@ export class DateDetailsDialogModal {
           </div>
 
           <!-- Holy Day & Western Zodiac -->
-          ${showHolyDay || showWesternZodiac ? `
+          ${showHolyDay || showWesternZodiac || settings.showGanzhi ? `
             <div class="card-divider" style="margin: 0;"></div>
             <div style="display: flex; flex-direction: column; gap: 9px;">
               ${showHolyDay ? `
-                <div style="font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--secondary); display: flex; align-items: center; gap: 8px;">
+                <div class="date-details-symbol-row" style="font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--secondary);">
                   ${info.lunar.isHolyDay ? `
-                    <img src="${holyDayLotus(info.lunar)}" style="width: 20px; height: 20px; object-fit: contain;" alt="" />
+                    <span class="date-details-symbol" aria-hidden="true"><img src="${holyDayLotus(info.lunar)}" alt="" /></span>
                     ${L.text('ui.thngai_sil_buddhist_holy_day.89de73', isKhmer)}
                   ` : `
-                    <span style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: calc(16px * var(--font-scale)); line-height: 1;" aria-hidden="true">🙏</span>
+                    <span class="date-details-symbol" aria-hidden="true">🙏</span>
                     ${L.text('ui.thngai_kaor_before_a_holy_day.d02977', isKhmer)}
                   `}
                 </div>
               ` : ''}
 
               ${showWesternZodiac ? `
-                <div style="font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--accent); display: flex; align-items: center; gap: 8px;">
-                  <span style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: calc(16px * var(--font-scale)); line-height: 1;" aria-hidden="true">${info.zodiac.symbol}</span>
+                <div class="date-details-symbol-row" style="font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--accent);">
+                  <span class="date-details-symbol" aria-hidden="true">${info.zodiac.symbol}</span>
                   <span>${Zodiac.labelWithoutSymbol(info.zodiac, false)}</span>
                 </div>
               ` : ''}
+              ${ganzhiHtml}
             </div>
           ` : ''}
 
@@ -168,10 +207,30 @@ export class DateDetailsDialogModal {
       });
     });
 
-    showModal(this.overlay, L.text('ui.date_details.e26d78', isKhmer));
+    showModal(this.overlay, dialogTitle);
+    if (isToday && settings.showGanzhi) {
+      const refreshHour = () => {
+        const now = new Date();
+        const zoned = dateTimeInZone(now, settings.todayTimeZone);
+        const hour = zoned.date === dateStr ? Number(zoned.time.slice(0, 2)) : undefined;
+        const table = this.overlay.querySelector<HTMLElement>('.ganzhi-table-wrap');
+        if (table) table.outerHTML = renderGanzhiTable(info.year, info.month, info.day, hour, isKhmer, settings.useEmojiForGanzhiAnimals);
+        if (hour === undefined) {
+          this.overlay.querySelector('.date-details-today-badge')?.remove();
+          this.hourRefreshTimer = undefined;
+          return;
+        }
+        const minute = Number(zoned.time.slice(3, 5));
+        const delay = (60 - minute) * 60_000 - now.getSeconds() * 1000 - now.getMilliseconds() + 1000;
+        this.hourRefreshTimer = window.setTimeout(refreshHour, delay);
+      };
+      refreshHour();
+    }
   }
 
   close() {
+    if (this.hourRefreshTimer !== undefined) window.clearTimeout(this.hourRefreshTimer);
+    this.hourRefreshTimer = undefined;
     this.cleanupDateCopy?.();
     this.cleanupDateCopy = undefined;
     hideModal(this.overlay);

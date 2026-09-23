@@ -68,7 +68,7 @@
     "en": "{lunar}\nYear of the {animal} · {sak}\nBuddhist Era {buddhist_year}"
   },
   "calendar.gregorian_label": {
-    "km": "{month} {day} {year}",
+    "km": "{month} {day}, {year}",
     "en": "{month} {day}, {year}"
   },
   "calendar.lunar_full": {
@@ -1421,7 +1421,7 @@
   },
   "ui.thngai_kaor_before_a_holy_day.d02977": {
     "km": "ថ្ងៃកោរ",
-    "en": "Shaving Day · Eve of Buddhist Holy Day"
+    "en": "Shaving Day"
   },
   "ui.thngai_sil_buddhist_holy_day.89de73": {
     "km": "ថ្ងៃសីល",
@@ -1590,5 +1590,61 @@
   "about.government_websites_title": {
     "km": "គេហទំព័រផ្លូវការរបស់រដ្ឋាភិបាល",
     "en": "Official government websites"
+  },
+  "ui.astrology_zodiac": {
+    "km": "ហោរាសាស្ត្រ និងរាសីចក្រ",
+    "en": "Astrology & Zodiac"
+  },
+  "ui.ganzhi_clash": {
+    "km": "សត្វឆុង",
+    "en": "Clash"
+  },
+  "ui.ganzhi_day_column": {
+    "km": "ថ្ងៃ",
+    "en": "Day"
+  },
+  "ui.ganzhi_emoji_subtitle": {
+    "km": "សម្រាប់កាលបរិច្ឆេទលម្អិតប៉ុណ្ណោះ · សង្ខេបប្រើ Emoji ជានិច្ច",
+    "en": "Date details only · summary always uses Emoji"
+  },
+  "ui.ganzhi_emoji_toggle": {
+    "km": "ប្រើ Emoji សម្រាប់សត្វ 干支",
+    "en": "Use emoji for Ganzhi animals"
+  },
+  "ui.ganzhi_hour_column": {
+    "km": "ម៉ោង",
+    "en": "Hour"
+  },
+  "ui.ganzhi_month": {
+    "km": "ខែ",
+    "en": "Month"
+  },
+  "ui.ganzhi_sign": {
+    "km": "សត្វរាសី",
+    "en": "Sign"
+  },
+  "ui.ganzhi_solar_range": {
+    "km": "សត្វរាសីឆ្នាំ និងខែ មានសម្រាប់ឆ្នាំ ១៩០០–២១០០។",
+    "en": "Year and month signs are available for 1900–2100."
+  },
+  "ui.ganzhi_year": {
+    "km": "ឆ្នាំ",
+    "en": "Year"
+  },
+  "ui.show_chinese_ganzhi": {
+    "km": "បង្ហាញហោរាសាស្ត្រចិន (干支)",
+    "en": "Show Chinese Ganzhi (干支)"
+  },
+  "ui.show_chinese_ganzhi_subtitle": {
+    "km": "ក្នុងកាលបរិច្ឆេទសង្ខេប និងលម្អិត",
+    "en": "In date summary and details"
+  },
+  "ui.show_observances": {
+    "km": "ទិវា និងពិធីបុណ្យ (ឥតឈប់សម្រាក)",
+    "en": "Show observances"
+  },
+  "ui.show_observances_subtitle": {
+    "km": "បង្ហាញក្នុងប្រតិទិន និងបញ្ជីព្រឹត្តិការណ៍",
+    "en": "In calendar and event list"
   }
 }

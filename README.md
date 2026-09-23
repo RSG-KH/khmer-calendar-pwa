@@ -7,7 +7,7 @@
 [![Deploy to GitHub Pages](https://github.com/RSG-KH/khmer-calendar-pwa/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/RSG-KH/khmer-calendar-pwa/actions/workflows/deploy-pages.yml)
 [![License: Apache-2.0](https://img.shields.io/github/license/RSG-KH/khmer-calendar-pwa?color=blue)](LICENSE)
 [![PWA · offline-first](https://img.shields.io/badge/PWA-offline--first-5a0fc8)](https://rsg-kh.github.io/khmer-calendar-pwa/)
-[![Engine 0.3.0](https://img.shields.io/badge/engine-khmer--calendar--engine%200.3.0-2b8a3e)](https://github.com/RSG-KH/khmer-calendar-engine)
+[![Engine 0.5.0](https://img.shields.io/badge/engine-khmer--calendar--engine%200.5.0-2b8a3e)](https://github.com/RSG-KH/khmer-calendar-engine)
 [![Catalog 0.4.4](https://img.shields.io/badge/catalog-khmer--calendar--manager%200.4.4-0366d6)](https://github.com/RSG-KH/khmer-calendar-manager)
 
 Khmer lunar dates, Buddhist holy days, Cambodian holidays and your personal events, in Khmer and English. Made for phones, tablets and desktops, with an interface inspired by iOS.
@@ -85,7 +85,8 @@ See [Chrome's desktop installation guide](https://support.google.com/chrome/answ
 - Tap the month to choose a month and year, then **Go**. **This year** changes the draft year and keeps your chosen month.
 - In the calendar header, **Today** returns to today's date and reflects selection status dynamically (neutral text when today is selected, and accent highlight when viewing other dates). In the calendar grid, Today stays filled; another selected date has an outline.
 - The calendar month card includes an adaptive legend for holidays, Buddhist holy days, observances, and personal events.
-- Settings includes background tint, Light/Dark choices, longer weekday names, weekday colors and Western zodiac signs.
+- Settings includes background tint, Light/Dark choices, 80%–150% app font size, longer weekday names, weekday colors, a global observances switch, and Western zodiac and Chinese Ganzhi controls.
+- Date details show Ganzhi year, month and day signs with clash animals, plus the hour sign for Today in the selected time zone. Animal names or emoji can be chosen; solar year and month signs cover 1900–2100.
 - Scheduled reminders are not available in PWA mode.
 
 You can also use the calendar directly in your browser without installing it.
@@ -94,7 +95,7 @@ You can also use the calendar directly in your browser without installing it.
 
 This is the web version of [Khmer Calendar for Android](https://github.com/RSG-KH/khmer-calendar). Both apps use [Khmer Calendar Engine](https://github.com/RSG-KH/khmer-calendar-engine) for calendar calculations. Calendar algorithms, source references and validation are documented in the [engine project](https://github.com/RSG-KH/khmer-calendar-engine#verification-and-accuracy).
 
-For setup, testing and hosting, see [DEVELOPMENT.md](DEVELOPMENT.md). Dependency updates and cache generation are covered in the [engine integration guide](docs/shared-engine.md).
+For setup, testing and hosting, see [DEVELOPMENT.md](DEVELOPMENT.md). Dependency updates and cache generation are covered in the [engine integration guide](docs/shared-engine.md). The calendar grid, summary and Ganzhi table have a [maintainer-certified PWA layout contract](docs/maintainer-certified-calendar-ui.md) for future Android syncs.
 
 ## License
 

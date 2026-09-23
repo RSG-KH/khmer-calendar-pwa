@@ -1,12 +1,14 @@
 # Shared engine integration
 
-The PWA bundles `khmer-calendar-engine` **0.3.0** from its [versioned release](https://github.com/RSG-KH/khmer-calendar-engine/releases/tag/v0.3.0). npm's lockfile records the exact release URL and integrity. Builds need Node/npm only; neither a sibling Android checkout nor Kotlin/Java is required. There are no runtime CDN requests.
+The PWA bundles `khmer-calendar-engine` **0.5.0** from its [versioned release](https://github.com/RSG-KH/khmer-calendar-engine/releases/tag/v0.5.0). npm's lockfile records the exact release URL and integrity. Builds need Node/npm only; neither a sibling Android checkout nor Kotlin/Java is required. There are no runtime CDN requests.
 
 ## Calculation ownership
 
-The engine's [API contract](https://github.com/RSG-KH/khmer-calendar-engine/blob/v0.3.0/docs/api.md) defines calculation behavior. Its [reference evidence](https://github.com/RSG-KH/khmer-calendar-engine/blob/v0.3.0/docs/references.md) documents calculation sources and validation. This guide covers how the PWA consumes that engine.
+The engine's [API contract](https://github.com/RSG-KH/khmer-calendar-engine/blob/v0.5.0/docs/api.md) defines calculation behavior. Its [reference evidence](https://github.com/RSG-KH/khmer-calendar-engine/blob/v0.5.0/docs/references.md) documents calculation sources and validation. This guide covers how the PWA consumes that engine.
 
-One `calendarEngine` instance supplies lunar dates, Buddhist Era, animal year, Sak, New Year and recurrence dates for Gregorian years 1800–2200. The PWA retains civil-date validation, local/Cambodia time zones, Western zodiac labels, translations, event titles, anniversaries and personal event storage.
+One `calendarEngine` instance supplies lunar dates, Buddhist Era, animal year, Sak, New Year and recurrence dates for Gregorian years 1800–2200. Engine 0.5.0 also supplies Ganzhi day and hour pillars throughout that range and solar year and month pillars for 1900–2100. The PWA retains civil-date validation, local/Cambodia time zones, Western zodiac labels, translations, event titles, anniversaries and personal event storage.
+
+Engine and Android updates do not replace the [maintainer-certified PWA calendar UI contract](maintainer-certified-calendar-ui.md), which records approved month-grid, summary-card and Ganzhi-table presentation choices.
 
 Built-in events come from the Schema v3 catalog `src/data/khmer-calendar-data-0.4.4.json` (file name carries its `dataVersion`). The repository evaluates that catalog live through the engine — there is no generated date cache to keep fresh. Calendar cells and date details call the engine for lunar dates throughout **1800–2200**. Personal repeats use the app's `EventRepeat.ts` and their saved end date, independently of the catalog. The first day of Khmer New Year (Moha Sangkran) formats its arrival time directly in the event title and header using evidenced times from `newYearArrivals` or the engine's `arrivalEstimate`.
 
@@ -41,10 +43,10 @@ There is no generator script. To adopt a new dataset release:
 
 ## Upgrading the dependency
 
-1. Download the intended release archive and `SHA256SUMS` from the engine's release page. Verify the archive before installing. The 0.3.0 archive SHA-256 is `3921da447c0ad9f258aa47dcf398e0e32d65fd9f926d23f29ad15f8e4befb5e7`.
+1. Download the intended release archive and `SHA256SUMS` from the engine's release page. Verify the archive before installing. The 0.5.0 archive SHA-256 is `708e796bd6adf019d661ecdb58983f33319b8c87c342b63554a340268e08f01e`.
 2. Install the exact versioned GitHub release URL with `npm install --save-exact <url>`. Review both package files and the release's API changes.
 3. Copy that release's `LICENSE` and `NOTICE` into `public/engine-LICENSE.txt` and `public/engine-NOTICE.txt` **and into `src/legal/`** without removing upstream credits; a test keeps the bundled and served copies byte-identical. Update the app notice/version references where needed.
 4. Re-run the full test suite: recurrences are evaluated live, so engine changes surface directly as date differences against the catalog expectations. Review any diff against explicit date anchors.
 5. Verify production update, offline reopening and saved events. A dependency update alone does not authorize publishing or a PWA version bump.
 
-The app, engine (including MIT upstream notices) and font license texts are bundled and readable offline in the Sources disclosure. Calculation evidence is maintained in the engine's [references](https://github.com/RSG-KH/khmer-calendar-engine/blob/v0.3.0/docs/references.md); its legacy implementation comparison is a historical migration report. The PWA tests its adapters and data use. Scheduled reminders remain unavailable in this PWA.
+The app, engine (including MIT upstream notices) and font license texts are bundled and readable offline in the Sources disclosure. Calculation evidence is maintained in the engine's [references](https://github.com/RSG-KH/khmer-calendar-engine/blob/v0.5.0/docs/references.md); its legacy implementation comparison is a historical migration report. The PWA tests its adapters and data use. Scheduled reminders remain unavailable in this PWA.

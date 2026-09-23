@@ -25,7 +25,7 @@ globalThis.localStorage = {
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 
 test('pinned engine corrects 2012 dates and separate animal/Sak transitions', () => {
-  assert.equal(calendarEngine.version, '0.3.0');
+  assert.equal(calendarEngine.version, '0.5.0');
   assert.deepEqual(KhmerNewYear.forYear(2012).dates, ['2012-04-13', '2012-04-14', '2012-04-15']);
   const dates = [12, 13, 14, 15].map(day => KhmerDateDetails.fromGregorian(2012, 4, day));
   assert.equal(dates[1].animalYear, (dates[0].animalYear + 1) % 12);
@@ -251,7 +251,7 @@ test('all 12 official government holiday calendars (2016–2027) apply public ho
   assert.equal(kny2027.titleEn, 'Khmer New Year – Moha Sankranta 4:48 PM (Estimated time)');
   assert.equal(kny2027.titleKm, 'ពិធី​បុណ្យ​ចូល​ឆ្នាំ​ថ្មី ប្រពៃណី​ជាតិ – មហា​សង្ក្រាន្ត ម៉ោង ០៤:៤៨ ល្ងាច (ម៉ោងប៉ាន់ស្មាន)');
 
-  // Engine v0.3.0 arrivalEstimate contract on KhmerNewYear
+  // Engine v0.5.0 arrivalEstimate contract on KhmerNewYear
   const ny2027 = KhmerNewYear.forYear(2027);
   assert.deepEqual(ny2027.arrivalEstimate, { minuteOfDay: 1008, hour: 16, minute: 48 });
 
@@ -452,7 +452,8 @@ test('event details dialog renders clean categories and descriptions without raw
   dateModal.open('2026-09-25', [], false);
   const shavingHtmlEn = dateModal.overlay.innerHTML;
   assert.ok(shavingHtmlEn.includes('🙏'), 'Shaving day must display prayer icon 🙏');
-  assert.ok(shavingHtmlEn.includes('Shaving Day · Eve of Buddhist Holy Day'));
+  assert.ok(shavingHtmlEn.includes('Shaving Day'));
+  assert.equal(shavingHtmlEn.includes('Eve of Buddhist Holy Day'), false);
   assert.equal(shavingHtmlEn.includes('holy_day_lotus'), false, 'Shaving day must NOT display lotus image');
 
   dateModal.open('2026-09-25', [], true);
@@ -475,7 +476,7 @@ test('event details dialog renders clean categories and descriptions without raw
   dateModal.open('2026-09-25', [], false);
   const disabledShavingHtmlEn = dateModal.overlay.innerHTML;
   assert.equal(disabledShavingHtmlEn.includes('🙏'), false, 'Disabled holyDayMarkers must not show 🙏 on shaving day');
-  assert.equal(disabledShavingHtmlEn.includes('Eve of Buddhist Holy Day'), false, 'Disabled holyDayMarkers must not show shaving day label');
+  assert.equal(disabledShavingHtmlEn.includes('Shaving Day'), false, 'Disabled holyDayMarkers must not show shaving day label');
 
   dateModal.open('2026-09-25', [], true);
   const disabledShavingHtmlKm = dateModal.overlay.innerHTML;
@@ -507,28 +508,42 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   const dateModal = new DateDetailsDialogModal(() => {}, () => {});
   const eventModal = new EventDetailsDialogModal(() => {}, () => {});
   const event = EventRepository.getYearEvents(2026).find(e => e.date === '2026-09-24');
+  const pastDate = '2025-09-24'; // Fixed past date: the hour pillar appears only for Today.
 
   // Default / on: Western zodiac is visible
   Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: true });
-  dateModal.open('2026-09-24', [], false);
+  dateModal.open(pastDate, [], false);
   assert.ok(dateModal.overlay.innerHTML.includes('dialog-watermark-western'), 'Western watermark should show when showWesternZodiac is true');
   assert.ok(dateModal.overlay.innerHTML.includes('Libra'), 'Western zodiac label should show when showWesternZodiac is true');
+  assert.ok(dateModal.overlay.innerHTML.includes('Wednesday, September 24, 2025'), 'Selected date is the dialog title');
+  assert.ok(dateModal.overlay.innerHTML.includes('ganzhi-table'), 'Ganzhi table is visible by default');
+  assert.ok(dateModal.overlay.innerHTML.includes('Clash'), 'Ganzhi clash row is visible');
+  assert.equal(dateModal.overlay.innerHTML.includes('scope="col">Hour'), false, 'Past dates do not show the hour pillar');
+
+  dateModal.open(pastDate, [], true);
+  assert.equal((dateModal.overlay.innerHTML.match(/September 24, 2025/g) || []).length, 1, 'Khmer date details have one Gregorian date title');
+  assert.ok(dateModal.overlay.innerHTML.includes('Libra (Air · Venus)'), 'Western zodiac keeps its proper English name in Khmer mode');
 
   eventModal.open(event, false);
   assert.ok(eventModal.overlay.innerHTML.includes('dialog-watermark-western'), 'Event details watermark should show when showWesternZodiac is true');
 
   // Off / false: Western zodiac is hidden
   Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: false });
-  dateModal.open('2026-09-24', [], false);
+  dateModal.open(pastDate, [], false);
   assert.equal(dateModal.overlay.innerHTML.includes('dialog-watermark-western'), false, 'Western watermark should be hidden when showWesternZodiac is false');
   assert.equal(dateModal.overlay.innerHTML.includes('Libra'), false, 'Western zodiac label should be hidden when showWesternZodiac is false');
 
   eventModal.open(event, false);
   assert.equal(eventModal.overlay.innerHTML.includes('dialog-watermark-western'), false, 'Event details watermark should be hidden when showWesternZodiac is false');
 
+  Storage.saveSettings({ ...DEFAULT_SETTINGS, showGanzhi: false });
+  dateModal.open(pastDate, [], false);
+  assert.equal(dateModal.overlay.innerHTML.includes('ganzhi-table'), false, 'Ganzhi setting hides its table');
+
+  Storage.saveSettings({ ...DEFAULT_SETTINGS, useEmojiForGanzhiAnimals: true });
+  dateModal.open(pastDate, [], false);
+  assert.match(dateModal.overlay.innerHTML, /<span title="[^"]+">[🐭🐮🐯🐰🐲🐍🐴🐐🐵🐔🐶🐷]<\/span>/u);
+
   // Cleanup settings
   Storage.saveSettings(DEFAULT_SETTINGS);
 });
-
-
-

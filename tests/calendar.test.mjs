@@ -12,6 +12,7 @@ const { EventRepository } = await server.ssrLoadModule('/src/data/EventRepositor
 const { escapeHtml } = await server.ssrLoadModule('/src/ui/html.ts');
 const { MonthPickerDraft } = await server.ssrLoadModule('/src/ui/MonthPicker.ts');
 const { effectiveTheme, appearanceBackground } = await server.ssrLoadModule('/src/ui/Appearance.ts');
+const { ganzhiColumns, ganzhiAnimalLabel, ganzhiEmojiSummary } = await server.ssrLoadModule('/src/domain/Ganzhi.ts');
 const values = new Map();
 globalThis.localStorage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
 
@@ -29,6 +30,25 @@ test('matches the Android festival and Buddhist Era anchors', () => {
     const lunar = KhmerCalendar.fromGregorian(...date.split('-').map(Number));
     assert.deepEqual([lunar.day, lunar.waxing, lunar.month, lunar.buddhistYear], expected, date);
   }
+});
+
+test('Ganzhi pillars match Android at solar boundaries and the 23:00 hour rollover', () => {
+  assert.equal(ganzhiColumns(2024, 2, 3)[0].pillar.nameZh, '癸卯');
+  assert.equal(ganzhiColumns(2024, 2, 4)[0].pillar.nameZh, '甲辰');
+  const noon = ganzhiColumns(2026, 1, 1, 12);
+  const late = ganzhiColumns(2026, 1, 1, 23);
+  assert.equal(noon[2].pillar.nameZh, '乙亥');
+  assert.equal(noon[3].pillar.nameZh, '壬午');
+  assert.equal(late[3].pillar.nameZh, '戊子');
+  assert.equal(ganzhiAnimalLabel(late[3].pillar.branch, false, false), 'Rat');
+  assert.equal(ganzhiAnimalLabel(late[3].pillar.branch, true, false), 'ជូត');
+  assert.equal(ganzhiAnimalLabel(late[3].pillar.clashBranch, false, true), '🐴');
+  assert.equal(ganzhiEmojiSummary(2026, 9, 11), '☯️ 干支 (🐴🐔🐭 x 🐭🐰🐴)');
+  assert.equal(ganzhiEmojiSummary(1800, 1, 1), null);
+  const historical = ganzhiColumns(1800, 1, 1);
+  assert.equal(historical[0].pillar, null);
+  assert.equal(historical[1].pillar, null);
+  assert.ok(historical[2].pillar);
 });
 
 test('all 146,462 supported days form continuous lunar months', () => {
@@ -131,7 +151,21 @@ test('legacy events and preferences remain readable', () => {
   assert.equal(Storage.getSettings().backgroundAccent, true);
   assert.equal(Storage.getSettings().showLongerWeekdayNames, false);
   assert.equal(Storage.getSettings().highlightWeekdayNames, true);
+  assert.equal(Storage.getSettings().showObservances, true);
+  assert.equal(Storage.getSettings().showGanzhi, true);
+  assert.equal(Storage.getSettings().useEmojiForGanzhiAnimals, false);
   assert.equal(Storage.getCustomEvents()[0].date, '2026-09-13');
+  values.clear();
+});
+
+test('observance and Ganzhi settings persist independently', () => {
+  values.clear();
+  Storage.saveSettings({ ...DEFAULT_SETTINGS, showObservances: false, showGanzhi: false, useEmojiForGanzhiAnimals: true });
+  const settings = Storage.getSettings();
+  assert.equal(settings.showObservances, false);
+  assert.equal(settings.showGanzhi, false);
+  assert.equal(settings.useEmojiForGanzhiAnimals, true);
+  assert.equal(settings.showWesternZodiac, true);
   values.clear();
 });
 

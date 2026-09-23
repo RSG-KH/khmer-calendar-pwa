@@ -1,14 +1,21 @@
-/* Layout follows viewport size/orientation, not the operating system. */
+/* Maintainer-certified calendar rows (before font scale): phone portrait 52px;
+   phone landscape 62px, or 47px below 600px viewport height; non-phone
+   portrait 56px; non-phone landscape >=740px wide 50px, or 40px below 600px.
+   Preserve during Android sync: docs/maintainer-certified-calendar-ui.md. */
 .left-nav-rail { display: none; }
 .bottom-bar { display: flex; }
 .calendar-two-columns { width: 100%; max-width: 640px; }
 .calendar-col-left, .calendar-col-right { min-width: 0; }
 .date-summary-card, .selected-day-events { display: none; }
 .calendar-col-right { margin-top: 16px; }
+@media (orientation: portrait) {
+  :root[data-phone] .cal-cell { height: calc(52px * var(--font-scale)); }
+}
 @media (orientation: landscape) {
   .cal-cell { height: calc(62px * var(--font-scale)); }
 }
 @media (min-width: 740px) and (orientation: landscape) {
+  :root:not([data-phone]) .cal-cell { height: calc(50px * var(--font-scale)); }
   .bottom-bar { display: none; }
   .left-nav-rail { display: flex; }
   .screen-container { --calendar-top-padding: 16px; padding: 16px 20px 20px; }
@@ -30,4 +37,7 @@
   .calendar-two-columns { column-gap: 10px; }
   .cal-cell { height: calc(47px * var(--font-scale)); }
   .screen-container { --calendar-top-padding: 4px; padding: 4px 12px; }
+}
+@media (min-width: 740px) and (orientation: landscape) and (max-height: 599px) {
+  :root:not([data-phone]) .cal-cell { height: calc(40px * var(--font-scale)); }
 }

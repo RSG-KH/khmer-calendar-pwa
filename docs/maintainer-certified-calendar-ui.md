@@ -32,7 +32,7 @@ The summary card appears only in landscape at viewport width **960px or more** a
 | Right column | Sizes to its content instead of a fixed 40% width; zodiac and Ganzhi stay on one line. |
 | Narrow landscape card | At 960–1159px viewport width, stack the date/zodiac/Ganzhi side below the full Khmer date and align it left. At 1160px and above, keep the two sides beside one another. |
 
-The Gregorian date is 13px × font scale; zodiac and Ganzhi use 11px × font scale. These are summary-card choices, not instructions to alter the date-details dialog. `src/domain/Ganzhi.ts` supplies the compact emoji sequence from the same pillars used by the dialog. The setting descriptions distinguish the summary's always-emoji line from the detail table's emoji/name choice.
+The Gregorian date is 13px × font scale; zodiac and Ganzhi use 11px × font scale. These are summary-card choices, not instructions to alter the date-details dialog. `src/domain/Ganzhi.ts` supplies the compact emoji sequence from the same pillars used by the dialog. The Ganzhi animal setting subtitle matches Android: **“Choose between Emoji and name”** / **“ជ្រើសរើសរវាង Emoji និងឈ្មោះ”**. That choice applies only to the date-details table; the summary always uses emoji.
 
 ## Date-details Ganzhi table and symbols
 

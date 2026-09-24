@@ -1604,8 +1604,8 @@
     "en": "Day"
   },
   "ui.ganzhi_emoji_subtitle": {
-    "km": "សម្រាប់កាលបរិច្ឆេទលម្អិតប៉ុណ្ណោះ · សង្ខេបប្រើ Emoji ជានិច្ច",
-    "en": "Date details only · summary always uses Emoji"
+    "km": "ជ្រើសរើសរវាង Emoji និងឈ្មោះ",
+    "en": "Choose between Emoji and name"
   },
   "ui.ganzhi_emoji_toggle": {
     "km": "ប្រើ Emoji សម្រាប់សត្វ 干支",

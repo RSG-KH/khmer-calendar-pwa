@@ -14,7 +14,7 @@ const { EventRepository } = await server.ssrLoadModule('/src/data/EventRepositor
 const { holyDayLotus } = await server.ssrLoadModule('/src/ui/HolyDayLotus.ts');
 const { Storage, DEFAULT_SETTINGS } = await server.ssrLoadModule('/src/data/Storage.ts');
 
-const catalogBytes = await readFile(new URL('../src/data/khmer-calendar-data-0.4.5.json', import.meta.url));
+const catalogBytes = await readFile(new URL('../src/data/khmer-calendar-data-0.5.0.json', import.meta.url));
 const storageMap = new Map();
 globalThis.localStorage = {
   getItem: k => storageMap.get(k) ?? null,
@@ -25,7 +25,7 @@ globalThis.localStorage = {
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 
 test('pinned engine corrects 2012 dates and separate animal/Sak transitions', () => {
-  assert.equal(calendarEngine.version, '0.5.1');
+  assert.equal(calendarEngine.version, '0.6.0');
   assert.deepEqual(KhmerNewYear.forYear(2012).dates, ['2012-04-13', '2012-04-14', '2012-04-15']);
   const dates = [12, 13, 14, 15].map(day => KhmerDateDetails.fromGregorian(2012, 4, day));
   assert.equal(dates[1].animalYear, (dates[0].animalYear + 1) % 12);
@@ -82,9 +82,9 @@ test('all 113 app definitions yield 30,371 unique in-year occurrences across 401
 });
 
 test('canonical Schema v3 catalog integrity and checksum match specification', () => {
-  assert.equal(sha(catalogBytes), 'ab995b6ca4b1700d7ce5d8688d1e6381c6415a6e4f322ef768d56223e1fb8b22');
+  assert.equal(sha(catalogBytes), '0cfe85d37d2ff22ead2559e106b965552853e40e59e5ef7ec795fd1f8975653e');
   assert.equal(calendarCatalog.schemaVersion, 3);
-  assert.equal(calendarCatalog.dataVersion, '0.4.5');
+  assert.equal(calendarCatalog.dataVersion, '0.5.0');
   assert.equal(calendarCatalog.events.length, 139);
 
   const recurring = calendarCatalog.events.filter(e => e.rule);
@@ -251,7 +251,7 @@ test('all 12 official government holiday calendars (2016–2027) apply public ho
   assert.equal(kny2027.titleEn, 'Khmer New Year – Moha Sankranta 4:48 PM (Estimated time)');
   assert.equal(kny2027.titleKm, 'ពិធី​បុណ្យ​ចូល​ឆ្នាំ​ថ្មី ប្រពៃណី​ជាតិ – មហា​សង្ក្រាន្ត ម៉ោង ០៤:៤៨ ល្ងាច (ម៉ោងប៉ាន់ស្មាន)');
 
-  // Engine v0.5.1 arrivalEstimate contract on KhmerNewYear
+  // Engine v0.6.0 arrivalEstimate contract on KhmerNewYear
   const ny2027 = KhmerNewYear.forYear(2027);
   assert.deepEqual(ny2027.arrivalEstimate, { minuteOfDay: 1008, hour: 16, minute: 48 });
 
@@ -373,12 +373,19 @@ test('event details dialog renders clean categories and descriptions without raw
   globalThis.document = {
     createElement(tag) { return new MockElement(tag); },
     getElementById() { return new MockElement('div'); },
+    querySelector() { return null; },
+    querySelectorAll() { return []; },
+    dispatchEvent() { return true; },
     body: { appendChild() {} }
   };
   globalThis.window = {
     innerWidth: 1024,
     innerHeight: 768,
-    setTimeout: (...args) => setTimeout(...args),
+    setTimeout: (...args) => {
+      const t = setTimeout(...args);
+      t.unref?.();
+      return t;
+    },
     clearTimeout: (...args) => clearTimeout(...args),
     addEventListener() {},
     removeEventListener() {},
@@ -494,6 +501,8 @@ test('event details dialog renders clean categories and descriptions without raw
   assert.equal(disabledHolyHtmlKm.includes('holy_day_lotus'), false, 'Disabled holyDayMarkers must not show lotus on holy day');
   assert.equal(disabledHolyHtmlKm.includes('ថ្ងៃសីល'), false, 'Disabled holyDayMarkers must not show ថ្ងៃសីល text');
 
+  dateModal.close();
+
   // Cleanup settings
   Storage.saveSettings(DEFAULT_SETTINGS);
 });
@@ -543,6 +552,8 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   Storage.saveSettings({ ...DEFAULT_SETTINGS, useEmojiForGanzhiAnimals: true });
   dateModal.open(pastDate, [], false);
   assert.match(dateModal.overlay.innerHTML, /<span title="[^"]+">[🐭🐮🐯🐰🐲🐍🐴🐐🐵🐔🐶🐷]<\/span>/u);
+
+  dateModal.close();
 
   // Cleanup settings
   Storage.saveSettings(DEFAULT_SETTINGS);

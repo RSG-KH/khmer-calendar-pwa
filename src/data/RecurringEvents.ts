@@ -1,7 +1,7 @@
 // Copyright (c) 2026 RSG-KH | Apache-2.0 License
 
 import { createRule, type RuleInput, type RecurrenceRule as EngineRecurrenceRule } from 'khmer-calendar-engine';
-import catalogData from './khmer-calendar-data-0.4.5.json';
+import catalogData from './khmer-calendar-data-0.5.0.json';
 import knowledgeData from './event-knowledge.json';
 import { calendarEngine, KhmerCalendar, khmerNumber } from '../domain/KhmerCalendar';
 

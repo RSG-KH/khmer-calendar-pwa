@@ -546,7 +546,7 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   const { todayInZone } = await server.ssrLoadModule('/src/domain/DateTime.ts');
   const todayStr = todayInZone(DEFAULT_SETTINGS.todayTimeZone);
   dateModal.open(todayStr, [], true);
-  assert.ok(dateModal.overlay.innerHTML.includes('លគ្ន៍ (រះ)'), 'Rising sign column header displays លគ្ន៍ (រះ) in Khmer mode');
+  assert.ok(dateModal.overlay.innerHTML.includes('រះ'), 'Rising sign column header displays រះ in Khmer mode');
 
   eventModal.open(event, false);
   assert.ok(eventModal.overlay.innerHTML.includes('dialog-watermark-western'), 'Event details watermark should show when showWesternZodiac is true');

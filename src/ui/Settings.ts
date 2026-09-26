@@ -18,7 +18,7 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
   if (!fontScales.includes(settings.fontScale)) fontScales.push(settings.fontScale);
   const installUrl = 'https://rsg-kh.github.io/khmer-calendar-pwa/';
   const installLink = `<a class="about-install-link" href="${installUrl}" target="_blank" rel="noopener noreferrer">${text('app.name')}</a>`;
-  const toggle = (key: 'mondayFirst' | 'showCopyButtons' | 'highlightSunday' | 'showLunar' | 'holyDayMarkers' | 'showHolyDaysInEvents' | 'backgroundAccent' | 'showLongerWeekdayNames' | 'highlightWeekdayNames' | 'showWesternZodiac' | 'showGanzhi' | 'useEmojiForGanzhiAnimals' | 'showObservances', title: string, subtitle: string) => `
+  const toggle = (key: 'mondayFirst' | 'showCopyButtons' | 'highlightSunday' | 'showLunar' | 'holyDayMarkers' | 'showHolyDaysInEvents' | 'backgroundAccent' | 'showLongerWeekdayNames' | 'highlightWeekdayNames' | 'showWesternZodiac' | 'useEmojiForWesternZodiac' | 'showGanzhi' | 'useEmojiForGanzhiAnimals' | 'showObservances', title: string, subtitle: string) => `
     <label class="settings-row" for="setting-${key}">
       <span class="settings-text-col"><span class="settings-title">${text(title)}</span><span class="settings-subtitle">${text(subtitle)}</span></span>
       <input class="settings-switch" type="checkbox" role="switch" id="setting-${key}" data-setting="${key}" ${settings[key] ? 'checked' : ''} />
@@ -75,6 +75,7 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
       <h2 class="section-label">${text('ui.astrology_zodiac')}</h2>
       <section class="settings-card">
         ${toggle('showWesternZodiac', 'ui.show_western_zodiac', 'ui.show_western_zodiac_subtitle')}
+        ${settings.showWesternZodiac ? toggle('useEmojiForWesternZodiac', 'ui.use_emoji_for_western_zodiac', 'ui.ganzhi_emoji_subtitle') : ''}
         ${toggle('showGanzhi', 'ui.show_chinese_ganzhi', 'ui.show_chinese_ganzhi_subtitle')}
         ${settings.showGanzhi ? toggle('useEmojiForGanzhiAnimals', 'ui.ganzhi_emoji_toggle', 'ui.ganzhi_emoji_subtitle') : ''}
       </section>

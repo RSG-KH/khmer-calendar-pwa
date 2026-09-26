@@ -1489,7 +1489,7 @@
   },
   "ui.show_western_zodiac": {
     "km": "បង្ហាញតារានិករ",
-    "en": "Show Western zodiac signs"
+    "en": "Show western zodiac"
   },
   "ui.show_western_zodiac_subtitle": {
     "km": "ក្នុងកាលបរិច្ឆេទសង្ខេប និងលម្អិត",
@@ -1646,5 +1646,29 @@
   "ui.show_observances_subtitle": {
     "km": "បង្ហាញក្នុងប្រតិទិន និងបញ្ជីព្រឹត្តិការណ៍",
     "en": "In calendar and event list"
+  },
+  "ui.use_emoji_for_western_zodiac": {
+    "km": "ប្រើ Emoji សម្រាប់តារានិករ",
+    "en": "Use emoji for western zodiac"
+  },
+  "ui.western_zodiac_big3": {
+    "km": "Big 3",
+    "en": "Big 3"
+  },
+  "ui.western_zodiac_sun": {
+    "km": "ព្រះអាទិត្យ",
+    "en": "Sun"
+  },
+  "ui.western_zodiac_moon": {
+    "km": "ព្រះច័ន្ទ",
+    "en": "Moon"
+  },
+  "ui.western_zodiac_rising": {
+    "km": "លគ្ន៍",
+    "en": "Rising sign"
+  },
+  "ui.western_zodiac_sign": {
+    "km": "រាសី",
+    "en": "Sign"
   }
 }

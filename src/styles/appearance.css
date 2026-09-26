@@ -240,17 +240,17 @@ svg { flex-shrink: 0; }
 .date-details-symbol-row { display: flex; align-items: center; gap: 6px; }
 .date-details-symbol { flex: 0 0 24px; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; font-size: calc(15px * var(--font-scale)); line-height: 1; }
 .date-details-symbol img { display: block; width: 20px; height: 20px; object-fit: contain; }
-/* Certified Ganzhi header, icon alignment and emoji sizing: docs/maintainer-certified-calendar-ui.md. */
-.ganzhi-table-wrap { max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; }
-.ganzhi-table { width: 100%; border-collapse: collapse; text-align: center; font-size: calc(12px * var(--font-scale)); }
+/* Certified Ganzhi and Western Zodiac Big 3 header, icon alignment and emoji sizing: docs/maintainer-certified-calendar-ui.md. */
+.ganzhi-table-wrap, .western-zodiac-table-wrap { max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; }
+.ganzhi-table, .western-zodiac-table { width: 100%; border-collapse: collapse; text-align: center; font-size: calc(12px * var(--font-scale)); }
 .ganzhi-heading { display: inline-flex; align-items: center; gap: 6px; }
-.ganzhi-table th, .ganzhi-table td { min-width: 52px; padding: 7px 5px; white-space: nowrap; }
-.ganzhi-table th:first-child { min-width: 65px; text-align: left; }
-.ganzhi-table thead th { border-bottom: 1px solid var(--outline); color: var(--accent); font-weight: 600; }
-.ganzhi-table thead th:first-child { padding-left: 0; }
-.ganzhi-table tbody th { color: var(--on-surface-variant); font-weight: 400; text-align: center; }
-.ganzhi-table td { color: var(--text-primary); }
-.ganzhi-table.emoji-animals td { font-size: calc(19px * var(--font-scale)); }
+.ganzhi-table th, .ganzhi-table td, .western-zodiac-table th, .western-zodiac-table td { min-width: 52px; padding: 7px 5px; white-space: nowrap; }
+.ganzhi-table th:first-child, .western-zodiac-table th:first-child { min-width: 65px; text-align: left; }
+.ganzhi-table thead th, .western-zodiac-table thead th { border-bottom: 1px solid var(--outline); color: var(--accent); font-weight: 600; }
+.ganzhi-table thead th:first-child, .western-zodiac-table thead th:first-child { padding-left: 0; }
+.ganzhi-table tbody th, .western-zodiac-table tbody th { color: var(--on-surface-variant); font-weight: 400; text-align: center; }
+.ganzhi-table td, .western-zodiac-table td { color: var(--text-primary); }
+.ganzhi-table.emoji-animals td, .western-zodiac-table.emoji-animals td { font-size: calc(19px * var(--font-scale)); }
 .ganzhi-range-note { margin: 5px 0 0; font-size: calc(10px * var(--font-scale)); color: var(--on-surface-variant); }
 .event-detail-dialog { display: flex; flex-direction: column; min-height: 0; overflow: hidden !important; }
 .event-detail-header { flex-shrink: 0; }

@@ -523,15 +523,22 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: true });
   dateModal.open(pastDate, [], false);
   assert.ok(dateModal.overlay.innerHTML.includes('dialog-watermark-western'), 'Western watermark should show when showWesternZodiac is true');
+  assert.ok(dateModal.overlay.innerHTML.includes('western-zodiac-table'), 'Western zodiac Big 3 table should show when showWesternZodiac is true');
+  assert.ok(dateModal.overlay.innerHTML.includes('Big 3'), 'Big 3 heading should show in English');
+  assert.ok(dateModal.overlay.innerHTML.includes('Sun'), 'Sun column should show');
+  assert.ok(dateModal.overlay.innerHTML.includes('Moon'), 'Moon column should show');
   assert.ok(dateModal.overlay.innerHTML.includes('Libra'), 'Western zodiac label should show when showWesternZodiac is true');
   assert.ok(dateModal.overlay.innerHTML.includes('Wednesday, September 24, 2025'), 'Selected date is the dialog title');
   assert.ok(dateModal.overlay.innerHTML.includes('ganzhi-table'), 'Ganzhi table is visible by default');
   assert.ok(dateModal.overlay.innerHTML.includes('Clash'), 'Ganzhi clash row is visible');
   assert.equal(dateModal.overlay.innerHTML.includes('scope="col">Hour'), false, 'Past dates do not show the hour pillar');
+  assert.equal(dateModal.overlay.innerHTML.includes('scope="col">Rising sign'), false, 'Past dates do not show the rising sign');
 
   dateModal.open(pastDate, [], true);
   assert.equal((dateModal.overlay.innerHTML.match(/September 24, 2025/g) || []).length, 1, 'Khmer date details have one Gregorian date title');
-  assert.ok(dateModal.overlay.innerHTML.includes('Libra (Air · Venus)'), 'Western zodiac keeps its proper English name in Khmer mode');
+  assert.ok(dateModal.overlay.innerHTML.includes('Libra'), 'Western zodiac displays English name in Khmer mode');
+  assert.ok(dateModal.overlay.innerHTML.includes('ព្រះអាទិត្យ'), 'Sun header in Khmer');
+  assert.ok(dateModal.overlay.innerHTML.includes('ព្រះច័ន្ទ'), 'Moon header in Khmer');
 
   eventModal.open(event, false);
   assert.ok(eventModal.overlay.innerHTML.includes('dialog-watermark-western'), 'Event details watermark should show when showWesternZodiac is true');
@@ -540,14 +547,20 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: false });
   dateModal.open(pastDate, [], false);
   assert.equal(dateModal.overlay.innerHTML.includes('dialog-watermark-western'), false, 'Western watermark should be hidden when showWesternZodiac is false');
-  assert.equal(dateModal.overlay.innerHTML.includes('Libra'), false, 'Western zodiac label should be hidden when showWesternZodiac is false');
+  assert.equal(dateModal.overlay.innerHTML.includes('western-zodiac-table'), false, 'Western zodiac table should be hidden when showWesternZodiac is false');
 
   eventModal.open(event, false);
   assert.equal(eventModal.overlay.innerHTML.includes('dialog-watermark-western'), false, 'Event details watermark should be hidden when showWesternZodiac is false');
 
+  // Emoji toggle for Western Zodiac
+  Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: true, useEmojiForWesternZodiac: true });
+  dateModal.open(pastDate, [], false);
+  assert.ok(dateModal.overlay.innerHTML.includes('western-zodiac-table'), 'Western zodiac table should show');
+  assert.match(dateModal.overlay.innerHTML, /<span title="Libra">♎️?<\/span>/u, 'Should show Libra emoji with name tooltip');
+
   Storage.saveSettings({ ...DEFAULT_SETTINGS, showGanzhi: false });
   dateModal.open(pastDate, [], false);
-  assert.equal(dateModal.overlay.innerHTML.includes('ganzhi-table'), false, 'Ganzhi setting hides its table');
+  assert.equal(dateModal.overlay.innerHTML.includes('ganzhi-table-wrap'), false, 'Ganzhi setting hides its table');
 
   Storage.saveSettings({ ...DEFAULT_SETTINGS, useEmojiForGanzhiAnimals: true });
   dateModal.open(pastDate, [], false);

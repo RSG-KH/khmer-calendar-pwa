@@ -16,6 +16,7 @@ import { setupCopyButton } from './CopyButton';
 import { holyDayLotus } from './HolyDayLotus';
 import { EventRepeatField, repeatDateLabel } from './EventRepeatField';
 import { ganzhiAnimalLabel, ganzhiColumns } from '../domain/Ganzhi';
+import { westernZodiacColumns, westernZodiacLabel, westernZodiacTooltip, type WesternZodiacColumn } from '../domain/WesternZodiac';
 
 /**
  * Maintainer-certified PWA date-details table (docs/maintainer-certified-calendar-ui.md).
@@ -43,6 +44,41 @@ function renderGanzhiTable(year: number, month: number, day: number, hour: numbe
         </tbody>
       </table>
       ${year < 1900 || year > 2100 ? `<p class="ganzhi-range-note">${label('solar_range')}</p>` : ''}
+    </div>`;
+}
+
+/**
+ * Maintainer-certified PWA date-details Western Zodiac Big 3 table (docs/maintainer-certified-calendar-ui.md).
+ * Keep `☸️ Big 3` in the first column header, followed by Sun, Moon, and the optional Today Rising sign;
+ * the single body row is Sign. `useEmoji` toggles between emoji symbols and localized sign names.
+ */
+function renderWesternZodiacTable(
+  year: number,
+  month: number,
+  day: number,
+  hour: number | undefined,
+  minute: number | undefined,
+  timeZone: string,
+  khmer: boolean,
+  useEmoji: boolean
+): string {
+  const columns = westernZodiacColumns({ year, month, day, hour, minute, timeZone });
+  const label = (key: string) => L.text(`ui.western_zodiac_${key}`, khmer);
+  const signCell = (col: WesternZodiacColumn) => {
+    if (!col.sign) return '—';
+    const textContent = westernZodiacLabel(col.sign, khmer, useEmoji);
+    const titleContent = westernZodiacTooltip(col.sign, khmer, useEmoji);
+    return `<span title="${escapeHtml(titleContent)}">${escapeHtml(textContent)}</span>`;
+  };
+
+  return `
+    <div class="western-zodiac-table-wrap">
+      <table class="western-zodiac-table ganzhi-table${useEmoji ? ' emoji-animals' : ''}" aria-label="${escapeHtml(label('big3'))}">
+        <thead><tr><th scope="col"><span class="ganzhi-heading"><span class="date-details-symbol" aria-hidden="true">☸️</span><span>${escapeHtml(label('big3'))}</span></span></th>${columns.map(column => `<th scope="col">${escapeHtml(label(column.key))}</th>`).join('')}</tr></thead>
+        <tbody>
+          <tr><th scope="row">${escapeHtml(label('sign'))}</th>${columns.map(col => `<td>${signCell(col)}</td>`).join('')}</tr>
+        </tbody>
+      </table>
     </div>`;
 }
 
@@ -94,6 +130,10 @@ export class DateDetailsDialogModal {
     });
     const dialogTitle = isKhmer ? dateTitle : `${CalendarWords.weekday(new Date(`${dateStr}T00:00:00Z`).getUTCDay(), false)}, ${dateTitle}`;
     const currentHour = isToday ? Number(dateTimeInZone(new Date(), settings.todayTimeZone).time.slice(0, 2)) : undefined;
+    const currentMinute = isToday ? Number(dateTimeInZone(new Date(), settings.todayTimeZone).time.slice(3, 5)) : undefined;
+    const westernZodiacHtml = showWesternZodiac
+      ? renderWesternZodiacTable(info.year, info.month, info.day, currentHour, currentMinute, settings.todayTimeZone, isKhmer, settings.useEmojiForWesternZodiac)
+      : '';
     const ganzhiHtml = settings.showGanzhi
       ? renderGanzhiTable(info.year, info.month, info.day, currentHour, isKhmer, settings.useEmojiForGanzhiAnimals)
       : '';
@@ -141,12 +181,7 @@ export class DateDetailsDialogModal {
                 </div>
               ` : ''}
 
-              ${showWesternZodiac ? `
-                <div class="date-details-symbol-row" style="font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--accent);">
-                  <span class="date-details-symbol" aria-hidden="true">${info.zodiac.symbol}</span>
-                  <span>${Zodiac.labelWithoutSymbol(info.zodiac, false)}</span>
-                </div>
-              ` : ''}
+              ${westernZodiacHtml}
               ${ganzhiHtml}
             </div>
           ` : ''}
@@ -208,20 +243,26 @@ export class DateDetailsDialogModal {
     });
 
     showModal(this.overlay, dialogTitle);
-    if (isToday && settings.showGanzhi) {
+    if (isToday && (settings.showGanzhi || settings.showWesternZodiac)) {
       const refreshHour = () => {
         const now = new Date();
         const zoned = dateTimeInZone(now, settings.todayTimeZone);
         const hour = zoned.date === dateStr ? Number(zoned.time.slice(0, 2)) : undefined;
-        const table = this.overlay.querySelector<HTMLElement>('.ganzhi-table-wrap');
-        if (table) table.outerHTML = renderGanzhiTable(info.year, info.month, info.day, hour, isKhmer, settings.useEmojiForGanzhiAnimals);
+        const minute = zoned.date === dateStr ? Number(zoned.time.slice(3, 5)) : undefined;
+        const ganzhiTable = this.overlay.querySelector<HTMLElement>('.ganzhi-table-wrap:not(.western-zodiac-table-wrap)');
+        if (ganzhiTable && settings.showGanzhi) {
+          ganzhiTable.outerHTML = renderGanzhiTable(info.year, info.month, info.day, hour, isKhmer, settings.useEmojiForGanzhiAnimals);
+        }
+        const westernTable = this.overlay.querySelector<HTMLElement>('.western-zodiac-table-wrap');
+        if (westernTable && settings.showWesternZodiac) {
+          westernTable.outerHTML = renderWesternZodiacTable(info.year, info.month, info.day, hour, minute, settings.todayTimeZone, isKhmer, settings.useEmojiForWesternZodiac);
+        }
         if (hour === undefined) {
           this.overlay.querySelector('.date-details-today-badge')?.remove();
           this.hourRefreshTimer = undefined;
           return;
         }
-        const minute = Number(zoned.time.slice(3, 5));
-        const delay = (60 - minute) * 60_000 - now.getSeconds() * 1000 - now.getMilliseconds() + 1000;
+        const delay = (60 - (minute ?? 0)) * 60_000 - now.getSeconds() * 1000 - now.getMilliseconds() + 1000;
         this.hourRefreshTimer = window.setTimeout(refreshHour, delay);
       };
       refreshHour();

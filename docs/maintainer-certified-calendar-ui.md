@@ -34,23 +34,26 @@ The summary card appears only in landscape at viewport width **960px or more** a
 
 The Gregorian date is 13px × font scale; zodiac and Ganzhi use 11px × font scale. These are summary-card choices, not instructions to alter the date-details dialog. `src/domain/Ganzhi.ts` supplies the compact emoji sequence from the same pillars used by the dialog. The Ganzhi animal setting subtitle matches Android: **“Choose between Emoji and name”** / **“ជ្រើសរើសរវាង Emoji និងឈ្មោះ”**. That choice applies only to the date-details table; the summary always uses emoji.
 
-## Date-details Ganzhi table and symbols
+## Date-details Ganzhi and Western Big 3 tables
 
-When `showGanzhi` is on, the dialog table has columns **year, month, day**, plus **hour only for Today** in the selected Today time zone. The first column header is **`☯️ 干支`**, above the sign and clash row labels. It is not a separate caption. The first header cell has zero left padding so its 24px symbol slot and label align with the lotus and Western zodiac rows. The table has `aria-label="干支"` and can scroll horizontally in a narrow dialog.
+When `showGanzhi` is on, the dialog table has columns **year, month, day**, plus **hour only for Today** in the selected Today time zone. The first column header is **`☯️ 干支`**, above the sign and clash row labels. It is not a separate caption. The first header cell has zero left padding so its 24px symbol slot and label align with the lotus and Western Big 3 rows. The table has `aria-label="干支"` and can scroll horizontally in a narrow dialog.
+
+When `showWesternZodiac` is on, the dialog renders the Western Zodiac Big 3 table replacing the former single text line. The table has columns **Sun, Moon**, plus **Rising sign only for Today** in the selected Today time zone. The first column header is **`☸️ Big 3`**, above the single body row **`Sign`**. `useEmojiForWesternZodiac` toggles between localized sign names (`false`) and standard emoji symbols (`true`). The first header cell has zero left padding so its 24px symbol slot aligns with the lotus and Ganzhi headings.
 
 | Element | Certified behavior |
 | --- | --- |
-| Symbol rows | Lotus, Western zodiac and ☯️ use a shared 24px-wide symbol slot and a 6px text gap. The lotus image is 20px; symbol emoji are 15px × font scale. |
-| Table text | Base table text is 12px × font scale. Named animals follow `useEmojiForGanzhiAnimals = false`; emoji animals follow `true`. Emoji animal cells are 19px × font scale. |
-| Table columns | Year/month/day (and conditional Today hour) use the same engine pillars for the sign and opposing clash rows. Header/data cells have a 52px minimum width; the first header column has a 65px minimum. |
-| Unsupported solar years | Outside 1900–2100, the year and month cells display em dashes and the range note appears; the day pillar remains available. The summary line is omitted because it requires all three animals. |
+| Symbol rows | Lotus, Western Big 3 (☸️) and Ganzhi (☯️) use a shared 24px-wide symbol slot and a 6px text gap. The lotus image is 20px; symbol emoji are 15px × font scale. |
+| Table text | Base table text is 12px × font scale. Named signs/animals follow `false`; emoji signs/animals follow `true`. Emoji cells are 19px × font scale. |
+| Ganzhi columns | Year/month/day (and conditional Today hour) use the same engine pillars for the sign and opposing clash rows. Header/data cells have a 52px minimum width; the first header column has a 65px minimum. |
+| Western Big 3 columns | Sun/Moon (and conditional Today Rising sign) computed via `calculateHoroscope`. First header is `☸️ Big 3`; body row is `Sign`. |
+| Unsupported solar years | Outside 1900–2100, Ganzhi year and month cells display em dashes and the range note appears; the day pillar remains available. The summary line is omitted because it requires all three animals. |
 
-The Earthly Branch emoji sequence, indexed from Rat through Pig, is **`🐭 🐮 🐯 🐰 🐲 🐍 🐴 🐐 🐵 🐔 🐶 🐷`**. Use each engine pillar's `branch` for the sign row and `clashBranch` for the clash row. The summary concatenates the three emojis in year–month–day order without spaces inside either group and uses the literal separator ` x `.
+The Earthly Branch emoji sequence, indexed from Rat through Pig, is **`🐭 🐮 🐯 🐰 🐲 🐍 🐴 🐐 🐵 🐔 🐶 🐷`**. The Western Zodiac emoji sequence, indexed from Aries through Pisces, is **`♈️ ♉️ ♊️ ♋️ ♌️ ♍️ ♎️ ♏️ ♐️ ♑️ ♒️ ♓️`**. Use each engine pillar's `branch` for the sign row and `clashBranch` for the clash row. The summary concatenates the three emojis in year–month–day order without spaces inside either group and uses the literal separator ` x `.
 
 ## Sync and review rule
 
 During an Android release sync, compare new calculations, data, settings and user-visible behavior for applicability, but **do not replace these certified PWA dimensions or table/summary presentation simply to match Android Compose sizing or placement**. If an Android change conflicts with this contract, record the difference and preserve the PWA behavior until the maintainer requests a revision.
 
-Before accepting a UI change here, review phone portrait and landscape, tablet/desktop landscape including a short window, 80% and 150% text size, both Ganzhi emoji settings, the `showGanzhi` and `showWesternZodiac` switches, and an out-of-range solar year. Run `npm test` for calculation/settings regressions and inspect the affected layouts in a browser or device preview.
+Before accepting a UI change here, review phone portrait and landscape, tablet/desktop landscape including a short window, 80% and 150% text size, both Ganzhi and Western emoji settings, the `showGanzhi` and `showWesternZodiac` switches, and an out-of-range solar year. Run `npm test` for calculation/settings regressions and inspect the affected layouts in a browser or device preview.
 
-Implementation anchors: `src/styles/responsive.css`, `src/styles/appearance.css`, `src/styles/components.css`, `src/main.ts`, `src/ui/Modals.ts`, `src/domain/Ganzhi.ts`, and `src/ui/Platform.ts`.
+Implementation anchors: `src/styles/responsive.css`, `src/styles/appearance.css`, `src/styles/components.css`, `src/main.ts`, `src/ui/Modals.ts`, `src/domain/Ganzhi.ts`, `src/domain/WesternZodiac.ts`, and `src/ui/Platform.ts`.

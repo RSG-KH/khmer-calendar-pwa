@@ -21,6 +21,7 @@ export interface AppSettings {
   highlightWeekdayNames: boolean;
   showCopyButtons: boolean;
   showWesternZodiac: boolean;
+  useEmojiForWesternZodiac: boolean;
   showGanzhi: boolean;
   useEmojiForGanzhiAnimals: boolean;
   showObservances: boolean;
@@ -45,6 +46,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   highlightWeekdayNames: true,
   showCopyButtons: false,
   showWesternZodiac: true,
+  useEmojiForWesternZodiac: false,
   showGanzhi: true,
   useEmojiForGanzhiAnimals: false,
   showObservances: true,

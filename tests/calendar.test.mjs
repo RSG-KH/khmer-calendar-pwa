@@ -160,12 +160,13 @@ test('legacy events and preferences remain readable', () => {
 
 test('observance and Ganzhi settings persist independently', () => {
   values.clear();
-  Storage.saveSettings({ ...DEFAULT_SETTINGS, showObservances: false, showGanzhi: false, useEmojiForGanzhiAnimals: true });
+  Storage.saveSettings({ ...DEFAULT_SETTINGS, showObservances: false, showGanzhi: false, useEmojiForGanzhiAnimals: true, useEmojiForWesternZodiac: true });
   const settings = Storage.getSettings();
   assert.equal(settings.showObservances, false);
   assert.equal(settings.showGanzhi, false);
   assert.equal(settings.useEmojiForGanzhiAnimals, true);
   assert.equal(settings.showWesternZodiac, true);
+  assert.equal(settings.useEmojiForWesternZodiac, true);
   values.clear();
 });
 
@@ -267,4 +268,28 @@ test('April month-card watermarks show the animal-year transition pair, matching
   assert.equal(KhmerDateDetails.fromGregorian(2026, 4, 10).animalYear, 5);
   assert.equal(KhmerDateDetails.fromGregorian(2026, 4, 20).animalYear, 6);
   assert.equal(KhmerDateDetails.fromGregorian(2026, 6, 15).animalYear, Zodiac.animalYearIndex(2026));
+});
+
+test('Western Zodiac Big 3 columns compute Sun, Moon, and conditional Rising sign', async () => {
+  const { westernZodiacColumns, westernZodiacLabel, westernZodiacEmoji } = await server.ssrLoadModule('/src/domain/WesternZodiac.ts');
+  // Past date without time -> Sun and Moon only (2 columns)
+  const pastCols = westernZodiacColumns({ year: 2026, month: 9, day: 24 });
+  assert.equal(pastCols.length, 2);
+  assert.equal(pastCols[0].key, 'sun');
+  assert.equal(pastCols[1].key, 'moon');
+  assert.equal(pastCols[0].sign.englishName, 'Libra');
+  assert.equal(westernZodiacLabel(pastCols[0].sign, false, false), 'Libra');
+  assert.equal(westernZodiacLabel(pastCols[0].sign, true, false), 'Libra');
+  assert.equal(westernZodiacLabel(pastCols[0].sign, false, true), '♎️');
+  assert.equal(westernZodiacEmoji(pastCols[0].sign), '♎️');
+
+  // Today with hour and minute -> Sun, Moon, Rising sign (3 columns)
+  const todayCols = westernZodiacColumns({ year: 2026, month: 9, day: 26, hour: 14, minute: 30, timeZone: 'cambodia' });
+  assert.equal(todayCols.length, 3);
+  assert.equal(todayCols[0].key, 'sun');
+  assert.equal(todayCols[1].key, 'moon');
+  assert.equal(todayCols[2].key, 'rising');
+  assert.equal(todayCols[0].sign.englishName, 'Libra');
+  assert.equal(todayCols[1].sign.englishName, 'Pisces');
+  assert.equal(todayCols[2].sign.englishName, 'Aquarius');
 });

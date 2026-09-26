@@ -39,8 +39,8 @@ function renderGanzhiTable(year: number, month: number, day: number, hour: numbe
       <table class="ganzhi-table${useEmoji ? ' emoji-animals' : ''}" aria-label="干支">
         <thead><tr><th scope="col"><span class="ganzhi-heading"><span class="date-details-symbol" aria-hidden="true">☯️</span><span>干支</span></span></th>${columns.map(column => `<th scope="col">${label(column.key === 'day' ? 'day_column' : column.key === 'hour' ? 'hour_column' : column.key)}</th>`).join('')}</tr></thead>
         <tbody>
-          <tr><th scope="row">${label('sign')}</th>${columns.map((_, index) => `<td>${animal(index, false)}</td>`).join('')}</tr>
-          <tr><th scope="row">${label('clash')}</th>${columns.map((_, index) => `<td>${animal(index, true)}</td>`).join('')}</tr>
+          <tr><th scope="row">${label('sign')}</th>${columns.map((col, index) => `<td${col.key === 'year' ? ' class="highlight-cell"' : ''}>${animal(index, false)}</td>`).join('')}</tr>
+          <tr><th scope="row">${label('clash')}</th>${columns.map((col, index) => `<td${col.key === 'year' ? ' class="highlight-cell"' : ''}>${animal(index, true)}</td>`).join('')}</tr>
         </tbody>
       </table>
       ${year < 1900 || year > 2100 ? `<p class="ganzhi-range-note">${label('solar_range')}</p>` : ''}
@@ -76,7 +76,7 @@ function renderWesternZodiacTable(
       <table class="western-zodiac-table ganzhi-table${useEmoji ? ' emoji-animals' : ''}" aria-label="${escapeHtml(label('big3'))}">
         <thead><tr><th scope="col"><span class="ganzhi-heading"><span class="date-details-symbol" aria-hidden="true">☸️</span><span>${escapeHtml(label('big3'))}</span></span></th>${columns.map(column => `<th scope="col">${escapeHtml(label(column.key))}</th>`).join('')}</tr></thead>
         <tbody>
-          <tr><th scope="row">${escapeHtml(label('sign'))}</th>${columns.map(col => `<td>${signCell(col)}</td>`).join('')}</tr>
+          <tr><th scope="row">${escapeHtml(label('sign'))}</th>${columns.map(col => `<td${col.key === 'sun' ? ' class="highlight-cell"' : ''}>${signCell(col)}</td>`).join('')}</tr>
         </tbody>
       </table>
     </div>`;

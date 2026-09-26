@@ -531,6 +531,9 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   assert.ok(dateModal.overlay.innerHTML.includes('Wednesday, September 24, 2025'), 'Selected date is the dialog title');
   assert.ok(dateModal.overlay.innerHTML.includes('ganzhi-table'), 'Ganzhi table is visible by default');
   assert.ok(dateModal.overlay.innerHTML.includes('Clash'), 'Ganzhi clash row is visible');
+  assert.match(dateModal.overlay.innerHTML, /<td class="highlight-cell"><span title="[^"]*">Libra<\/span><\/td>/, 'Sun sign cell has highlight-cell class');
+  assert.match(dateModal.overlay.innerHTML, /<tr><th scope="row">Sign<\/th><td class="highlight-cell">/u, 'Ganzhi Year sign cell has highlight-cell class');
+  assert.match(dateModal.overlay.innerHTML, /<tr><th scope="row">Clash<\/th><td class="highlight-cell">/u, 'Ganzhi Year clash cell has highlight-cell class');
   assert.equal(dateModal.overlay.innerHTML.includes('scope="col">Hour'), false, 'Past dates do not show the hour pillar');
   assert.equal(dateModal.overlay.innerHTML.includes('scope="col">Rising sign'), false, 'Past dates do not show the rising sign');
 
@@ -539,6 +542,11 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   assert.ok(dateModal.overlay.innerHTML.includes('Libra'), 'Western zodiac displays English name in Khmer mode');
   assert.ok(dateModal.overlay.innerHTML.includes('ព្រះអាទិត្យ'), 'Sun header in Khmer');
   assert.ok(dateModal.overlay.innerHTML.includes('ព្រះច័ន្ទ'), 'Moon header in Khmer');
+
+  const { todayInZone } = await server.ssrLoadModule('/src/domain/DateTime.ts');
+  const todayStr = todayInZone(DEFAULT_SETTINGS.todayTimeZone);
+  dateModal.open(todayStr, [], true);
+  assert.ok(dateModal.overlay.innerHTML.includes('លគ្ន៍ (រះ)'), 'Rising sign column header displays លគ្ន៍ (រះ) in Khmer mode');
 
   eventModal.open(event, false);
   assert.ok(eventModal.overlay.innerHTML.includes('dialog-watermark-western'), 'Event details watermark should show when showWesternZodiac is true');

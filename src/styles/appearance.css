@@ -250,6 +250,7 @@ svg { flex-shrink: 0; }
 .ganzhi-table thead th:first-child, .western-zodiac-table thead th:first-child { padding-left: 0; }
 .ganzhi-table tbody th, .western-zodiac-table tbody th { color: var(--on-surface-variant); font-weight: 400; text-align: center; }
 .ganzhi-table td, .western-zodiac-table td { color: var(--text-primary); }
+.ganzhi-table td.highlight-cell, .western-zodiac-table td.highlight-cell { color: var(--accent); font-weight: 600; }
 .ganzhi-table.emoji-animals td, .western-zodiac-table.emoji-animals td { font-size: calc(19px * var(--font-scale)); }
 .ganzhi-range-note { margin: 5px 0 0; font-size: calc(10px * var(--font-scale)); color: var(--on-surface-variant); }
 .event-detail-dialog { display: flex; flex-direction: column; min-height: 0; overflow: hidden !important; }

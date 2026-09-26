@@ -43,7 +43,7 @@ When `showWesternZodiac` is on, the dialog renders the Western Zodiac Big 3 tabl
 | Element | Certified behavior |
 | --- | --- |
 | Symbol rows | Lotus, Western Big 3 (☸️) and Ganzhi (☯️) use a shared 24px-wide symbol slot and a 6px text gap. The lotus image is 20px; symbol emoji are 15px × font scale. |
-| Table text | Base table text is 12px × font scale. Named signs/animals follow `false`; emoji signs/animals follow `true`. Emoji cells are 19px × font scale. |
+| Table text | Base table text is 12px × font scale. Named signs/animals follow `false`; emoji signs/animals follow `true`. Emoji cells are 19px × font scale. Primary astrological markers (Ganzhi Year sign and clash cells, and Western Big 3 Sun sign cell) use `.highlight-cell` (`font-weight: 600; color: var(--accent)`). |
 | Ganzhi columns | Year/month/day (and conditional Today hour) use the same engine pillars for the sign and opposing clash rows. Header/data cells have a 52px minimum width; the first header column has a 65px minimum. |
 | Western Big 3 columns | Sun/Moon (and conditional Today Rising sign) computed via `calculateHoroscope`. First header is `☸️ Big 3`; body row is `Sign`. |
 | Unsupported solar years | Outside 1900–2100, Ganzhi year and month cells display em dashes and the range note appears; the day pillar remains available. The summary line is omitted because it requires all three animals. |

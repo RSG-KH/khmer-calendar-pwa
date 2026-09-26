@@ -44,15 +44,12 @@ function renderGanzhiTable(
     const col = columns[index];
     const pillar = col.pillar;
     if (col.key === 'hour' && !pillar) {
-      if (solarSupported) {
-        return renderTimePickButton(khmer);
-      }
-      return '—';
+      return renderTimePickButton(khmer);
     }
     if (!pillar) return '—';
     const branch = clash ? pillar.clashBranch : pillar.branch;
     const name = ganzhiAnimalLabel(branch, khmer, useEmoji);
-    const isInteractive = col.key === 'hour' && solarSupported;
+    const isInteractive = col.key === 'hour';
     const cellClass = isInteractive ? ' class="time-interactive-cell"' : '';
     const clickTitle = isInteractive ? ` (${L.text('ui.select_time.eacac3', khmer)})` : '';
     return `<span${cellClass}${isInteractive ? ' role="button" tabindex="0"' : ''} title="${escapeHtml((khmer ? branch.khmerAnimal : branch.animal) + clickTitle)}">${escapeHtml(name)}</span>`;
@@ -261,8 +258,8 @@ export class DateDetailsDialogModal {
     const fullDate = isKhmer ? CalendarWords.fullKhmerDate(info) : CalendarWords.fullEnglishDate(info);
     const settings = Storage.getSettings();
     const showWesternZodiac = settings.showWesternZodiac;
-    const canPickTime = (settings.showGanzhi && info.year >= 1900 && info.year <= 2100)
-      || (showWesternZodiac && info.year >= 1800 && info.year <= 2200);
+    const canPickTime = (settings.showGanzhi || showWesternZodiac)
+      && info.year >= 1800 && info.year <= 2200;
     const zonedNow = canPickTime ? dateTimeInZone(new Date(), settings.todayTimeZone) : null;
     this.customTime = zonedNow?.date === dateStr ? zonedNow.time : null;
 

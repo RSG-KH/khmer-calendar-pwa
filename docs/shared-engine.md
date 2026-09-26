@@ -6,9 +6,9 @@ The PWA bundles `khmer-calendar-engine` **0.6.0** from its [versioned release](h
 
 The engine's [API contract](https://github.com/RSG-KH/khmer-calendar-engine/blob/v0.6.0/docs/api.md) defines calculation behavior. Its [reference evidence](https://github.com/RSG-KH/khmer-calendar-engine/blob/v0.6.0/docs/references.md) documents calculation sources and validation. This guide covers how the PWA consumes that engine.
 
-One `calendarEngine` instance supplies lunar dates, Buddhist Era, animal year, Sak, New Year and recurrence dates for Gregorian years 1800–2200. Engine 0.6.0 also supplies Ganzhi day and hour pillars throughout that range and solar year and month pillars for 1900–2100. The PWA retains civil-date validation, local/Cambodia time zones, Western zodiac labels, translations, event titles, anniversaries and personal event storage.
+One `calendarEngine` instance supplies lunar dates, Buddhist Era, animal year, Sak, New Year and recurrence dates for Gregorian years 1800–2200. Engine 0.6.0 also supplies Ganzhi day and hour pillars throughout that range, solar year and month pillars for 1900–2100, and `calculateHoroscope` for the Western Big 3. The PWA retains civil-date validation, local/Cambodia time zones, Western zodiac labels, translations, event titles, anniversaries and personal event storage. The Ganzhi and Western calculations run independently when their respective display settings are enabled.
 
-Engine and Android updates do not replace the [maintainer-certified PWA calendar UI contract](maintainer-certified-calendar-ui.md), which records approved month-grid, summary-card and Ganzhi-table presentation choices.
+Engine and Android updates do not replace the [maintainer-certified PWA calendar UI contract](maintainer-certified-calendar-ui.md), which records approved month-grid, summary-card, Western Big 3 and Ganzhi-table presentation choices.
 
 Built-in events come from the Schema v3 catalog `src/data/khmer-calendar-data-0.5.0.json` (file name carries its `dataVersion`). The repository evaluates that catalog live through the engine — there is no generated date cache to keep fresh. Calendar cells and date details call the engine for lunar dates throughout **1800–2200**. Personal repeats use the app's `EventRepeat.ts` and their saved end date, independently of the catalog. The first day of Khmer New Year (Moha Sangkran) formats its arrival time directly in the event title and header using evidenced times from `newYearArrivals` or the engine's `arrivalEstimate`.
 
@@ -16,7 +16,7 @@ Built-in events come from the Schema v3 catalog `src/data/khmer-calendar-data-0.
 
 ## Event precedence and provenance
 
-`EventRepository.getYearEvents` builds a year in four passes, then personal events are merged per displayed range:
+`EventRepository.getYearEvents` builds a year in four passes; personal events form a fifth pass when the displayed range is assembled:
 
 | Pass | Data | Coverage | Behavior |
 | --- | --- | --- | --- |

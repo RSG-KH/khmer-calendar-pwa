@@ -629,6 +629,12 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   assert.equal(dateModal.overlay.innerHTML.includes('dialog-watermark-western'), false, 'Western watermark should be hidden when showWesternZodiac is false');
   assert.equal(dateModal.overlay.innerHTML.includes('western-zodiac-table'), false, 'Western zodiac table should be hidden when showWesternZodiac is false');
 
+  dateModal.open('1800-09-24', [], false);
+  assert.ok(dateModal.overlay.innerHTML.includes('ganzhi-range-note'), 'Ganzhi solar year and month are marked unavailable outside 1900–2100');
+  assert.match(dateModal.overlay.innerHTML, /<div class="date-details-header-badge">\s*<button type="button" class="btn-time-pick"/u, 'Ganzhi hour remains selectable outside the solar pillar range');
+  dateModal.setTime('14:30');
+  assert.ok(dateModal.overlay.innerHTML.includes('time-interactive-cell'), 'Selected Ganzhi hour is computed and editable outside the solar pillar range');
+
   Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: false, showGanzhi: false });
   const { Zodiac } = await server.ssrLoadModule('/src/domain/Zodiac.ts');
   const originalSignLookup = Zodiac.forMonthDay;

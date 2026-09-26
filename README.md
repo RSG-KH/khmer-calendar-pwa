@@ -77,7 +77,7 @@ See [Chrome's desktop installation guide](https://support.google.com/chrome/answ
 - Works offline after the first full online load in your browser or installed app.
 - Browse years **1800–2200**. Recurring observances and holy days are calculated on-device; official public-holiday calendars cover **2016–2027**, and date-backed historical milestones appear at their recorded dates (**1886–2025** in catalog 0.5.0).
 - Commemorations show their anniversary count in both languages — ខួបលើកទី៤៧ in Khmer and **· 47th** with English ordinal suffixes.
-- Every built-in event carries a curated bilingual knowledge summary: tap an event, then **Learn more**. **Search online** opens your browser on an AI-mode search for that event; it only ever runs when you tap it — the app itself makes no network requests.
+- Every built-in event carries a curated bilingual knowledge summary: tap an event, then **Learn more**. **Search online** opens your browser on an AI-mode search for that event only when you tap it.
 - Your events and settings stay on your device. No account or sync; clearing app/site data removes them.
 - Personal events can repeat every X days, weekly, monthly or yearly, with a required end date and a preview. Choose how to handle missing month-end or leap-day dates; editing or deleting applies to the whole series.
 - To update, tap **Check for update** in Settings. Available updates download and reload automatically; saved events and settings are kept.
@@ -86,7 +86,7 @@ See [Chrome's desktop installation guide](https://support.google.com/chrome/answ
 - In the calendar header, **Today** returns to today's date and reflects selection status dynamically (neutral text when today is selected, and accent highlight when viewing other dates). In the calendar grid, Today stays filled; another selected date has an outline.
 - The calendar month card includes an adaptive legend for holidays, Buddhist holy days, observances, and personal events.
 - Settings includes background tint, Light/Dark choices, 80%–150% app font size, longer weekday names, weekday colors, a global observances switch, and Western zodiac and Chinese Ganzhi controls.
-- Date details show Ganzhi year, month and day signs with clash animals, plus the hour sign for Today in the selected time zone. Animal names or emoji can be chosen; solar year and month signs cover 1900–2100.
+- Date details show the Western Big 3 (Sun, Moon and Rising sign) and Ganzhi year, month, day and hour signs with clash animals. When either table is on, Today starts with the current time in the selected Today time zone; for another date, use a clock button to choose a time for Rising sign and Ganzhi hour. You can edit or clear that time. Each table can be turned off independently; Ganzhi solar year and month signs cover 1900–2100, while day and hour signs cover 1800–2200.
 - Scheduled reminders are not available in PWA mode.
 
 You can also use the calendar directly in your browser without installing it.
@@ -95,7 +95,7 @@ You can also use the calendar directly in your browser without installing it.
 
 This is the web version of [Khmer Calendar for Android](https://github.com/RSG-KH/khmer-calendar). Both apps use [Khmer Calendar Engine](https://github.com/RSG-KH/khmer-calendar-engine) for calendar calculations. Calendar algorithms, source references and validation are documented in the [engine project](https://github.com/RSG-KH/khmer-calendar-engine#verification-and-accuracy).
 
-For setup, testing and hosting, see [DEVELOPMENT.md](DEVELOPMENT.md). Dependency updates and cache generation are covered in the [engine integration guide](docs/shared-engine.md). The calendar grid, summary and Ganzhi table have a [maintainer-certified PWA layout contract](docs/maintainer-certified-calendar-ui.md) for future Android syncs.
+For setup, testing and hosting, see [DEVELOPMENT.md](DEVELOPMENT.md). Dependency and event catalog updates are covered in the [engine integration guide](docs/shared-engine.md). The calendar grid, summary, Western Big 3 and Ganzhi tables have a [maintainer-certified PWA layout contract](docs/maintainer-certified-calendar-ui.md) for future Android syncs.
 
 ## License
 

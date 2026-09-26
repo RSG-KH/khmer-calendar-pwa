@@ -60,9 +60,9 @@ svg { flex-shrink: 0; }
 .header-year-btn { justify-self: start; min-height: 44px; }
 .header-month-nav { justify-self: center; }
 .btn-go-today { justify-self: end; width: 74px; min-height: 44px; padding: 0; display: inline-flex; align-items: center; justify-content: center; text-align: center; font-size: calc(13px * var(--font-scale)); }
-/* Reduce the extra line spacing between the two year formats by 40%. */
-.year-num { font-size: calc(25px * var(--font-scale)); letter-spacing: -0.5px; line-height: 1.2; }
-.be-num { line-height: 1.3; }
+/* Pull the BE label closer to the year; Khmer glyphs leave visible space inside their line boxes. */
+.year-num { font-size: calc(25px * var(--font-scale)); letter-spacing: -0.5px; line-height: 1.168; }
+.be-num { line-height: 1.252; margin-top: calc(-5px * var(--font-scale)); }
 .month-name-btn { font-size: calc(18px * var(--font-scale)); padding-inline: 4px; }
 .header-month-short { display: none; }
 /* Use the calendar's width, including a narrow column in landscape. */

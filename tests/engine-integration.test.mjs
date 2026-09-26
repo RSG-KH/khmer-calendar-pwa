@@ -362,7 +362,45 @@ test('event details dialog renders clean categories and descriptions without raw
     set innerHTML(val) { this._html = val; }
     addEventListener() {}
     removeEventListener() {}
-    querySelector() { return new MockElement('div'); }
+    querySelector(selector) {
+      const child = new MockElement('div');
+      if (selector === '.date-details-header-badge') {
+        Object.defineProperty(child, 'innerHTML', {
+          get: () => child._html,
+          set: (val) => {
+            child._html = val;
+            this._html = this._html.replace(
+              /(<div class="date-details-header-badge">)[\s\S]*?(<\/div>)/,
+              `$1${val}$2`
+            );
+          }
+        });
+        return child;
+      }
+      if (selector && selector.includes('.ganzhi-table-wrap:not(.western-zodiac-table-wrap)')) {
+        Object.defineProperty(child, 'outerHTML', {
+          set: (val) => {
+            this._html = this._html.replace(
+              /<div class="ganzhi-table-wrap">[\s\S]*?<\/table>(\s*<p class="ganzhi-range-note">.*?<\/p>)?\s*<\/div>/,
+              val
+            );
+          }
+        });
+        return child;
+      }
+      if (selector && selector.includes('.western-zodiac-table-wrap')) {
+        Object.defineProperty(child, 'outerHTML', {
+          set: (val) => {
+            this._html = this._html.replace(
+              /<div class="western-zodiac-table-wrap">[\s\S]*?<\/table>\s*<\/div>/,
+              val
+            );
+          }
+        });
+        return child;
+      }
+      return child;
+    }
     querySelectorAll() { return []; }
     setAttribute(k, v) { this.attributes[k] = v; }
     getAttribute(k) { return this.attributes[k]; }
@@ -517,7 +555,7 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   const dateModal = new DateDetailsDialogModal(() => {}, () => {});
   const eventModal = new EventDetailsDialogModal(() => {}, () => {});
   const event = EventRepository.getYearEvents(2026).find(e => e.date === '2026-09-24');
-  const pastDate = '2025-09-24'; // Fixed past date: the hour pillar appears only for Today.
+  const pastDate = '2025-09-24'; // Fixed past date: its hour and rising sign need a selected time.
 
   // Default / on: Western zodiac is visible
   Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: true });
@@ -535,7 +573,25 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   assert.match(dateModal.overlay.innerHTML, /<tr><th scope="row">Sign<\/th><td class="highlight-cell">/u, 'Ganzhi Year sign cell has highlight-cell class');
   assert.ok(dateModal.overlay.innerHTML.includes('scope="col">Hour'), 'Past dates show the hour pillar column header');
   assert.ok(dateModal.overlay.innerHTML.includes('scope="col">Rising sign'), 'Past dates show the rising sign column header');
-  assert.ok(dateModal.overlay.innerHTML.includes('<td>—</td>'), 'Uncomputed past values display an em dash placeholder');
+  assert.ok(dateModal.overlay.innerHTML.includes('class="btn-time-pick"'), 'Uncomputed past values display time pick button');
+  assert.ok(dateModal.overlay.innerHTML.includes('>🕒</button>'), 'Uncomputed past values display 🕒 compact button');
+  assert.match(dateModal.overlay.innerHTML, /<div class="date-details-header-badge">\s*<button type="button" class="btn-time-pick"/u, 'Header also offers time selection before a time is set');
+
+  // Test setting custom time on not-today date
+  dateModal.setTime('14:30');
+  assert.ok(dateModal.overlay.innerHTML.includes('btn-time-chip'), 'Setting custom time displays header time chip');
+  assert.ok(dateModal.overlay.innerHTML.includes('14:30'), 'Header time chip shows set time');
+  assert.ok(dateModal.overlay.innerHTML.includes('time-interactive-cell'), 'Computed columns become interactive cells');
+  assert.ok(dateModal.overlay.innerHTML.includes('Aquarius'), 'Rising sign for 2025-09-24 14:30 is computed as Aquarius');
+  assert.ok(dateModal.overlay.innerHTML.includes('Goat') || dateModal.overlay.innerHTML.includes('Sheep'), 'Hour pillar animal for 14:30 is Goat/Sheep');
+  assert.equal(dateModal.overlay.innerHTML.includes('btn-time-pick'), false, 'Time pick buttons are replaced when time is set');
+
+  // Test clearing custom time reverts to 🕒 button
+  dateModal.setTime(null);
+  assert.equal(dateModal.overlay.innerHTML.includes('btn-time-chip'), false, 'Clearing time removes header time chip');
+  assert.match(dateModal.overlay.innerHTML, /<div class="date-details-header-badge"><button type="button" class="btn-time-pick"/u, 'Clearing time restores the header picker');
+  assert.ok(dateModal.overlay.innerHTML.includes('class="btn-time-pick"'), 'Reverts back to time pick button');
+  assert.ok(dateModal.overlay.innerHTML.includes('>🕒</button>'), 'Reverts back to 🕒 compact button');
 
   dateModal.open(pastDate, [], true);
   assert.equal((dateModal.overlay.innerHTML.match(/September 24, 2025/g) || []).length, 1, 'Khmer date details have one Gregorian date title');
@@ -545,10 +601,24 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   assert.ok(dateModal.overlay.innerHTML.includes('ម៉ោង'), 'Hour header in Khmer');
   assert.ok(dateModal.overlay.innerHTML.includes('រះ'), 'Rising sign header in Khmer');
 
-  const { todayInZone } = await server.ssrLoadModule('/src/domain/DateTime.ts');
+  const { todayInZone, dateTimeInZone } = await server.ssrLoadModule('/src/domain/DateTime.ts');
   const todayStr = todayInZone(DEFAULT_SETTINGS.todayTimeZone);
+  const timeBeforeOpen = dateTimeInZone(new Date(), DEFAULT_SETTINGS.todayTimeZone).time;
   dateModal.open(todayStr, [], true);
+  const timeAfterOpen = dateTimeInZone(new Date(), DEFAULT_SETTINGS.todayTimeZone).time;
   assert.ok(dateModal.overlay.innerHTML.includes('រះ'), 'Rising sign column header displays រះ in Khmer mode');
+  assert.ok([timeBeforeOpen, timeAfterOpen].some(time => dateModal.overlay.innerHTML.includes(`<span class="btn-time-chip-text">${time}</span>`)), 'Today opens with the current time in an editable chip');
+  assert.ok(dateModal.overlay.innerHTML.includes('time-interactive-cell'), 'Today hour and rising sign cells can open the time picker');
+  assert.equal(dateModal.overlay.innerHTML.includes('date-details-today-badge'), false, 'The Today badge is replaced by the editable time chip');
+
+  dateModal.setTime('14:30');
+  assert.ok(dateModal.overlay.innerHTML.includes('<span class="btn-time-chip-text">14:30</span>'), 'Today keeps a manually selected time');
+  dateModal.setTime(null);
+  assert.equal(dateModal.overlay.innerHTML.includes('btn-time-chip'), false, 'Clearing Today removes the time chip');
+  assert.match(dateModal.overlay.innerHTML, /<div class="date-details-header-badge"><button type="button" class="btn-time-pick"/u, 'Clearing Today restores the header picker');
+  assert.ok(dateModal.overlay.innerHTML.includes('btn-time-pick'), 'Clearing Today restores the time picker buttons');
+  dateModal.open(todayStr, [], true);
+  assert.ok(dateModal.overlay.innerHTML.includes('btn-time-chip'), 'Reopening Today selects the current time again');
 
   eventModal.open(event, false);
   assert.ok(eventModal.overlay.innerHTML.includes('dialog-watermark-western'), 'Event details watermark should show when showWesternZodiac is true');
@@ -559,8 +629,25 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   assert.equal(dateModal.overlay.innerHTML.includes('dialog-watermark-western'), false, 'Western watermark should be hidden when showWesternZodiac is false');
   assert.equal(dateModal.overlay.innerHTML.includes('western-zodiac-table'), false, 'Western zodiac table should be hidden when showWesternZodiac is false');
 
-  eventModal.open(event, false);
-  assert.equal(eventModal.overlay.innerHTML.includes('dialog-watermark-western'), false, 'Event details watermark should be hidden when showWesternZodiac is false');
+  Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: false, showGanzhi: false });
+  const { Zodiac } = await server.ssrLoadModule('/src/domain/Zodiac.ts');
+  const originalSignLookup = Zodiac.forMonthDay;
+  const originalWesternDrawable = Zodiac.getWesternDrawable;
+  Zodiac.forMonthDay = () => { throw new Error('Disabled Western sign lookup ran'); };
+  Zodiac.getWesternDrawable = () => { throw new Error('Disabled Western watermark lookup ran'); };
+  try {
+    dateModal.open(pastDate, [], false);
+    assert.match(dateModal.overlay.innerHTML, /<div class="date-details-header-badge">\s*<\/div>/u, 'Header omits time picker when both time-dependent tables are hidden');
+    dateModal.open(todayStr, [], false);
+    assert.match(dateModal.overlay.innerHTML, /<div class="date-details-header-badge">\s*<\/div>/u, 'Today header omits its automatic time chip when both tables are hidden');
+    assert.equal(dateModal.timePickerModal, undefined, 'Hidden time picker is not constructed');
+
+    eventModal.open(event, false);
+    assert.equal(eventModal.overlay.innerHTML.includes('dialog-watermark-western'), false, 'Event details watermark should be hidden when showWesternZodiac is false');
+  } finally {
+    Zodiac.forMonthDay = originalSignLookup;
+    Zodiac.getWesternDrawable = originalWesternDrawable;
+  }
 
   // Emoji toggle for Western Zodiac
   Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: true, useEmojiForWesternZodiac: true });
@@ -577,6 +664,23 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   assert.match(dateModal.overlay.innerHTML, /<span title="[^"]+">[🐭🐮🐯🐰🐲🐍🐴🐐🐵🐔🐶🐷]<\/span>/u);
 
   dateModal.close();
+
+  // Test TimePickerModal
+  const { TimePickerModal } = await server.ssrLoadModule('/src/ui/Modals.ts');
+  let pickedTime = null;
+  const timePicker = new TimePickerModal((t) => { pickedTime = t; });
+  timePicker.open('09:15', false, 'Asia/Phnom_Penh');
+  assert.ok(timePicker.overlay.innerHTML.includes('time-picker-dialog'), 'Time picker dialog renders');
+  assert.ok(timePicker.overlay.innerHTML.includes('09:15'), 'Initial time value is populated');
+  assert.ok(timePicker.overlay.innerHTML.includes('btn-time-clear'), 'Clear button is visible when initial time is set');
+  assert.ok(timePicker.overlay.innerHTML.includes('btn-time-save'), 'Save button is visible');
+  assert.ok(timePicker.overlay.innerHTML.includes('btn-time-cancel'), 'Cancel button is visible');
+  timePicker.close();
+
+  // Test when initialTime is null
+  timePicker.open(null, true, 'Asia/Phnom_Penh');
+  assert.equal(timePicker.overlay.innerHTML.includes('btn-time-clear'), false, 'Clear button is hidden when no initial time');
+  timePicker.close();
 
   // Cleanup settings
   Storage.saveSettings(DEFAULT_SETTINGS);

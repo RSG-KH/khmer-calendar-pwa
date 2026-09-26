@@ -11,7 +11,7 @@ export class KhmerDateDetails {
   readonly animalYear: number;
   readonly sak: number;
   readonly animalYearChangesToday: boolean;
-  readonly zodiac: ZodiacSign;
+  #zodiac?: ZodiacSign;
 
   constructor(year: number, month: number, day: number) {
     this.year = year;
@@ -22,7 +22,10 @@ export class KhmerDateDetails {
     this.animalYear = result.animalYear;
     this.sak = result.sak;
     this.animalYearChangesToday = result.animalYearChangesToday;
-    this.zodiac = Zodiac.forMonthDay(month, day);
+  }
+
+  get zodiac(): ZodiacSign {
+    return this.#zodiac ??= Zodiac.forMonthDay(this.month, this.day);
   }
 
   static fromGregorian(year: number, month: number, day: number): KhmerDateDetails {

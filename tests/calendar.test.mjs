@@ -270,6 +270,26 @@ test('April month-card watermarks show the animal-year transition pair, matching
   assert.equal(KhmerDateDetails.fromGregorian(2026, 6, 15).animalYear, Zodiac.animalYearIndex(2026));
 });
 
+test('Western sign lookup runs only when the sign is requested', async () => {
+  const { Zodiac } = await server.ssrLoadModule('/src/domain/Zodiac.ts');
+  const { KhmerDateDetails } = await server.ssrLoadModule('/src/domain/KhmerDateDetails.ts');
+  const original = Zodiac.forMonthDay;
+  let calls = 0;
+  Zodiac.forMonthDay = (...args) => {
+    calls++;
+    return original.apply(Zodiac, args);
+  };
+  try {
+    const details = KhmerDateDetails.fromGregorian(2026, 9, 23);
+    assert.equal(calls, 0, 'Khmer and lunar details do not calculate the Western sign');
+    assert.equal(details.zodiac.signName, 'Libra');
+    assert.equal(details.zodiac.signName, 'Libra');
+    assert.equal(calls, 1, 'Western sign is calculated once on demand');
+  } finally {
+    Zodiac.forMonthDay = original;
+  }
+});
+
 test('Western Zodiac Big 3 columns compute Sun, Moon, and conditional Rising sign', async () => {
   const { westernZodiacColumns, westernZodiacLabel, westernZodiacEmoji } = await server.ssrLoadModule('/src/domain/WesternZodiac.ts');
   // Past date without time -> Sun, Moon, and Rising sign placeholder (3 columns)

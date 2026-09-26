@@ -253,6 +253,61 @@ svg { flex-shrink: 0; }
 .ganzhi-table td.highlight-cell, .western-zodiac-table td.highlight-cell { color: var(--accent); font-weight: 600; }
 .ganzhi-table.emoji-animals td, .western-zodiac-table.emoji-animals td { font-size: calc(19px * var(--font-scale)); }
 .ganzhi-range-note { margin: 5px 0 0; font-size: calc(10px * var(--font-scale)); color: var(--on-surface-variant); }
+.btn-time-pick {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(24px * var(--font-scale));
+  height: calc(24px * var(--font-scale));
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid var(--outline);
+  background: color-mix(in srgb, var(--bg-surface-variant) 60%, transparent);
+  color: var(--text-primary);
+  font-size: calc(12px * var(--font-scale));
+  line-height: 1.4;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+.btn-time-pick:hover, .btn-time-pick:focus-visible {
+  background: var(--bg-surface-variant);
+  border-color: var(--accent);
+}
+.btn-time-pick:active {
+  transform: scale(0.95);
+}
+.btn-time-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--outline);
+  background: color-mix(in srgb, var(--bg-surface-variant) 60%, transparent);
+  font-size: calc(12px * var(--font-scale));
+  color: var(--text-primary);
+  cursor: pointer;
+  line-height: 1.4;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.btn-time-chip:hover, .btn-time-chip:focus-visible {
+  background: var(--bg-surface-variant);
+  border-color: var(--accent);
+}
+.btn-time-chip-text {
+  font-weight: 600;
+  color: var(--accent);
+}
+.time-interactive-cell {
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 1px 4px;
+  transition: background-color 0.15s ease;
+}
+.time-interactive-cell:hover, .time-interactive-cell:focus-visible {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+}
 .event-detail-dialog { display: flex; flex-direction: column; min-height: 0; overflow: hidden !important; }
 .event-detail-header { flex-shrink: 0; }
 .event-detail-content { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }

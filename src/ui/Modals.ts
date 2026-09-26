@@ -7,7 +7,7 @@ import { CalendarEvent } from '../data/EventRepository';
 import { knowledgeById } from '../data/RecurringEvents';
 import { KhmerDateDetails } from '../domain/KhmerDateDetails';
 import { Zodiac } from '../domain/Zodiac';
-import { dateTimeInZone, eventInstant, isSupportedDate, namedTimeZone, timeZoneOffsetLabel, todayInZone } from '../domain/DateTime';
+import { dateTimeInZone, eventInstant, isSupportedDate, namedTimeZone, timeZoneOffsetLabel } from '../domain/DateTime';
 import { escapeHtml } from './html';
 import { setupModal, showModal, hideModal } from './Modal';
 import { prefersNativeTimePicker } from './Platform';
@@ -18,21 +18,44 @@ import { EventRepeatField, repeatDateLabel } from './EventRepeatField';
 import { ganzhiAnimalLabel, ganzhiColumns } from '../domain/Ganzhi';
 import { westernZodiacColumns, westernZodiacLabel, westernZodiacTooltip, type WesternZodiacColumn } from '../domain/WesternZodiac';
 
+function renderTimePickButton(khmer: boolean): string {
+  const label = escapeHtml(L.text('ui.select_time.eacac3', khmer));
+  return `<button type="button" class="btn-time-pick" aria-label="${label}" title="${label}">🕒</button>`;
+}
+
 /**
  * Maintainer-certified PWA date-details table (docs/maintainer-certified-calendar-ui.md).
  * Keep `☯️ 干支` in the first column header, followed by year/month/day and
- * the optional Today hour; the two body rows are sign and clash. `useEmoji`
+ * the selected hour; the two body rows are sign and clash. `useEmoji`
  * controls this table only, while the date summary always uses emoji.
  */
-function renderGanzhiTable(year: number, month: number, day: number, hour: number | undefined, khmer: boolean, useEmoji: boolean): string {
+function renderGanzhiTable(
+  year: number,
+  month: number,
+  day: number,
+  hour: number | undefined,
+  khmer: boolean,
+  useEmoji: boolean
+): string {
   const columns = ganzhiColumns(year, month, day, hour);
   const label = (key: string) => L.text(`ui.ganzhi_${key}`, khmer);
+  const solarSupported = year >= 1900 && year <= 2100;
   const animal = (index: number, clash: boolean) => {
-    const pillar = columns[index].pillar;
+    const col = columns[index];
+    const pillar = col.pillar;
+    if (col.key === 'hour' && !pillar) {
+      if (solarSupported) {
+        return renderTimePickButton(khmer);
+      }
+      return '—';
+    }
     if (!pillar) return '—';
     const branch = clash ? pillar.clashBranch : pillar.branch;
     const name = ganzhiAnimalLabel(branch, khmer, useEmoji);
-    return `<span title="${escapeHtml(khmer ? branch.khmerAnimal : branch.animal)}">${escapeHtml(name)}</span>`;
+    const isInteractive = col.key === 'hour' && solarSupported;
+    const cellClass = isInteractive ? ' class="time-interactive-cell"' : '';
+    const clickTitle = isInteractive ? ` (${L.text('ui.select_time.eacac3', khmer)})` : '';
+    return `<span${cellClass}${isInteractive ? ' role="button" tabindex="0"' : ''} title="${escapeHtml((khmer ? branch.khmerAnimal : branch.animal) + clickTitle)}">${escapeHtml(name)}</span>`;
   };
   return `
     <div class="ganzhi-table-wrap">
@@ -43,13 +66,13 @@ function renderGanzhiTable(year: number, month: number, day: number, hour: numbe
           <tr><th scope="row">${label('clash')}</th>${columns.map((col, index) => `<td${col.key === 'year' ? ' class="highlight-cell"' : ''}>${animal(index, true)}</td>`).join('')}</tr>
         </tbody>
       </table>
-      ${year < 1900 || year > 2100 ? `<p class="ganzhi-range-note">${label('solar_range')}</p>` : ''}
+      ${!solarSupported ? `<p class="ganzhi-range-note">${label('solar_range')}</p>` : ''}
     </div>`;
 }
 
 /**
  * Maintainer-certified PWA date-details Western Zodiac Big 3 table (docs/maintainer-certified-calendar-ui.md).
- * Keep `☸️ Big 3` in the first column header, followed by Sun, Moon, and the optional Today Rising sign;
+ * Keep `☸️ Big 3` in the first column header, followed by Sun, Moon, and Rising sign;
  * the single body row is Sign. `useEmoji` toggles between emoji symbols and localized sign names.
  */
 function renderWesternZodiacTable(
@@ -64,11 +87,21 @@ function renderWesternZodiacTable(
 ): string {
   const columns = westernZodiacColumns({ year, month, day, hour, minute, timeZone });
   const label = (key: string) => L.text(`ui.western_zodiac_${key}`, khmer);
+  const westernSupported = year >= 1800 && year <= 2200;
   const signCell = (col: WesternZodiacColumn) => {
+    if (col.key === 'rising' && !col.sign) {
+      if (westernSupported) {
+        return renderTimePickButton(khmer);
+      }
+      return '—';
+    }
     if (!col.sign) return '—';
     const textContent = westernZodiacLabel(col.sign, khmer, useEmoji);
     const titleContent = westernZodiacTooltip(col.sign, khmer, useEmoji);
-    return `<span title="${escapeHtml(titleContent)}">${escapeHtml(textContent)}</span>`;
+    const isInteractive = col.key === 'rising' && westernSupported;
+    const cellClass = isInteractive ? ' class="time-interactive-cell"' : '';
+    const clickTitle = isInteractive ? ` (${L.text('ui.select_time.eacac3', khmer)})` : '';
+    return `<span${cellClass}${isInteractive ? ' role="button" tabindex="0"' : ''} title="${escapeHtml(titleContent + clickTitle)}">${escapeHtml(textContent)}</span>`;
   };
 
   return `
@@ -88,6 +121,111 @@ function renderWesternZodiacTable(
 export { MonthPickerModal } from './MonthPicker';
 
 /* ==========================================================================
+   2a. TIME PICKER MODAL (matching TimeSelectionDialog in CalendarApp.kt)
+   ========================================================================== */
+export class TimePickerModal {
+  private overlay: HTMLElement;
+  private cleanupTimeField?: () => void;
+  private onSelect: (time: string | null) => void;
+
+  constructor(onSelect: (time: string | null) => void) {
+    this.onSelect = onSelect;
+    this.overlay = document.createElement('div');
+    this.overlay.className = 'modal-overlay';
+    setupModal(this.overlay, () => this.close());
+    this.overlay.addEventListener('click', (e) => { if (e.target === this.overlay) this.close(); });
+    document.body?.appendChild(this.overlay);
+  }
+
+  open(initialTime: string | null, isKhmer: boolean, timeZone: string) {
+    this.cleanupTimeField?.();
+    this.cleanupTimeField = undefined;
+    const nativeTimePicker = prefersNativeTimePicker();
+    const fallbackTime = dateTimeInZone(new Date(), timeZone).time.slice(0, 5) || '12:00';
+    const currentTimeVal = initialTime || fallbackTime;
+    const zoneLabel = timeZone === 'local' ? L.text('ui.local_short', isKhmer)
+      : timeZone === 'cambodia' || timeZone === 'Asia/Phnom_Penh' ? L.text('ui.cambodia_short', isKhmer)
+      : timeZone;
+
+    this.overlay.innerHTML = `
+      <div class="modal-dialog-surface time-picker-dialog ${nativeTimePicker ? '' : 'custom-time-editor'}" style="position: relative; max-width: 360px; width: 90%;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+          <span style="font-size: calc(16px * var(--font-scale)); font-weight: 600; color: var(--text-primary);">
+            ${L.text('ui.select_time.eacac3', isKhmer)}
+          </span>
+          <span style="font-size: calc(12px * var(--font-scale)); color: var(--on-surface-variant);">
+            ${escapeHtml(zoneLabel)}
+          </span>
+        </div>
+
+        <form id="time-picker-form" style="display: flex; flex-direction: column; gap: 14px;">
+          <div>
+            ${nativeTimePicker ? `
+              <div class="event-native-field">
+                <input type="time" id="pick-time" step="60" value="${escapeHtml(currentTimeVal)}" />
+              </div>
+            ` : `
+              <input type="hidden" id="pick-time" value="${escapeHtml(currentTimeVal)}" />
+              <div class="custom-time-field" role="group" aria-label="${L.text('ui.time_hh_mm.8cf351', isKhmer)}"></div>
+            `}
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+            ${initialTime ? `
+              <button type="button" class="btn-today-pill btn-time-clear" style="border: 1px solid var(--outline); background: transparent; color: var(--text-secondary);">
+                ${L.text('ui.clear.7d76fd', isKhmer)}
+              </button>
+            ` : '<span></span>'}
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn-today-pill btn-time-cancel" style="border: 1px solid var(--outline); background: transparent; color: var(--text-primary);">
+                ${L.text('ui.cancel.5bf834', isKhmer)}
+              </button>
+              <button type="submit" class="btn-today-pill btn-time-save" style="background: var(--accent); color: var(--on-accent); padding: 8px 20px; border-radius: 20px;">
+                ${L.text('ui.save.1b0623', isKhmer)}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    `;
+
+    const form = this.overlay.querySelector('#time-picker-form') as HTMLFormElement;
+    const input = form.querySelector<HTMLInputElement>('#pick-time')!;
+
+    if (!nativeTimePicker) {
+      this.cleanupTimeField = setupTimeField(
+        form.querySelector('.custom-time-field')!, input, isKhmer
+      );
+    }
+
+    this.overlay.querySelector('.btn-time-cancel')!.addEventListener('click', () => this.close());
+    const clearBtn = this.overlay.querySelector('.btn-time-clear');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        this.close();
+        this.onSelect(null);
+      });
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = input.value || '12:00';
+      this.close();
+      this.onSelect(val);
+    });
+
+    document.body?.appendChild(this.overlay);
+    showModal(this.overlay, L.text('ui.select_time.eacac3', isKhmer));
+  }
+
+  close() {
+    this.cleanupTimeField?.();
+    this.cleanupTimeField = undefined;
+    hideModal(this.overlay);
+  }
+}
+
+/* ==========================================================================
    2. DATE DETAILS DIALOG MODAL (matching DateDetailsDialog in CalendarApp.kt)
    ========================================================================== */
 export class DateDetailsDialogModal {
@@ -95,7 +233,9 @@ export class DateDetailsDialogModal {
   private onOpenEvent: (event: CalendarEvent) => void;
   private onAddEvent: (dateStr: string) => void;
   private cleanupDateCopy?: () => void;
-  private hourRefreshTimer?: number;
+  private timePickerModal?: TimePickerModal;
+  private customTime: string | null = null;
+  private updateInteractiveContent?: () => void;
 
   constructor(onOpenEvent: (event: CalendarEvent) => void, onAddEvent: (dateStr: string) => void) {
     this.onOpenEvent = onOpenEvent;
@@ -106,49 +246,72 @@ export class DateDetailsDialogModal {
     setupModal(this.overlay, () => this.close());
     this.overlay.addEventListener('click', (e) => { if (e.target === this.overlay) this.close(); });
     document.body.appendChild(this.overlay);
+
+  }
+
+  setTime(time: string | null) {
+    this.customTime = time;
+    this.updateInteractiveContent?.();
   }
 
   open(dateStr: string, events: CalendarEvent[], isKhmer: boolean) {
     this.cleanupDateCopy?.();
-    if (this.hourRefreshTimer !== undefined) window.clearTimeout(this.hourRefreshTimer);
-    this.hourRefreshTimer = undefined;
     const parts = dateStr.split('-').map(Number);
     const info = KhmerDateDetails.fromGregorian(parts[0], parts[1], parts[2]);
     const fullDate = isKhmer ? CalendarWords.fullKhmerDate(info) : CalendarWords.fullEnglishDate(info);
     const settings = Storage.getSettings();
-    const todayStr = todayInZone(settings.todayTimeZone);
-    const isToday = dateStr === todayStr;
+    const showWesternZodiac = settings.showWesternZodiac;
+    const canPickTime = (settings.showGanzhi && info.year >= 1900 && info.year <= 2100)
+      || (showWesternZodiac && info.year >= 1800 && info.year <= 2200);
+    const zonedNow = canPickTime ? dateTimeInZone(new Date(), settings.todayTimeZone) : null;
+    this.customTime = zonedNow?.date === dateStr ? zonedNow.time : null;
 
     const animalImg = Zodiac.getAnimalDrawable(info.animalYear, true);
-    const westernImg = Zodiac.getWesternDrawable(info.zodiac);
     const showHolyDay = settings.holyDayMarkers && (info.lunar.isHolyDay || info.lunar.isShavingDay);
-    const showWesternZodiac = settings.showWesternZodiac;
     const dateTitle = L.text('calendar.gregorian_label', false, {
       month: CalendarWords.month(info.month, false),
       day: info.day,
       year: info.year
     });
     const dialogTitle = isKhmer ? dateTitle : `${CalendarWords.weekday(new Date(`${dateStr}T00:00:00Z`).getUTCDay(), false)}, ${dateTitle}`;
-    const currentHour = isToday ? Number(dateTimeInZone(new Date(), settings.todayTimeZone).time.slice(0, 2)) : undefined;
-    const currentMinute = isToday ? Number(dateTimeInZone(new Date(), settings.todayTimeZone).time.slice(3, 5)) : undefined;
+    const renderHeaderTimeControl = () => {
+      if (!canPickTime) return '';
+      return this.customTime
+        ? `<button type="button" class="btn-time-chip" aria-label="${escapeHtml(L.text('ui.select_time.eacac3', isKhmer))}"><span>🕒</span><span class="btn-time-chip-text">${escapeHtml(this.customTime)}</span></button>`
+        : renderTimePickButton(isKhmer);
+    };
+
+    const getEffectiveTime = () => {
+      if (this.customTime) {
+        return {
+          hour: Number(this.customTime.slice(0, 2)),
+          minute: Number(this.customTime.slice(3, 5))
+        };
+      }
+      return { hour: undefined, minute: undefined };
+    };
+
+    const initialTime = getEffectiveTime();
     const westernZodiacHtml = showWesternZodiac
-      ? renderWesternZodiacTable(info.year, info.month, info.day, currentHour, currentMinute, settings.todayTimeZone, isKhmer, settings.useEmojiForWesternZodiac)
+      ? renderWesternZodiacTable(info.year, info.month, info.day, initialTime.hour, initialTime.minute, settings.todayTimeZone, isKhmer, settings.useEmojiForWesternZodiac)
       : '';
     const ganzhiHtml = settings.showGanzhi
-      ? renderGanzhiTable(info.year, info.month, info.day, currentHour, isKhmer, settings.useEmojiForGanzhiAnimals)
+      ? renderGanzhiTable(info.year, info.month, info.day, initialTime.hour, isKhmer, settings.useEmojiForGanzhiAnimals)
       : '';
 
     this.overlay.innerHTML = `
       <div class="modal-dialog-surface date-details-dialog" style="position: relative; overflow: hidden; max-width: 480px; width: 92%;">
         <!-- Watermarks -->
         <span class="dialog-watermark-animal tinted-watermark" style="--watermark-image: url('${animalImg}')" aria-hidden="true"></span>
-        ${showWesternZodiac ? `<span class="dialog-watermark-western tinted-watermark" style="--watermark-image: url('${westernImg}')" aria-hidden="true"></span>` : ''}
+        ${showWesternZodiac ? `<span class="dialog-watermark-western tinted-watermark" style="--watermark-image: url('${Zodiac.getWesternDrawable(info.zodiac)}')" aria-hidden="true"></span>` : ''}
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; position: relative; z-index: 1;">
-          <span style="font-size: calc(16px * var(--font-scale)); font-weight: 600; color: var(--text-primary);">
+          <span style="font-size: calc(16px * var(--font-scale)); font-weight: 400; color: var(--text-primary);">
             ${escapeHtml(dialogTitle)}
           </span>
-          ${isToday ? `<span class="date-details-today-badge" style="font-size: calc(12px * var(--font-scale)); font-weight: 600; color: var(--accent);">${L.text('ui.today.d71ac6', isKhmer)}</span>` : ''}
+          <div class="date-details-header-badge">
+            ${renderHeaderTimeControl()}
+          </div>
         </div>
 
         <div class="card-divider" style="margin: 0 0 16px 0;"></div>
@@ -215,6 +378,45 @@ export class DateDetailsDialogModal {
       </div>
     `;
 
+    const bindTimePickers = () => {
+      const onPick = () => {
+        this.timePickerModal ??= new TimePickerModal((time) => this.setTime(time));
+        this.timePickerModal.open(this.customTime, isKhmer, settings.todayTimeZone);
+      };
+      this.overlay.querySelectorAll('.btn-time-pick, .btn-time-chip, .time-interactive-cell').forEach(el => {
+        el.addEventListener('click', onPick);
+        if (el.classList.contains('time-interactive-cell')) {
+          el.addEventListener('keydown', (e) => {
+            const ke = e as KeyboardEvent;
+            if (ke.key === 'Enter' || ke.key === ' ') {
+              ke.preventDefault();
+              onPick();
+            }
+          });
+        }
+      });
+    };
+
+    const updateTables = () => {
+      const eff = getEffectiveTime();
+      const ganzhiTable = this.overlay.querySelector<HTMLElement>('.ganzhi-table-wrap:not(.western-zodiac-table-wrap)');
+      if (ganzhiTable && settings.showGanzhi) {
+        ganzhiTable.outerHTML = renderGanzhiTable(info.year, info.month, info.day, eff.hour, isKhmer, settings.useEmojiForGanzhiAnimals);
+      }
+      const westernTable = this.overlay.querySelector<HTMLElement>('.western-zodiac-table-wrap');
+      if (westernTable && settings.showWesternZodiac) {
+        westernTable.outerHTML = renderWesternZodiacTable(info.year, info.month, info.day, eff.hour, eff.minute, settings.todayTimeZone, isKhmer, settings.useEmojiForWesternZodiac);
+      }
+      const headerBadge = this.overlay.querySelector<HTMLElement>('.date-details-header-badge');
+      if (headerBadge) {
+        headerBadge.innerHTML = renderHeaderTimeControl();
+      }
+      bindTimePickers();
+    };
+
+    this.updateInteractiveContent = () => updateTables();
+    bindTimePickers();
+
     this.cleanupDateCopy = setupCopyButton(
       this.overlay.querySelector<HTMLButtonElement>('.btn-copy-date')!,
       this.overlay.querySelector<HTMLElement>('.date-copy-status')!,
@@ -243,37 +445,12 @@ export class DateDetailsDialogModal {
     });
 
     showModal(this.overlay, dialogTitle);
-    if (isToday && (settings.showGanzhi || settings.showWesternZodiac)) {
-      const refreshHour = () => {
-        const now = new Date();
-        const zoned = dateTimeInZone(now, settings.todayTimeZone);
-        const hour = zoned.date === dateStr ? Number(zoned.time.slice(0, 2)) : undefined;
-        const minute = zoned.date === dateStr ? Number(zoned.time.slice(3, 5)) : undefined;
-        const ganzhiTable = this.overlay.querySelector<HTMLElement>('.ganzhi-table-wrap:not(.western-zodiac-table-wrap)');
-        if (ganzhiTable && settings.showGanzhi) {
-          ganzhiTable.outerHTML = renderGanzhiTable(info.year, info.month, info.day, hour, isKhmer, settings.useEmojiForGanzhiAnimals);
-        }
-        const westernTable = this.overlay.querySelector<HTMLElement>('.western-zodiac-table-wrap');
-        if (westernTable && settings.showWesternZodiac) {
-          westernTable.outerHTML = renderWesternZodiacTable(info.year, info.month, info.day, hour, minute, settings.todayTimeZone, isKhmer, settings.useEmojiForWesternZodiac);
-        }
-        if (hour === undefined) {
-          this.overlay.querySelector('.date-details-today-badge')?.remove();
-          this.hourRefreshTimer = undefined;
-          return;
-        }
-        const delay = (60 - (minute ?? 0)) * 60_000 - now.getSeconds() * 1000 - now.getMilliseconds() + 1000;
-        this.hourRefreshTimer = window.setTimeout(refreshHour, delay);
-      };
-      refreshHour();
-    }
   }
 
   close() {
-    if (this.hourRefreshTimer !== undefined) window.clearTimeout(this.hourRefreshTimer);
-    this.hourRefreshTimer = undefined;
     this.cleanupDateCopy?.();
     this.cleanupDateCopy = undefined;
+    this.timePickerModal?.close();
     hideModal(this.overlay);
   }
 }
@@ -307,7 +484,6 @@ export class EventDetailsDialogModal {
     const isCustom = event.kind === 'CUSTOM';
     const settings = Storage.getSettings();
     const animalImg = Zodiac.getAnimalDrawable(info.animalYear, true);
-    const westernImg = Zodiac.getWesternDrawable(info.zodiac);
     const frequencyLabel = event.repeat
       ? (event.repeat.frequency === 'days'
           ? (isKhmer
@@ -336,7 +512,7 @@ export class EventDetailsDialogModal {
     this.overlay.innerHTML = `
       <div class="modal-dialog-surface event-detail-dialog" style="position: relative; max-width: 480px; width: 92%;">
         <span class="dialog-watermark-animal tinted-watermark" style="--watermark-image: url('${animalImg}')" aria-hidden="true"></span>
-        ${settings.showWesternZodiac ? `<span class="dialog-watermark-western tinted-watermark" style="--watermark-image: url('${westernImg}')" aria-hidden="true"></span>` : ''}
+        ${settings.showWesternZodiac ? `<span class="dialog-watermark-western tinted-watermark" style="--watermark-image: url('${Zodiac.getWesternDrawable(info.zodiac)}')" aria-hidden="true"></span>` : ''}
 
         <div class="event-detail-header" style="position: relative; z-index: 1;">
           <div class="event-title-copy">

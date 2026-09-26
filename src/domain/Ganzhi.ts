@@ -14,15 +14,12 @@ export interface GanzhiColumn {
  */
 export function ganzhiColumns(year: number, month: number, day: number, hourOfDay?: number): GanzhiColumn[] {
   const solarSupported = year >= 1900 && year <= 2100;
-  const columns: GanzhiColumn[] = [
+  return [
     { key: 'year', pillar: solarSupported ? getYearPillar(year, month, day) : null },
     { key: 'month', pillar: solarSupported ? getMonthPillar(year, month, day) : null },
-    { key: 'day', pillar: getDayPillar(year, month, day) }
+    { key: 'day', pillar: getDayPillar(year, month, day) },
+    { key: 'hour', pillar: hourOfDay !== undefined ? getHourPillar(year, month, day, hourOfDay) : null }
   ];
-  if (hourOfDay !== undefined) {
-    columns.push({ key: 'hour', pillar: getHourPillar(year, month, day, hourOfDay) });
-  }
-  return columns;
 }
 
 /** Maintainer-certified Earthly Branch emoji order, Rat (0) through Pig (11). */

@@ -100,12 +100,9 @@ export function westernZodiacColumns(options: WesternZodiacOptions): WesternZodi
 
   const columns: WesternZodiacColumn[] = [
     { key: 'sun', sign: horoscope.sun.sign },
-    { key: 'moon', sign: horoscope.moon.sign }
+    { key: 'moon', sign: horoscope.moon.sign },
+    { key: 'rising', sign: hasTime ? (horoscope.ascendant?.sign ?? null) : null }
   ];
-
-  if (hasTime) {
-    columns.push({ key: 'rising', sign: horoscope.ascendant?.sign ?? null });
-  }
 
   return columns;
 }

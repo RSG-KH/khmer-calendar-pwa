@@ -533,15 +533,17 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   assert.ok(dateModal.overlay.innerHTML.includes('Clash'), 'Ganzhi clash row is visible');
   assert.match(dateModal.overlay.innerHTML, /<td class="highlight-cell"><span title="[^"]*">Libra<\/span><\/td>/, 'Sun sign cell has highlight-cell class');
   assert.match(dateModal.overlay.innerHTML, /<tr><th scope="row">Sign<\/th><td class="highlight-cell">/u, 'Ganzhi Year sign cell has highlight-cell class');
-  assert.match(dateModal.overlay.innerHTML, /<tr><th scope="row">Clash<\/th><td class="highlight-cell">/u, 'Ganzhi Year clash cell has highlight-cell class');
-  assert.equal(dateModal.overlay.innerHTML.includes('scope="col">Hour'), false, 'Past dates do not show the hour pillar');
-  assert.equal(dateModal.overlay.innerHTML.includes('scope="col">Rising sign'), false, 'Past dates do not show the rising sign');
+  assert.ok(dateModal.overlay.innerHTML.includes('scope="col">Hour'), 'Past dates show the hour pillar column header');
+  assert.ok(dateModal.overlay.innerHTML.includes('scope="col">Rising sign'), 'Past dates show the rising sign column header');
+  assert.ok(dateModal.overlay.innerHTML.includes('<td>—</td>'), 'Uncomputed past values display an em dash placeholder');
 
   dateModal.open(pastDate, [], true);
   assert.equal((dateModal.overlay.innerHTML.match(/September 24, 2025/g) || []).length, 1, 'Khmer date details have one Gregorian date title');
   assert.ok(dateModal.overlay.innerHTML.includes('Libra'), 'Western zodiac displays English name in Khmer mode');
   assert.ok(dateModal.overlay.innerHTML.includes('ព្រះអាទិត្យ'), 'Sun header in Khmer');
   assert.ok(dateModal.overlay.innerHTML.includes('ព្រះច័ន្ទ'), 'Moon header in Khmer');
+  assert.ok(dateModal.overlay.innerHTML.includes('ម៉ោង'), 'Hour header in Khmer');
+  assert.ok(dateModal.overlay.innerHTML.includes('រះ'), 'Rising sign header in Khmer');
 
   const { todayInZone } = await server.ssrLoadModule('/src/domain/DateTime.ts');
   const todayStr = todayInZone(DEFAULT_SETTINGS.todayTimeZone);

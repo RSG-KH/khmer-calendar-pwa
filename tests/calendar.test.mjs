@@ -272,11 +272,14 @@ test('April month-card watermarks show the animal-year transition pair, matching
 
 test('Western Zodiac Big 3 columns compute Sun, Moon, and conditional Rising sign', async () => {
   const { westernZodiacColumns, westernZodiacLabel, westernZodiacEmoji } = await server.ssrLoadModule('/src/domain/WesternZodiac.ts');
-  // Past date without time -> Sun and Moon only (2 columns)
+  // Past date without time -> Sun, Moon, and Rising sign placeholder (3 columns)
   const pastCols = westernZodiacColumns({ year: 2026, month: 9, day: 24 });
-  assert.equal(pastCols.length, 2);
+  assert.equal(pastCols.length, 3);
   assert.equal(pastCols[0].key, 'sun');
   assert.equal(pastCols[1].key, 'moon');
+  assert.equal(pastCols[2].key, 'rising');
+  assert.equal(pastCols[2].sign, null);
+  assert.equal(westernZodiacLabel(pastCols[2].sign, false, false), '—');
   assert.equal(pastCols[0].sign.englishName, 'Libra');
   assert.equal(westernZodiacLabel(pastCols[0].sign, false, false), 'Libra');
   assert.equal(westernZodiacLabel(pastCols[0].sign, true, false), 'Libra');

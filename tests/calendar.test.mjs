@@ -333,7 +333,15 @@ test('Rising sign uses the selected date and the representative location of its 
     assert.equal(rising({ ...pastMidnight, timeZone: 'cambodia' }), 'Scorpio');
     assert.equal(rising({ ...pastMidnight, timeZone: 'local' }), 'Libra');
 
-    // Brussels changes between UTC+1 and UTC+2; today's offset must not be
+    // The country-only Belgium case sits on the Leo/Virgo boundary. DST had
+    // ended on October 26, so the selected date uses UTC+1, not today's UTC+2.
+    const boundary = { year: 2008, month: 10, day: 27, hour: 1, minute: 30 };
+    assert.equal(eventInstant('2008-10-27', '01:30', 'local'), '2008-10-27T00:30:00.000Z');
+    assert.equal(rising({ ...boundary, timeZone: 'cambodia' }), 'Leo');
+    assert.equal(rising({ ...boundary, timeZone: 'local' }), 'Virgo');
+    assert.equal(rising({ ...boundary, timeZone: 'Europe/Brussels' }), 'Virgo');
+
+    // Belgium changes between UTC+1 and UTC+2; today's offset must not be
     // reused for dates in a different season.
     assert.equal(rising({ year: 2026, month: 1, day: 15, hour: 2, minute: 30, timeZone: 'local' }), 'Scorpio');
     assert.equal(rising({ year: 2026, month: 7, day: 15, hour: 0, minute: 30, timeZone: 'local' }), 'Aries');

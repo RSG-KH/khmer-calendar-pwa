@@ -545,6 +545,32 @@ test('event details dialog renders clean categories and descriptions without raw
   Storage.saveSettings(DEFAULT_SETTINGS);
 });
 
+test('date details recalculates the 2008 country-level Rising sign after a zone change', async () => {
+  const { Storage, DEFAULT_SETTINGS } = await server.ssrLoadModule('/src/data/Storage.ts');
+  const { DateDetailsDialogModal } = await server.ssrLoadModule('/src/ui/Modals.ts');
+  const previousZone = process.env.TZ;
+  process.env.TZ = 'Europe/Brussels';
+  const dateModal = new DateDetailsDialogModal(() => {}, () => {});
+  try {
+    for (const [zone, expected] of [['cambodia', 'Leo'], ['local', 'Virgo']]) {
+      Storage.saveSettings({ ...DEFAULT_SETTINGS, todayTimeZone: zone, showGanzhi: false });
+      dateModal.open('2008-10-27', [], false);
+      dateModal.setTime('01:30');
+      const html = dateModal.overlay.innerHTML;
+      const tableStart = html.indexOf('<table class="western-zodiac-table');
+      const tableEnd = html.indexOf('</table>', tableStart);
+      assert.ok(tableStart >= 0 && tableEnd > tableStart, 'Western Big 3 table is present');
+      const table = html.slice(tableStart, tableEnd + '</table>'.length);
+      assert.ok(table.includes(`>${expected}</span></td>`), `${zone} Rising sign is ${expected}`);
+    }
+  } finally {
+    dateModal.close();
+    Storage.saveSettings(DEFAULT_SETTINGS);
+    if (previousZone === undefined) delete process.env.TZ;
+    else process.env.TZ = previousZone;
+  }
+});
+
 test('showWesternZodiac setting defaults to true and toggles zodiac visibility in dialogs', async () => {
   const { Storage, DEFAULT_SETTINGS } = await server.ssrLoadModule('/src/data/Storage.ts');
   const { DateDetailsDialogModal, EventDetailsDialogModal } = await server.ssrLoadModule('/src/ui/Modals.ts');

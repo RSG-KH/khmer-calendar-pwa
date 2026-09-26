@@ -24,7 +24,7 @@ export const WESTERN_ZODIAC_EMOJI: readonly string[] = [
   '♎️', '♏️', '♐️', '♑️', '♒️', '♓️'
 ];
 
-/** Representative city coordinates for common IANA time zones. */
+/** Representative locations for common IANA time zones. */
 const IANA_COORDINATES: Record<string, [number, number]> = {
   'Asia/Phnom_Penh': [11.5564, 104.9282],
   'Asia/Bangkok': [13.7563, 100.5018],
@@ -42,7 +42,8 @@ const IANA_COORDINATES: Record<string, [number, number]> = {
   'Asia/Kolkata': [22.5726, 88.3639],
   'Asia/Dubai': [25.2048, 55.2708],
   'Europe/London': [51.5074, -0.1278],
-  'Europe/Brussels': [50.8503, 4.3517],
+  // Belgium's official geographic centre: 50°38′ N, 4°40′ E (belgium.be).
+  'Europe/Brussels': [50 + 38 / 60, 4 + 40 / 60],
   'Europe/Paris': [48.8566, 2.3522],
   'Europe/Berlin': [52.5200, 13.4050],
   'America/New_York': [40.7128, -74.0060],

@@ -87,6 +87,7 @@ See [Chrome's desktop installation guide](https://support.google.com/chrome/answ
 - The calendar month card includes an adaptive legend for holidays, Buddhist holy days, observances, and personal events.
 - Settings includes background tint, Light/Dark choices, 80%–150% app font size, longer weekday names, weekday colors, a global observances switch, and Western zodiac and Chinese Ganzhi controls.
 - Date details show the Western Big 3 (Sun, Moon and Rising sign) and Ganzhi year, month, day and hour signs with clash animals. When either table is on, Today starts with the current time in the selected Today time zone; for another date, use a clock button to choose a time for Rising sign and Ganzhi hour. You can edit or clear that time. Each table can be turned off independently; Ganzhi solar year and month signs cover 1900–2100, while day and hour signs cover 1800–2200.
+- Rising sign uses the selected date's time-zone offset and a representative city for that zone (Phnom Penh for Cambodia; Brussels for local `Europe/Brussels`). The app does not use your exact location, so changing zones does not guarantee a different sign for every time.
 - Scheduled reminders are not available in PWA mode.
 
 You can also use the calendar directly in your browser without installing it.

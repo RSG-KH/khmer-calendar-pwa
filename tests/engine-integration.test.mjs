@@ -558,7 +558,7 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   const pastDate = '2025-09-24'; // Fixed past date: its hour and rising sign need a selected time.
 
   // Default / on: Western zodiac is visible
-  Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: true });
+  Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: true, todayTimeZone: 'cambodia' });
   dateModal.open(pastDate, [], false);
   assert.ok(dateModal.overlay.innerHTML.includes('dialog-watermark-western'), 'Western watermark should show when showWesternZodiac is true');
   assert.ok(dateModal.overlay.innerHTML.includes('western-zodiac-table'), 'Western zodiac Big 3 table should show when showWesternZodiac is true');
@@ -582,7 +582,7 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   assert.ok(dateModal.overlay.innerHTML.includes('btn-time-chip'), 'Setting custom time displays header time chip');
   assert.ok(dateModal.overlay.innerHTML.includes('14:30'), 'Header time chip shows set time');
   assert.ok(dateModal.overlay.innerHTML.includes('time-interactive-cell'), 'Computed columns become interactive cells');
-  assert.ok(dateModal.overlay.innerHTML.includes('Aquarius'), 'Rising sign for 2025-09-24 14:30 is computed as Aquarius');
+  assert.ok(dateModal.overlay.innerHTML.includes('Aquarius'), 'Rising sign for 2025-09-24 14:30 in Cambodia is computed as Aquarius');
   assert.ok(dateModal.overlay.innerHTML.includes('Goat') || dateModal.overlay.innerHTML.includes('Sheep'), 'Hour pillar animal for 14:30 is Goat/Sheep');
   assert.equal(dateModal.overlay.innerHTML.includes('btn-time-pick'), false, 'Time pick buttons are replaced when time is set');
 
@@ -602,10 +602,10 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   assert.ok(dateModal.overlay.innerHTML.includes('រះ'), 'Rising sign header in Khmer');
 
   const { todayInZone, dateTimeInZone } = await server.ssrLoadModule('/src/domain/DateTime.ts');
-  const todayStr = todayInZone(DEFAULT_SETTINGS.todayTimeZone);
-  const timeBeforeOpen = dateTimeInZone(new Date(), DEFAULT_SETTINGS.todayTimeZone).time;
+  const todayStr = todayInZone('cambodia');
+  const timeBeforeOpen = dateTimeInZone(new Date(), 'cambodia').time;
   dateModal.open(todayStr, [], true);
-  const timeAfterOpen = dateTimeInZone(new Date(), DEFAULT_SETTINGS.todayTimeZone).time;
+  const timeAfterOpen = dateTimeInZone(new Date(), 'cambodia').time;
   assert.ok(dateModal.overlay.innerHTML.includes('រះ'), 'Rising sign column header displays រះ in Khmer mode');
   assert.ok([timeBeforeOpen, timeAfterOpen].some(time => dateModal.overlay.innerHTML.includes(`<span class="btn-time-chip-text">${time}</span>`)), 'Today opens with the current time in an editable chip');
   assert.ok(dateModal.overlay.innerHTML.includes('time-interactive-cell'), 'Today hour and rising sign cells can open the time picker');

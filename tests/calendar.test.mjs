@@ -316,3 +316,32 @@ test('Western Zodiac Big 3 columns compute Sun, Moon, and conditional Rising sig
   assert.equal(todayCols[1].sign.englishName, 'Pisces');
   assert.equal(todayCols[2].sign.englishName, 'Aquarius');
 });
+
+test('Rising sign uses the selected date and the representative location of its time zone', async () => {
+  const { westernZodiacColumns } = await server.ssrLoadModule('/src/domain/WesternZodiac.ts');
+  const previousZone = process.env.TZ;
+  process.env.TZ = 'Europe/Brussels';
+  try {
+    const rising = options => westernZodiacColumns(options)[2].sign?.englishName ?? null;
+    const date = { year: 2026, month: 9, day: 26, hour: 14, minute: 30 };
+    assert.equal(rising({ ...date, timeZone: 'cambodia' }), 'Aquarius');
+    assert.equal(rising({ ...date, timeZone: 'local' }), 'Sagittarius');
+    assert.equal(rising({ ...date, timeZone: 'Europe/Brussels' }), 'Sagittarius');
+
+    // Same past date and 00:30 wall time: only the selected zone changes.
+    const pastMidnight = { year: 2026, month: 1, day: 15, hour: 0, minute: 30 };
+    assert.equal(rising({ ...pastMidnight, timeZone: 'cambodia' }), 'Scorpio');
+    assert.equal(rising({ ...pastMidnight, timeZone: 'local' }), 'Libra');
+
+    // Brussels changes between UTC+1 and UTC+2; today's offset must not be
+    // reused for dates in a different season.
+    assert.equal(rising({ year: 2026, month: 1, day: 15, hour: 2, minute: 30, timeZone: 'local' }), 'Scorpio');
+    assert.equal(rising({ year: 2026, month: 7, day: 15, hour: 0, minute: 30, timeZone: 'local' }), 'Aries');
+
+    // No instant exists during the spring-forward gap, so Rising is unavailable.
+    assert.equal(rising({ year: 2026, month: 3, day: 29, hour: 2, minute: 30, timeZone: 'local' }), null);
+  } finally {
+    if (previousZone === undefined) delete process.env.TZ;
+    else process.env.TZ = previousZone;
+  }
+});

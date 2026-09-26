@@ -1,6 +1,7 @@
 // Copyright (c) 2026 RSG-KH | Apache-2.0 License
 
 import { calculateHoroscope, type WesternZodiacSign } from 'khmer-calendar-engine';
+import { eventInstant, namedTimeZone } from './DateTime';
 
 export interface WesternZodiacColumn {
   key: 'sun' | 'moon' | 'rising';
@@ -23,7 +24,7 @@ export const WESTERN_ZODIAC_EMOJI: readonly string[] = [
   '♎️', '♏️', '♐️', '♑️', '♒️', '♓️'
 ];
 
-/** Canonical coordinates for major timezones. */
+/** Representative city coordinates for common IANA time zones. */
 const IANA_COORDINATES: Record<string, [number, number]> = {
   'Asia/Phnom_Penh': [11.5564, 104.9282],
   'Asia/Bangkok': [13.7563, 100.5018],
@@ -41,6 +42,7 @@ const IANA_COORDINATES: Record<string, [number, number]> = {
   'Asia/Kolkata': [22.5726, 88.3639],
   'Asia/Dubai': [25.2048, 55.2708],
   'Europe/London': [51.5074, -0.1278],
+  'Europe/Brussels': [50.8503, 4.3517],
   'Europe/Paris': [48.8566, 2.3522],
   'Europe/Berlin': [52.5200, 13.4050],
   'America/New_York': [40.7128, -74.0060],
@@ -67,32 +69,30 @@ export function westernZodiacColumns(options: WesternZodiacOptions): WesternZodi
   const effHour = hasTime ? hour : 12;
   const effMinute = hasTime ? minute : 0;
   const effSecond = hasTime ? (second ?? 0) : 0;
+  const zone = timeZone ?? 'cambodia';
+  const date = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  const time = `${String(effHour).padStart(2, '0')}:${String(effMinute).padStart(2, '0')}`;
+  const selectedInstant = eventInstant(date, time, zone);
+  // A clock time skipped by daylight saving time has no corresponding instant.
+  // Keep Sun and Moon available at noon, but do not invent a Rising sign.
+  const validSelectedTime = hasTime && selectedInstant !== undefined;
+  const calculationHour = hasTime && !validSelectedTime ? 12 : effHour;
+  const calculationMinute = hasTime && !validSelectedTime ? 0 : effMinute;
+  const instant = selectedInstant ?? eventInstant(date, '12:00', zone);
+  if (!instant) throw new RangeError('Invalid horoscope date or time zone');
+  const utcOffsetHours = (Date.UTC(year, month - 1, day, calculationHour, calculationMinute)
+    - Date.parse(instant)) / 3_600_000;
 
-  let utcOffsetHours = 7.0;
-  let latitude = 11.5564;
-  let longitude = 104.9282;
-
-  if (timeZone === 'local' && typeof Date !== 'undefined') {
-    const now = new Date();
-    utcOffsetHours = -now.getTimezoneOffset() / 60;
-    longitude = utcOffsetHours * 15;
-    try {
-      const iana = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (iana && IANA_COORDINATES[iana]) {
-        [latitude, longitude] = IANA_COORDINATES[iana];
-      }
-    } catch {
-      // Fallback to central meridian
-    }
-  }
+  const coordinates = IANA_COORDINATES[namedTimeZone(zone)];
+  const [latitude, longitude] = coordinates ?? [11.5564, utcOffsetHours * 15];
 
   const horoscope = calculateHoroscope({
     year,
     month,
     day,
-    hour: effHour,
-    minute: effMinute,
-    second: effSecond,
+    hour: calculationHour,
+    minute: calculationMinute,
+    second: validSelectedTime ? effSecond : 0,
     utcOffsetHours,
     latitude,
     longitude
@@ -101,7 +101,7 @@ export function westernZodiacColumns(options: WesternZodiacOptions): WesternZodi
   const columns: WesternZodiacColumn[] = [
     { key: 'sun', sign: horoscope.sun.sign },
     { key: 'moon', sign: horoscope.moon.sign },
-    { key: 'rising', sign: hasTime ? (horoscope.ascendant?.sign ?? null) : null }
+    { key: 'rising', sign: validSelectedTime ? (horoscope.ascendant?.sign ?? null) : null }
   ];
 
   return columns;

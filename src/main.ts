@@ -2,7 +2,7 @@
 
 import './styles/index.css';
 
-import { KhmerCalendar, toEpochDay, khmerNumber } from './domain/KhmerCalendar';
+import { KhmerCalendar, toEpochDay } from './domain/KhmerCalendar';
 import { KhmerDateDetails } from './domain/KhmerDateDetails';
 import { Zodiac } from './domain/Zodiac';
 import { ganzhiEmojiSummary } from './domain/Ganzhi';
@@ -24,6 +24,7 @@ import { holyDayLotus } from './ui/HolyDayLotus';
 import { fitWeekdayHeadings } from './ui/WeekdayHeadings';
 import { fitCalendarWidth } from './ui/CalendarWidth';
 import { startTodayRefresh } from './ui/TodayRefresh';
+import { renderEventRows } from './ui/EventRows';
 
 const updateReceiptKey = `khmer-calendar:update:${import.meta.env.BASE_URL}`;
 function consumeUpdateReceipt(): number | undefined {
@@ -105,10 +106,14 @@ class KhmerCalendarApp {
     this.eventDetailsModal = new EventDetailsDialogModal(
       (event) => {
         const source = Storage.getCustomEvents().find(item => item.id === (event.seriesId || event.id));
-        if (source) this.customEventModal.open(source.date, this.settings.language === 'km', source);
+        if (source) {
+          this.dateDetailsModal.close();
+          this.customEventModal.open(source.date, this.settings.language === 'km', source);
+        }
       },
       (id) => {
         Storage.deleteCustomEventSync(id);
+        this.dateDetailsModal.close();
         this.render();
       }
     );
@@ -237,7 +242,7 @@ class KhmerCalendarApp {
     } else if (this.activePage === 1) {
       this.renderEventsScreen(screenContainer, k);
     } else {
-      this.renderSettingsScreen(screenContainer, k);
+      this.renderSettingsScreen(screenContainer);
     }
   }
 
@@ -361,36 +366,6 @@ class KhmerCalendarApp {
       </button>
     `;
 
-    // 4. Events Rows
-    const renderEventRows = (events: CalendarEvent[]) => {
-      if (events.length === 0) return '';
-      return events.map(e => {
-        const d = parseInt(e.date.slice(8, 10), 10);
-        const dateObj = new Date(e.date);
-        const dayOfWeek = (dateObj.getUTCDay() === 0 ? 7 : dateObj.getUTCDay()) % 7;
-        const isHol = e.kind === 'HOLIDAY';
-        return `
-          <button class="event-row-card ${e.kind === 'CUSTOM' ? 'custom-event-row' : ''}" data-event-id="${escapeHtml(e.id)}" data-event-date="${escapeHtml(e.date)}">
-            <div class="event-row-date">
-              <span class="event-row-daynum ${isHol ? 'holiday' : ''}">${CalendarWords.number(d, k)}</span>
-              <span class="event-row-weekday">${CalendarWords.weekday(dayOfWeek, k, 'short')}</span>
-            </div>
-            <div class="event-row-bar ${e.kind.toLowerCase()}"></div>
-            <div class="event-row-content">
-              <span class="event-row-title">${escapeHtml(k ? e.titleKm : e.titleEn)}</span>
-              <span class="event-row-kind ${e.kind.toLowerCase()}">
-                ${e.kind === 'HOLIDAY' ? L.text('ui.holiday.253332', k) :
-                  e.kind === 'HOLY_DAY' ? L.text('ui.holy_day.28786d', k) :
-                  e.kind === 'OBSERVANCE' ? L.text('ui.observance.5b9a87', k) : L.text('ui.custom.917053', k)}
-                ${e.time ? ' · ' + escapeHtml(e.time) : ''}
-              </span>
-            </div>
-            <span class="event-row-chevron">›</span>
-          </button>
-        `;
-      }).join('');
-    };
-
       container.innerHTML = `
         <div class="calendar-two-columns">
           <div class="calendar-col-left">
@@ -401,7 +376,7 @@ class KhmerCalendarApp {
               <div style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant); margin: 10px 0 4px 6px;">
                 ${L.text('ui.events_on_the_day.a174fc', k)}
               </div>
-              <div class="events-list-container">${renderEventRows(selectedDayEvents)}</div>
+              <div class="events-list-container">${renderEventRows(selectedDayEvents, k)}</div>
             </div>` : ''}
           </div>
 
@@ -409,7 +384,7 @@ class KhmerCalendarApp {
             <div style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant); margin: 6px 0 10px 4px;">
               ${L.text('ui.all_events_in_month.ab923a', k, { month: CalendarWords.month(this.currentMonth, k) })} (${CalendarWords.number(monthEvents.length, k)})
             </div>
-            <div class="events-list-container">${renderEventRows(monthEvents)}</div>
+            <div class="events-list-container">${renderEventRows(monthEvents, k, todayStr)}</div>
           </div>
         </div>
       `;
@@ -526,8 +501,11 @@ class KhmerCalendarApp {
   /* ==========================================================================
      PAGE 1: EVENTS SCREEN
      ========================================================================== */
-  private renderEventsScreen(container: HTMLElement, k: boolean, resultsOnly = false) {
-    const rawEvents = EventRepository.forYearWithCustom(this.eventsYear);
+  private renderEventsScreen(container: HTMLElement, k: boolean, existingEvents?: CalendarEvent[]) {
+    // Search reuses this screen's snapshot; navigation or edits rebuild it.
+    const rawEvents = existingEvents ?? EventRepository.forYearWithCustom(this.eventsYear);
+    const query = this.eventsSearchQuery.trim().toLowerCase();
+    const todayStr = todayInZone(this.settings.todayTimeZone);
 
     // Apply Filter & Search Query
     const filteredEvents = rawEvents.filter(e => {
@@ -538,10 +516,9 @@ class KhmerCalendarApp {
       if (this.eventsFilter === 3 && e.kind !== 'HOLY_DAY') return false;
       if (this.eventsFilter === 4 && e.kind !== 'CUSTOM') return false;
 
-      if (this.eventsSearchQuery.trim()) {
-        const q = this.eventsSearchQuery.toLowerCase();
+      if (query) {
         const searchStr = `${e.titleKm} ${e.titleEn} ${e.date} ${e.notes || ''}`.toLowerCase();
-        if (!searchStr.includes(q)) return false;
+        if (!searchStr.includes(query)) return false;
       }
       return true;
     });
@@ -568,31 +545,7 @@ class KhmerCalendarApp {
             <span class="events-month-count">${CalendarWords.number(evs.length, k)}</span>
           </div>
           <div class="events-list-container">
-            ${evs.map(e => {
-              const d = parseInt(e.date.slice(8, 10), 10);
-              const dateObj = new Date(e.date);
-              const dayOfWeek = (dateObj.getUTCDay() === 0 ? 7 : dateObj.getUTCDay()) % 7;
-              const isHol = e.kind === 'HOLIDAY';
-              return `
-                <button class="event-row-card ${e.kind === 'CUSTOM' ? 'custom-event-row' : ''}" data-event-id="${escapeHtml(e.id)}" data-event-date="${escapeHtml(e.date)}">
-                  <div class="event-row-date">
-                    <span class="event-row-daynum ${isHol ? 'holiday' : ''}">${CalendarWords.number(d, k)}</span>
-                    <span class="event-row-weekday">${CalendarWords.weekday(dayOfWeek, k, 'short')}</span>
-                  </div>
-                  <div class="event-row-bar ${e.kind.toLowerCase()}"></div>
-                  <div class="event-row-content">
-                    <span class="event-row-title">${escapeHtml(k ? e.titleKm : e.titleEn)}</span>
-                    <span class="event-row-kind ${e.kind.toLowerCase()}">
-                      ${e.kind === 'HOLIDAY' ? L.text('ui.holiday.253332', k) :
-                        e.kind === 'HOLY_DAY' ? L.text('ui.holy_day.28786d', k) :
-                        e.kind === 'OBSERVANCE' ? L.text('ui.observance.5b9a87', k) : L.text('ui.custom.917053', k)}
-                      ${e.time ? ' · ' + escapeHtml(e.time) : ''}
-                    </span>
-                  </div>
-                  <span class="event-row-chevron">›</span>
-                </button>
-              `;
-            }).join('')}
+            ${renderEventRows(evs, k, todayStr)}
           </div>
         </div>
       `;
@@ -606,7 +559,7 @@ class KhmerCalendarApp {
         if (event) this.eventDetailsModal.open(event, k);
       });
     });
-    if (resultsOnly) {
+    if (existingEvents) {
       container.querySelector('.events-results')!.innerHTML = resultsHtml;
       bindEventRows();
       return;
@@ -665,7 +618,7 @@ class KhmerCalendarApp {
     const searchInput = container.querySelector('#events-search-input') as HTMLInputElement;
     searchInput?.addEventListener('input', () => {
       this.eventsSearchQuery = searchInput.value;
-      this.renderEventsScreen(container, k, true);
+      this.renderEventsScreen(container, k, rawEvents);
     });
 
     // Filter chips
@@ -688,7 +641,7 @@ class KhmerCalendarApp {
   /* ==========================================================================
      PAGE 2: SETTINGS SCREEN
      ========================================================================== */
-  private renderSettingsScreen(container: HTMLElement, k: boolean) {
+  private renderSettingsScreen(container: HTMLElement) {
     this.cleanupSettings = renderSettings(container, this.settings, settings => {
       const scrollTop = container.scrollTop;
       const previousToday = todayInZone(this.settings.todayTimeZone);

@@ -69,6 +69,18 @@ The master and individual astrology switches gate calculations as well as presen
 
 The Earthly Branch emoji sequence, indexed from Rat through Pig, is **`🐭 🐮 🐯 🐰 🐲 🐍 🐴 🐐 🐵 🐔 🐶 🐷`**. The Western Zodiac emoji sequence, indexed from Aries through Pisces, is **`♈️ ♉️ ♊️ ♋️ ♌️ ♍️ ♎️ ♏️ ♐️ ♑️ ♒️ ♓️`**. Use each engine pillar's `branch` for the sign row and `clashBranch` for the clash row. The summary concatenates the three emojis in year–month–day order without spaces inside either group and uses the literal separator ` x `.
 
+**Maintainer requested — 27 September 2026.** The shared Time and location picker footer has a **30px top margin**, matching the date-details action row. Keep this spacing in catalog and custom-location modes, as well as the time-only and location-only variants.
+
+## Same-day event lists
+
+**Maintainer requested — 27 September 2026.** Group the calendar's selected-day and monthly lists and the Events page by date. Keep dates chronological. Within each day, show personal events in ascending time order, then personal events without a time, then holidays, observances, and enabled Buddhist holy days. Equal-time personal events keep their saved order. The date-details event buttons follow the same ordering.
+
+Show the large day number and weekday only in the first event row of each day, leaving that column empty in subsequent rows. Keep the date colored as a holiday when any visible event that day is a holiday, even when a personal event comes first. Use full-width separators between dates; within a date, start separators at the event bar so they never cross the shared date column. Each event remains independently clickable and includes its full date in its accessible name. Filtering and searching rebuild the groups from the visible results.
+
+The weekday sits slightly closer to the large day number, following the maintainer's request for roughly 20% tighter spacing. Its top margin is `calc(-1px - 0.2em)`, reducing the gap by 2px at default text size and scaling with the weekday font. Keep the existing font sizes and line heights.
+
+In the calendar's monthly event list and the Events tab, today's entire day group has a background of **2% accent color over the normal surface**, including its shared date column and every event row. This background tint is the only today-specific visual change. Preserve the original event-type colors, holiday date color, category bars, text, separators, chevrons, personal-event artwork, and focus/pressed styling. Do not add a stripe or replace the surface with a solid accent color. Today follows the configured calendar time zone and refreshes when the day changes. Other dates and the separate selected-day list retain their normal background.
+
 ## Sync and review rule
 
 During an Android release sync, compare new calculations, data, settings and user-visible behavior for applicability, but **do not replace these certified PWA dimensions or table/summary presentation simply to match Android Compose sizing or placement**. If an Android change conflicts with this contract, record the difference and preserve the PWA behavior until the maintainer requests a revision.

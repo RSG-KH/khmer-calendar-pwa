@@ -16,6 +16,7 @@ export function namedTimeZone(zone: string): string {
 }
 
 const formatters = new Map<string, Intl.DateTimeFormat>();
+const maxCachedFormatters = 32;
 export function dateTimeInZone(now: Date, zone: string): { date: string; time: string } {
   const name = namedTimeZone(zone);
   let formatter = formatters.get(name);
@@ -25,8 +26,11 @@ export function dateTimeInZone(now: Date, zone: string): { date: string; time: s
       year: 'numeric', month: '2-digit', day: '2-digit',
       hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
     });
-    formatters.set(name, formatter);
   }
+  // Keep frequently used zones warm without retaining every zone ever visited.
+  formatters.delete(name);
+  formatters.set(name, formatter);
+  if (formatters.size > maxCachedFormatters) formatters.delete(formatters.keys().next().value!);
   const parts = formatter.formatToParts(now);
   const value = (type: string) => parts.find(part => part.type === type)!.value;
   return { date: `${value('year')}-${value('month')}-${value('day')}`, time: `${value('hour')}:${value('minute')}` };

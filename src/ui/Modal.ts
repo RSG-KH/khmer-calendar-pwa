@@ -26,7 +26,9 @@ export function setupModal(overlay: HTMLElement, onClose: () => void) {
 export function showModal(overlay: HTMLElement, label: string) {
   viewportCleanup.get(overlay)?.();
   viewportCleanup.set(overlay, trackModalViewport(overlay));
-  if (document.activeElement instanceof HTMLElement) previousFocus.set(overlay, document.activeElement);
+  if (!overlay.classList.contains('open') && document.activeElement instanceof HTMLElement) {
+    previousFocus.set(overlay, document.activeElement);
+  }
   overlay.setAttribute('aria-label', label);
   overlay.classList.add('open');
   document.getElementById('app')!.inert = true;
@@ -35,12 +37,21 @@ export function showModal(overlay: HTMLElement, label: string) {
 }
 
 export function hideModal(overlay: HTMLElement) {
+  const wasOpen = overlay.classList.contains('open');
   overlay.classList.remove('open');
   viewportCleanup.get(overlay)?.();
   viewportCleanup.delete(overlay);
-  if (document.querySelector('.modal-overlay.open')) return;
-  document.getElementById('app')!.inert = false;
   const previous = previousFocus.get(overlay);
+  previousFocus.delete(overlay);
+  if (!wasOpen) return;
+  const remaining = Array.from(document.querySelectorAll<HTMLElement>('.modal-overlay.open')).at(-1);
+  if (remaining) {
+    // Closing a child sheet returns keyboard navigation to its parent.
+    if (previous?.isConnected && remaining.contains(previous)) previous.focus({ preventScroll: true });
+    else remaining.focus({ preventScroll: true });
+    return;
+  }
+  document.getElementById('app')!.inert = false;
   if (previous?.isConnected) previous.focus({ preventScroll: true });
   else document.querySelector<HTMLElement>('[data-page].active')?.focus({ preventScroll: true });
   document.dispatchEvent(new Event('calendar-modal-closed'));

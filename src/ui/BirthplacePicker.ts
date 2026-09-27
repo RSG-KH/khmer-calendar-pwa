@@ -534,6 +534,8 @@ export class TimeAndLocationModal {
     this.cleanupTimeField?.();
     this.cleanupTimeField = undefined;
     hideModal(this.overlay);
+    // Release search indexes, suggestion lists and draft handlers while closed.
+    this.overlay.innerHTML = '';
   }
 
   dispose(): void {
@@ -543,6 +545,7 @@ export class TimeAndLocationModal {
       this.openSearch?.hide();
       this.cleanupTimeField?.();
     }
+    this.onSelect = () => {};
     this.overlay.remove();
   }
 }

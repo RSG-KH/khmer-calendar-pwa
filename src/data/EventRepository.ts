@@ -31,7 +31,20 @@ export interface CalendarEvent {
   anniversaryBase?: number;
 }
 
+const eventKindOrder: Record<EventKind, number> = { CUSTOM: 0, HOLIDAY: 1, OBSERVANCE: 2, HOLY_DAY: 3 };
+
+export function compareCalendarEvents(a: CalendarEvent, b: CalendarEvent): number {
+  const dateOrder = a.date.localeCompare(b.date);
+  if (dateOrder) return dateOrder;
+  const kindOrder = eventKindOrder[a.kind] - eventKindOrder[b.kind];
+  if (kindOrder) return kindOrder;
+  // A missing personal-event time follows every valid clock time, including midnight.
+  if (a.kind === 'CUSTOM') return (a.time || '24:00').localeCompare(b.time || '24:00');
+  return a.id.localeCompare(b.id);
+}
+
 export class EventRepository {
+  private static readonly maxCachedYears = 12;
   private static yearCache = new Map<number, CalendarEvent[]>();
   private static compiledRules = new Map<string, EngineRecurrenceRule>(
     calendarCatalog.events.filter(e => !!e.rule).map(e => [e.id, createRule(e.rule!)])
@@ -92,7 +105,10 @@ export class EventRepository {
       throw new RangeError('Supported years: 1800–2200.');
     }
     if (this.yearCache.has(year)) {
-      return this.yearCache.get(year)!;
+      const cached = this.yearCache.get(year)!;
+      this.yearCache.delete(year);
+      this.yearCache.set(year, cached);
+      return cached;
     }
 
     const events: CalendarEvent[] = [];
@@ -220,8 +236,11 @@ export class EventRepository {
       });
     }
 
-    events.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+    events.sort(compareCalendarEvents);
     this.yearCache.set(year, events);
+    if (this.yearCache.size > this.maxCachedYears) {
+      this.yearCache.delete(this.yearCache.keys().next().value!);
+    }
     return events;
   }
 
@@ -249,11 +268,7 @@ export class EventRepository {
     const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
     filtered.push(...this.customForRange(`${monthPrefix}01`, `${monthPrefix}${lastDay}`));
 
-    return filtered.sort((a, b) => {
-      const dateCmp = a.date.localeCompare(b.date);
-      if (dateCmp !== 0) return dateCmp;
-      return (a.time || '').localeCompare(b.time || '');
-    });
+    return filtered.sort(compareCalendarEvents);
   }
 
   static forDate(dateStr: string): CalendarEvent[] {
@@ -265,7 +280,7 @@ export class EventRepository {
   static forYearWithCustom(year: number): CalendarEvent[] {
     const yearEvents = [...this.getYearEvents(year)];
     yearEvents.push(...this.customForRange(`${year}-01-01`, `${year}-12-31`));
-    return yearEvents.sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''));
+    return yearEvents.sort(compareCalendarEvents);
   }
 
   private static customForRange(from: string, through: string): CalendarEvent[] {

@@ -1048,11 +1048,11 @@
     "en": "Calendar"
   },
   "ui.calendar_sources.7f962e": {
-    "km": "ប្រភពប្រតិទិន",
-    "en": "Calendar sources"
+    "km": "ប្រភពទិន្នន័យ និងអាជ្ញាប័ណ្ណ",
+    "en": "Sources and licenses"
   },
   "ui.calendar_sources_licenses.c2bdb3": {
-    "km": "ប្រភពទិន្នន័យ និងអាជ្ញាបណ្ណ",
+    "km": "ប្រភពទិន្នន័យ និងអាជ្ញាប័ណ្ណ",
     "en": "Calendar sources & licenses  ›"
   },
   "ui.cambodia_time_utc_7.6b9f2d": {
@@ -1304,7 +1304,7 @@
     "en": "Open Android settings"
   },
   "ui.open_source_license.ab00af": {
-    "km": "អាជ្ញាបណ្ណប្រភពបើកចំហ",
+    "km": "អាជ្ញាប័ណ្ណប្រភពបើកចំហ",
     "en": "Open-source licenses"
   },
   "ui.opens_in_external_browser": {
@@ -1421,7 +1421,7 @@
   },
   "ui.thngai_kaor_before_a_holy_day.d02977": {
     "km": "ថ្ងៃកោរ",
-    "en": "Shaving Day"
+    "en": "Buddhist Shaving Day"
   },
   "ui.thngai_sil_buddhist_holy_day.89de73": {
     "km": "ថ្ងៃសីល",
@@ -1466,6 +1466,10 @@
   "ui.could_not_copy_date": {
     "km": "មិនអាចចម្លងបានទេ។ សូមជ្រើសរើសអត្ថបទកាលបរិច្ឆេទ ដើម្បីចម្លងដោយខ្លួនឯង។",
     "en": "Could not copy. Select the date text to copy it manually."
+  },
+  "ui.could_not_copy_urls": {
+    "km": "មិនអាចចម្លងបានទេ។ សូមជ្រើសរើសអាសយដ្ឋានប្រភព ដើម្បីចម្លងដោយខ្លួនឯង។",
+    "en": "Could not copy. Select the source URLs to copy them manually."
   },
   "ui.copy_event_title": {
     "km": "ចម្លងចំណងជើងព្រឹត្តិការណ៍",

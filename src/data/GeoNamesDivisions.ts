@@ -63,10 +63,15 @@ export function geonamesDivisions(code: string): Promise<GeoNamesDivisionDocumen
         throw new Error('Invalid GeoNames division data');
       }
       return document;
-    })().catch(error => { countryPromises.delete(code); throw error; });
-    countryPromises.set(code, promise);
-    if (countryPromises.size > 2) countryPromises.delete(countryPromises.keys().next().value!);
+    })().catch(error => {
+      // An evicted request can fail after a newer request for this country starts.
+      if (countryPromises.get(code) === promise) countryPromises.delete(code);
+      throw error;
+    });
   }
+  countryPromises.delete(code);
+  countryPromises.set(code, promise);
+  if (countryPromises.size > 2) countryPromises.delete(countryPromises.keys().next().value!);
   return promise;
 }
 

@@ -350,8 +350,9 @@ test('lotus variants follow engine holy and shaving flags, including short wanin
 });
 
 test('event details dialog renders clean categories and descriptions without raw SHA-256 provenance notes', async () => {
-  class MockElement {
+  class MockElement extends EventTarget {
     constructor(tag) {
+      super();
       this.tagName = tag;
       this.children = [];
       this.attributes = {};
@@ -360,8 +361,7 @@ test('event details dialog renders clean categories and descriptions without raw
     }
     get innerHTML() { return this._html; }
     set innerHTML(val) { this._html = val; }
-    addEventListener() {}
-    removeEventListener() {}
+    contains(element) { return element === this || this.children.some(child => child.contains(element)); }
     querySelector(selector) {
       const child = new MockElement('div');
       if (selector === '.date-details-header-badge') {
@@ -404,7 +404,12 @@ test('event details dialog renders clean categories and descriptions without raw
     querySelectorAll() { return []; }
     setAttribute(k, v) { this.attributes[k] = v; }
     getAttribute(k) { return this.attributes[k]; }
-    classList = { add() {}, remove() {}, toggle() {}, contains() { return false; } };
+    classes = new Set();
+    classList = {
+      add: key => this.classes.add(key), remove: key => this.classes.delete(key),
+      toggle: (key, enabled) => enabled ? this.classes.add(key) : this.classes.delete(key),
+      contains: key => this.classes.has(key)
+    };
     focus() {}
   }
   globalThis.HTMLElement = MockElement;
@@ -497,11 +502,11 @@ test('event details dialog renders clean categories and descriptions without raw
   dateModal.open('2026-09-25', [], false);
   const shavingHtmlEn = dateModal.overlay.innerHTML;
   assert.ok(shavingHtmlEn.includes('🙏'), 'Shaving day must display prayer icon 🙏');
-  assert.ok(shavingHtmlEn.includes('Shaving Day'));
+  assert.ok(shavingHtmlEn.includes('Buddhist Shaving Day'));
   assert.equal(shavingHtmlEn.includes('Eve of Buddhist Holy Day'), false);
   assert.equal(shavingHtmlEn.includes('holy_day_lotus'), false, 'Shaving day must NOT display lotus image');
   const shavingContent = shavingHtmlEn.slice(shavingHtmlEn.indexOf('class="date-details-content"'));
-  assert.ok(shavingContent.indexOf('Shaving Day') < shavingContent.indexOf('<div class="card-divider" style="margin: 0;"></div>'),
+  assert.ok(shavingContent.indexOf('Buddhist Shaving Day') < shavingContent.indexOf('<div class="card-divider" style="margin: 0;"></div>'),
     'Shaving day appears with the lunar date, before the astrology divider');
 
   dateModal.open('2026-09-25', [], true);
@@ -532,7 +537,7 @@ test('event details dialog renders clean categories and descriptions without raw
   dateModal.open('2026-09-25', [], false);
   const disabledShavingHtmlEn = dateModal.overlay.innerHTML;
   assert.equal(disabledShavingHtmlEn.includes('🙏'), false, 'Disabled holyDayMarkers must not show 🙏 on shaving day');
-  assert.equal(disabledShavingHtmlEn.includes('Shaving Day'), false, 'Disabled holyDayMarkers must not show shaving day label');
+  assert.equal(disabledShavingHtmlEn.includes('Buddhist Shaving Day'), false, 'Disabled holyDayMarkers must not show shaving day label');
 
   dateModal.open('2026-09-25', [], true);
   const disabledShavingHtmlKm = dateModal.overlay.innerHTML;
@@ -554,6 +559,36 @@ test('event details dialog renders clean categories and descriptions without raw
 
   // Cleanup settings
   Storage.saveSettings(DEFAULT_SETTINGS);
+});
+
+test('closing event details opened from a date preserves the date dialog and its contents', async () => {
+  const { DateDetailsDialogModal, EventDetailsDialogModal } = await server.ssrLoadModule('/src/ui/Modals.ts');
+  const event = EventRepository.getYearEvents(2026).find(e => e.id === 'constitution_day');
+  const eventModal = new EventDetailsDialogModal(() => {}, () => {});
+  const dateModal = new DateDetailsDialogModal(selected => eventModal.open(selected, false), () => {});
+  const trigger = document.createElement('button');
+  trigger.dataset = { evId: event.id };
+  dateModal.overlay.querySelectorAll = selector => selector === '.dialog-event-item' ? [trigger] : [];
+  const appended = [];
+  const append = document.body.appendChild;
+  document.body.appendChild = overlay => appended.push(overlay);
+  try {
+    dateModal.open(event.date, [event], false);
+    const dateContents = dateModal.overlay.innerHTML;
+    trigger.dispatchEvent(new Event('click'));
+    assert.equal(eventModal.overlay.classList.contains('open'), true);
+    assert.equal(dateModal.overlay.classList.contains('open'), true);
+    assert.equal(appended.at(-1), eventModal.overlay, 'Event details must stack above the date');
+    eventModal.close();
+    assert.equal(eventModal.overlay.classList.contains('open'), false);
+    assert.equal(eventModal.overlay.innerHTML, '', 'The closed child releases its content');
+    assert.equal(dateModal.overlay.classList.contains('open'), true);
+    assert.equal(dateModal.overlay.innerHTML, dateContents, 'The date stays intact for returning to it');
+  } finally {
+    eventModal.close();
+    dateModal.close();
+    document.body.appendChild = append;
+  }
 });
 
 test('date details use setting defaults and keep time/location overrides in the open dialog', async () => {

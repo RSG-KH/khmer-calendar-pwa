@@ -1,4 +1,5 @@
 import { Icons } from './Icons';
+import { copyText } from './Clipboard';
 
 export function setupCopyButton(
   button: HTMLButtonElement,
@@ -24,7 +25,7 @@ export function setupCopyButton(
     button.setAttribute('aria-busy', 'true');
     try {
       // Keep the write directly in the tap/click gesture for Safari and installed PWAs.
-      await navigator.clipboard.writeText(text);
+      await copyText(text, button);
       if (!active) return;
       icon.innerHTML = Icons.check;
       button.classList.add('copied');

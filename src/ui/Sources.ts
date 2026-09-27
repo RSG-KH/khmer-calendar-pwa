@@ -1,6 +1,7 @@
 import { L } from '../data/i18n';
 import { escapeHtml } from './html';
 import { setupModal, showModal, hideModal } from './Modal';
+import { copyText } from './Clipboard';
 import appLicense from '../../LICENSE?raw';
 // Bundled copies live in src/legal so Vite never imports out of the public directory;
 // a test keeps them byte-identical to the served files in public/.
@@ -21,6 +22,7 @@ function showUrlDialog(title: string, urlText: string, k: boolean): () => void {
       <div class="source-url-body">
         ${urlLinesHtml}
       </div>
+      <p class="source-url-copy-status" role="status" aria-atomic="true" hidden></p>
       <div class="source-url-footer">
         <button type="button" class="btn-today-pill source-url-close">${escapeHtml(L.text('ui.close.7df7dc', k))}</button>
         <button type="button" class="btn-today-pill source-url-copy">${escapeHtml(L.text('ui.copy', k))}</button>
@@ -36,15 +38,26 @@ function showUrlDialog(title: string, urlText: string, k: boolean): () => void {
   };
   setupModal(overlay, close);
   overlay.querySelector('.source-url-close')!.addEventListener('click', close);
-  overlay.querySelector('.source-url-copy')!.addEventListener('click', async () => {
+  const copyButton = overlay.querySelector<HTMLButtonElement>('.source-url-copy')!;
+  const copyStatus = overlay.querySelector<HTMLElement>('.source-url-copy-status')!;
+  let copying = false;
+  copyButton.addEventListener('click', async () => {
+    if (closed || copying) return;
+    copying = true;
+    copyStatus.hidden = true;
+    copyStatus.textContent = '';
+    copyButton.setAttribute('aria-busy', 'true');
     try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(urlText);
-      }
+      await copyText(urlText, copyButton);
+      if (!closed) close();
     } catch {
-      // restricted environment fallback
+      if (closed) return;
+      copyStatus.textContent = L.text('ui.could_not_copy_urls', k);
+      copyStatus.hidden = false;
+    } finally {
+      copying = false;
+      if (!closed) copyButton.removeAttribute('aria-busy');
     }
-    close();
   });
   overlay.addEventListener('click', event => { if (event.target === overlay) close(); });
   document.body.appendChild(overlay);
@@ -67,7 +80,7 @@ export function showCalendarSources(k: boolean): () => void {
   ].join('\n');
   const sourceUrlsTitle = k ? 'អាសយដ្ឋានប្រភព' : 'Source URLs';
   const divisionDescription = k
-    ? 'ក្រៅកម្ពុជា តំបន់រដ្ឋបាលយោងតាមទិន្នន័យ GeoNames ក្រោមអាជ្ញាបណ្ណ CC BY 4.0។ នៅកម្ពុជា បញ្ជីខេត្ត ស្រុក ខណ្ឌ ឃុំ និងសង្កាត់របស់ Wikipedia ជាប្រភពយោងសំខាន់ ដោយមានកំណត់ត្រាបន្ថែមខ្លះពី CambodiaPostalCode។ កូអរដោនេតំបន់រដ្ឋបាលកម្ពុជាភាគច្រើនបានមកពី Open Admin Data ក្រោមអាជ្ញាបណ្ណ CC BY 4.0 ហើយកូអរដោនេបន្ថែមយោងតាម OCHA / Department of Geography, GeoNames, OpenStreetMap និង Wikidata។'
+    ? 'ទិន្នន័យបំណែងចែករដ្ឋបាលក្រៅប្រទេសកម្ពុជា គឺទទួលបានពី GeoNames ក្រោមអាជ្ញាប័ណ្ណ CC BY 4.0។ បញ្ជីឈ្មោះខេត្ត ស្រុក និងឃុំនៃប្រទេសកម្ពុជា ត្រូវបានដកស្រង់ចេញពី Wikipedia ដែលជាប្រភពយោងចម្បង ដោយរួមជាមួយនិងកំណត់ត្រាបន្ថែមមួយចំនួនពី CambodiaPostalCode។ ចំណែកកូអរដោនេផ្នែករដ្ឋបាលកម្ពុជាភាគច្រើន គឺទទួលបានពី Open Admin Data ក្រោមអាជ្ញាប័ណ្ណ CC BY 4.0។ រីឯកូអរដោនេបន្ថែម ត្រូវបានដកស្រង់ចេញពី OCHA / នាយកដ្ឋានភូមិសាស្ត្រ GeoNames OpenStreetMap និង Wikidata។'
     : 'Outside Cambodia, administrative divisions come from GeoNames under CC BY 4.0. In Cambodia, Wikipedia’s province, district, and commune lists are the main references, with some additional records from CambodiaPostalCode. Most Cambodian division coordinates come from Open Admin Data under CC BY 4.0; supplemental coordinates draw on OCHA / Department of Geography, GeoNames, OpenStreetMap, and Wikidata.';
 
   const holidayText = L.text('about.public_holiday_source', k);
@@ -97,7 +110,7 @@ export function showCalendarSources(k: boolean): () => void {
         <p>${holidayDescription}</p>
         <p>${engineDescription}</p>
         <div class="source-data-credits">
-          <p>${escapeHtml(divisionDescription)} <button type="button" class="source-url-link" data-url-source="data">${escapeHtml(k ? 'មើលអាសយដ្ឋានប្រភព' : 'View source URLs')}</button>${k ? '។' : '.'}</p>
+          <p>${escapeHtml(divisionDescription)} <button type="button" class="source-url-link" data-url-source="data">${k ? '<strong>មើល ប្រភព URL ទាំងអស់។</strong>' : 'View source URLs'}</button>${k ? '' : '.'}</p>
         </div>
         <details class="source-licenses">
           <summary>${text('ui.open_source_license.ab00af')}</summary>

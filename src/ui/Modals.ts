@@ -299,10 +299,12 @@ export class DateDetailsDialogModal {
         westernTable.outerHTML = renderWesternZodiacTable(info.year, info.month, info.day, eff.hour, eff.minute, settings.todayTimeZone, isKhmer, settings.useEmojiForWesternZodiac, this.birthplace);
       }
       const headerBadge = this.overlay.querySelector<HTMLElement>('.date-details-header-badge');
+      const restoreHeaderFocus = headerBadge?.contains(document.activeElement);
       if (headerBadge) {
         headerBadge.innerHTML = renderHeaderTimeControl();
       }
       bindTimePickers();
+      if (restoreHeaderFocus) headerBadge?.querySelector<HTMLElement>('button')?.focus({ preventScroll: true });
     };
 
     this.openTimeAndLocation = canPickTime ? () => {
@@ -342,7 +344,6 @@ export class DateDetailsDialogModal {
         const id = (item as HTMLElement).dataset.evId;
         const ev = events.find(e => e.id === id);
         if (ev) {
-          this.close();
           this.onOpenEvent(ev);
         }
       });
@@ -354,8 +355,12 @@ export class DateDetailsDialogModal {
   close() {
     this.cleanupDateCopy?.();
     this.cleanupDateCopy = undefined;
-    this.timeAndLocationModal?.close();
+    this.timeAndLocationModal?.dispose();
+    this.timeAndLocationModal = undefined;
+    this.openTimeAndLocation = undefined;
+    this.updateInteractiveContent = undefined;
     hideModal(this.overlay);
+    this.overlay.innerHTML = '';
   }
 }
 
@@ -549,13 +554,17 @@ export class EventDetailsDialogModal {
       });
     }
 
+    // Event details can open from a date dialog created later in the DOM.
+    document.body.appendChild(this.overlay);
     showModal(this.overlay, title);
   }
 
   close() {
     this.cleanupTitleCopy?.();
     this.cleanupTitleCopy = undefined;
+    this.learnMoreModal.close();
     hideModal(this.overlay);
+    this.overlay.innerHTML = '';
   }
 }
 
@@ -667,6 +676,7 @@ export class LearnMoreModal {
 
   close() {
     hideModal(this.overlay);
+    this.overlay.innerHTML = '';
   }
 }
 
@@ -836,5 +846,6 @@ export class CustomEventModal {
     this.repeatField?.dispose();
     this.repeatField = undefined;
     hideModal(this.overlay);
+    this.overlay.innerHTML = '';
   }
 }

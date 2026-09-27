@@ -259,7 +259,7 @@ test('division credits form one paragraph and their URLs open in one copyable di
   ];
   for (const [khmer, opening, sentenceEnd, title] of [
     [false, 'Outside Cambodia, administrative divisions come from GeoNames', '.', 'Source URLs'],
-    [true, 'ក្រៅកម្ពុជា តំបន់រដ្ឋបាលយោងតាមទិន្នន័យ GeoNames', '។', 'អាសយដ្ឋានប្រភព']
+    [true, 'ទិន្នន័យបំណែងចែករដ្ឋបាលក្រៅប្រទេសកម្ពុជា គឺទទួលបានពី GeoNames', '។', 'អាសយដ្ឋានប្រភព']
   ]) {
     const dom = createMockDom();
     const closeSources = showCalendarSources(khmer);
@@ -286,7 +286,7 @@ test('division credits form one paragraph and their URLs open in one copyable di
     assert.ok(urlsButton);
     assert.equal(urlsButton.tagName, 'BUTTON');
     assert.equal(urlsButton.parentNode, paragraphs[0]);
-    assert.equal(urlsButton.textContent, khmer ? 'មើលអាសយដ្ឋានប្រភព' : 'View source URLs');
+    assert.equal(urlsButton.textContent, khmer ? 'មើល ប្រភព URL ទាំងអស់។' : 'View source URLs');
     urlsButton.dispatchEvent(new Event('click'));
     assert.equal(dom.body.querySelector('.source-url-title')?.textContent, title);
     assert.deepEqual(dom.body.querySelectorAll('.source-url-text').map(el => el.textContent), expectedUrls);
@@ -352,6 +352,31 @@ test('sources dialog omits retired archive credit and renders official governmen
 
   closeSources();
   assert.equal(dom.body.querySelector('.sources-dialog'), null, 'Sources dialog should be closed');
+});
+
+test('failed URL copying keeps the popup open with localized feedback and permits retry', async () => {
+  for (const khmer of [false, true]) {
+    const dom = createMockDom();
+    const closeSources = showCalendarSources(khmer);
+    dom.body.querySelector('[data-url-source="data"]').dispatchEvent(new Event('click'));
+    const copyButton = dom.body.querySelector('.source-url-copy');
+    const writeText = navigator.clipboard.writeText;
+    navigator.clipboard.writeText = async () => { throw new Error('Clipboard unavailable'); };
+    copyButton.dispatchEvent(new Event('click'));
+    await new Promise(resolve => setImmediate(resolve));
+    assert.ok(dom.body.querySelector('.source-url-dialog'), 'A failed copy must not dismiss the URLs');
+    const status = dom.body.querySelector('.source-url-copy-status');
+    assert.equal(status.hidden, false);
+    assert.equal(status.textContent, L.text('ui.could_not_copy_urls', khmer));
+    assert.equal(copyButton.getAttribute('aria-busy'), null);
+    assert.equal(dom.getClipboard(), '');
+    navigator.clipboard.writeText = writeText;
+    copyButton.dispatchEvent(new Event('click'));
+    await new Promise(resolve => setImmediate(resolve));
+    assert.ok(dom.getClipboard().includes('https://www.geonames.org/'));
+    assert.equal(dom.body.querySelector('.source-url-dialog'), null);
+    closeSources();
+  }
 });
 
 test('sources dialog works in Khmer and close button dismisses URL dialog', () => {

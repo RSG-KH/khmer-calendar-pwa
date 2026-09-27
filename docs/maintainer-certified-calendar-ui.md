@@ -4,6 +4,12 @@
 
 Android remains a reference for applicable behavior and shared calculations. Its native layout is not authority to replace these PWA choices. Preserve the values, breakpoint conditions, ordering and toggle behavior below during a sync. Change this contract only when the maintainer explicitly requests a new PWA UI decision, and update the implementation and this document together.
 
+## Calendar width
+
+**Maintainer requested — 27 September 2026.** The month card's width is capped at **1.25 times its natural height**, including the weekday headings, grid, padding, divider and legend, but excluding the navigation header and date summary. Narrow screens may use a smaller width. Preserve the row heights below; do not increase the card height to enforce an aspect ratio.
+
+The calendar header, summary and selected-day events stay aligned with the month card. The centered landscape layout retains two equal columns and its existing gap, with the monthly event list following the same width cap. The cap is recalculated when the month, text size, fonts or responsive row heights change. Measure before applying the cap so a wrapping legend cannot cause alternating widths.
+
 ## Month grid row heights
 
 `src/main.ts` sets `data-phone` on the root from `isPhone()` in `src/ui/Platform.ts`. Heights below are the CSS values **before** multiplication by `--font-scale` (the app supports 80%–150%). Orientation and viewport breakpoints are CSS media queries. The 2px gap between grid cells is separate from row height.

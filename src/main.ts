@@ -22,6 +22,7 @@ import { AppUpdater } from './ui/AppUpdater';
 import { appearanceBackground, effectiveTheme } from './ui/Appearance';
 import { holyDayLotus } from './ui/HolyDayLotus';
 import { fitWeekdayHeadings } from './ui/WeekdayHeadings';
+import { fitCalendarWidth } from './ui/CalendarWidth';
 import { startTodayRefresh } from './ui/TodayRefresh';
 
 const updateReceiptKey = `khmer-calendar:update:${import.meta.env.BASE_URL}`;
@@ -47,6 +48,7 @@ class KhmerCalendarApp {
   private eventsSearchQuery: string = '';
   private cleanupSettings?: () => void;
   private cleanupWeekdays?: () => void;
+  private cleanupCalendarWidth?: () => void;
   private todayRefresh?: ReturnType<typeof startTodayRefresh>;
   private updateScrollTop = consumeUpdateReceipt();
   private updater = new AppUpdater(
@@ -169,6 +171,8 @@ class KhmerCalendarApp {
   }
 
   private render() {
+    this.cleanupCalendarWidth?.();
+    this.cleanupCalendarWidth = undefined;
     this.cleanupWeekdays?.();
     this.cleanupWeekdays = undefined;
     this.cleanupSettings?.();
@@ -477,6 +481,11 @@ class KhmerCalendarApp {
 
       gridCellsContainer.appendChild(cell);
     }
+
+    this.cleanupCalendarWidth = fitCalendarWidth(
+      container.querySelector<HTMLElement>('.calendar-two-columns')!,
+      container.querySelector<HTMLElement>('.calendar-month-card')!
+    );
 
     // Attach Header navigation events
     container.querySelector('.btn-prev-month')?.addEventListener('click', () => this.changeMonth(-1));

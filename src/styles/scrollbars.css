@@ -12,7 +12,7 @@
 @media (min-width: 740px) and (orientation: landscape) {
   [data-auto-hide-scrollbars] .screen-container:has(> .calendar-two-columns) { scrollbar-gutter: auto; }
   /* The two balanced scrollbar gutters already provide space between columns. */
-  [data-auto-hide-scrollbars] .calendar-two-columns { column-gap: 0; }
+  [data-auto-hide-scrollbars] .calendar-two-columns { --calendar-column-gap: 0px; column-gap: 0; }
 }
 /* Animate the thumb without changing scrollbar width or shifting the content. */
 @property --scrollbar-thumb-color {

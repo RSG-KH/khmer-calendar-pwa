@@ -500,6 +500,9 @@ test('event details dialog renders clean categories and descriptions without raw
   assert.ok(shavingHtmlEn.includes('Shaving Day'));
   assert.equal(shavingHtmlEn.includes('Eve of Buddhist Holy Day'), false);
   assert.equal(shavingHtmlEn.includes('holy_day_lotus'), false, 'Shaving day must NOT display lotus image');
+  const shavingContent = shavingHtmlEn.slice(shavingHtmlEn.indexOf('class="date-details-content"'));
+  assert.ok(shavingContent.indexOf('Shaving Day') < shavingContent.indexOf('<div class="card-divider" style="margin: 0;"></div>'),
+    'Shaving day appears with the lunar date, before the astrology divider');
 
   dateModal.open('2026-09-25', [], true);
   const shavingHtmlKm = dateModal.overlay.innerHTML;
@@ -513,6 +516,14 @@ test('event details dialog renders clean categories and descriptions without raw
   assert.ok(holyHtmlEn.includes('holy_day_lotus_blossom.png'), 'Holy day must display lotus image');
   assert.ok(holyHtmlEn.includes('Buddhist Holy Day'));
   assert.equal(holyHtmlEn.includes('🙏'), false, 'Holy day must NOT display prayer icon 🙏');
+  const holyContent = holyHtmlEn.slice(holyHtmlEn.indexOf('class="date-details-content"'));
+  assert.ok(holyContent.indexOf('Buddhist Holy Day') < holyContent.indexOf('<div class="card-divider" style="margin: 0;"></div>'),
+    'Buddhist Holy Day appears with the lunar date, before the astrology divider');
+
+  Storage.saveSettings({ ...DEFAULT_SETTINGS, holyDayMarkers: true, showWesternZodiac: false, showGanzhi: false });
+  dateModal.open('2026-09-26', [], false);
+  assert.equal((dateModal.overlay.innerHTML.match(/<div class="card-divider" style="margin: 0;"><\/div>/gu) ?? []).length, 1,
+    'The holy-day-only detail keeps one divider below the marker');
 
   // When holyDayMarkers is disabled:
   Storage.saveSettings({ ...DEFAULT_SETTINGS, holyDayMarkers: false });
@@ -545,47 +556,173 @@ test('event details dialog renders clean categories and descriptions without raw
   Storage.saveSettings(DEFAULT_SETTINGS);
 });
 
-test('date details recalculates the 2008 country-level Rising sign after a zone change', async () => {
+test('date details use setting defaults and keep time/location overrides in the open dialog', async () => {
   const { Storage, DEFAULT_SETTINGS } = await server.ssrLoadModule('/src/data/Storage.ts');
   const { DateDetailsDialogModal } = await server.ssrLoadModule('/src/ui/Modals.ts');
-  const previousZone = process.env.TZ;
-  process.env.TZ = 'Europe/Brussels';
+  const previousSettings = Storage.getSettings();
   const dateModal = new DateDetailsDialogModal(() => {}, () => {});
   try {
-    for (const [zone, expected] of [['cambodia', 'Leo'], ['local', 'Virgo']]) {
-      Storage.saveSettings({ ...DEFAULT_SETTINGS, todayTimeZone: zone, showGanzhi: false });
-      dateModal.open('2008-10-27', [], false);
-      dateModal.setTime('01:30');
-      const html = dateModal.overlay.innerHTML;
-      const tableStart = html.indexOf('<table class="western-zodiac-table');
-      const tableEnd = html.indexOf('</table>', tableStart);
-      assert.ok(tableStart >= 0 && tableEnd > tableStart, 'Western Big 3 table is present');
-      const table = html.slice(tableStart, tableEnd + '</table>'.length);
-      assert.ok(table.includes(`>${expected}</span></td>`), `${zone} Rising sign is ${expected}`);
-    }
+    Storage.saveSettings({ ...DEFAULT_SETTINGS, pastFutureTime: '07:45', showGanzhi: false });
+    dateModal.open('2008-10-27', [], false);
+    assert.match(dateModal.overlay.innerHTML, /<button type="button" class="btn-time-chip"[^>]*><span aria-hidden="true">🇰🇭<\/span><span class="btn-time-chip-text">07:45<\/span><\/button>/u,
+      'Big 3 shows the default country as a flag emoji');
+    assert.equal(dateModal.overlay.innerHTML.includes('btn-birthplace'), false);
+    let applySelection;
+    dateModal.timeAndLocationModal = {
+      setOnSelect(callback) { applySelection = callback; },
+      open() { return Promise.resolve(); }
+    };
+    dateModal.openTimeAndLocation();
+    const overridePlace = { source: 'manual', label: 'Brussels', latitude: 50.85,
+      longitude: 4.35, timeZone: 'Europe/Brussels' };
+    applySelection('01:30', overridePlace);
+    assert.match(dateModal.overlay.innerHTML, /<span aria-hidden="true">🗺️<\/span><span class="btn-time-chip-text">01:30<\/span>/u,
+      'Custom places without a country code use the world map emoji');
+    applySelection('01:30', { source: 'GeoNames', geonameId: 123, datasetVersion: DEFAULT_SETTINGS.risingPlace.datasetVersion,
+      label: 'Brussels', countryCode: 'BE', latitude: 50.85, longitude: 4.35, timeZone: 'Europe/Brussels' });
+    assert.match(dateModal.overlay.innerHTML, /<span aria-hidden="true">🇧🇪<\/span><span class="btn-time-chip-text">01:30<\/span>/u,
+      'Changing the Rising place updates its flag emoji');
+    applySelection('01:30', { ...overridePlace, countryCode: 'AN' });
+    assert.match(dateModal.overlay.innerHTML, /<span aria-hidden="true">🗺️<\/span><span class="btn-time-chip-text">01:30<\/span>/u,
+      'Countries without a flag emoji use the world map');
+    assert.deepEqual(Storage.getSettings().risingPlace, DEFAULT_SETTINGS.risingPlace);
+    assert.equal(Storage.getSettings().pastFutureTime, '07:45');
+    dateModal.timeAndLocationModal = undefined;
+    dateModal.open('2008-10-27', [], false);
+    assert.ok(dateModal.overlay.innerHTML.includes('<span class="btn-time-chip-text">07:45</span>'),
+      'Reopening restores the setting default');
   } finally {
+    dateModal.timeAndLocationModal = undefined;
     dateModal.close();
-    Storage.saveSettings(DEFAULT_SETTINGS);
-    if (previousZone === undefined) delete process.env.TZ;
-    else process.env.TZ = previousZone;
+    Storage.saveSettings(previousSettings);
   }
 });
 
-test('showWesternZodiac setting defaults to true and toggles zodiac visibility in dialogs', async () => {
+test('Today clock follows Today follows even when the Rising place is on another date', async () => {
   const { Storage, DEFAULT_SETTINGS } = await server.ssrLoadModule('/src/data/Storage.ts');
+  const { DateDetailsDialogModal } = await server.ssrLoadModule('/src/ui/Modals.ts');
+  const previousSettings = Storage.getSettings();
+  const RealDate = Date;
+  const instant = '2026-09-27T20:00:00Z'; // Cambodia September 28 03:00; Belgium September 27 22:00.
+  globalThis.Date = class extends RealDate {
+    constructor(...args) { super(...(args.length ? args : [instant])); }
+    static now() { return RealDate.parse(instant); }
+  };
+  const dateModal = new DateDetailsDialogModal(() => {}, () => {});
+  try {
+    Storage.saveSettings({ ...DEFAULT_SETTINGS, todayTimeZone: 'cambodia', pastFutureTime: '07:45',
+      risingPlace: { source: 'manual', label: 'Brussels', latitude: 50.85,
+        longitude: 4.35, timeZone: 'Europe/Brussels' } });
+    dateModal.open('2026-09-28', [], false);
+    assert.match(dateModal.overlay.innerHTML, /September 28, 2026/u);
+    assert.match(dateModal.overlay.innerHTML, /<span class="btn-time-chip-text">03:00<\/span>/u,
+      'Today keeps its calendar-zone clock instead of shifting to the Rising place');
+    dateModal.open('2026-09-27', [], false);
+    assert.match(dateModal.overlay.innerHTML, /<span class="btn-time-chip-text">07:45<\/span>/u,
+      'Other dates still use the saved past/future time');
+  } finally {
+    dateModal.close();
+    Storage.saveSettings(previousSettings);
+    globalThis.Date = RealDate;
+  }
+});
+
+test('manual locations persist independently of the selected Rising place', () => {
+  const previousPlace = Storage.getBirthplace();
+  const previousManual = Storage.getManualBirthplaces();
+  const brussels = { source: 'manual', label: 'Brussels', latitude: 50.85,
+    longitude: 4.35, timeZone: 'Europe/Brussels' };
+  const phnomPenh = { source: 'manual', label: 'Phnom Penh', latitude: 11.56,
+    longitude: 104.93, timeZone: 'Asia/Phnom_Penh' };
+  try {
+    Storage.saveBirthplace(brussels);
+    Storage.saveManualBirthplaces([brussels, phnomPenh]);
+    assert.deepEqual(Storage.getManualBirthplaces(), [brussels, phnomPenh]);
+    Storage.saveManualBirthplaces([phnomPenh]);
+    assert.deepEqual(Storage.getManualBirthplaces(), [phnomPenh], 'Deleting a chip does not recreate it from the selected place');
+    assert.deepEqual(Storage.getBirthplace(), brussels, 'Deleting a reusable chip leaves the active Rising place alone');
+  } finally {
+    Storage.saveManualBirthplaces(previousManual);
+    Storage.saveBirthplace(previousPlace);
+  }
+});
+
+test('catalog places remain reusable and deleting a chip does not restore it from the active place', () => {
+  const key = 'khmer_calendar_catalog_rising_places';
+  const previousRaw = localStorage.getItem(key);
+  const previousPlace = Storage.getBirthplace();
+  const brussels = { source: 'GeoNames', geonameId: 1, datasetVersion: 'a'.repeat(64),
+    label: 'Brussels', countryCode: 'BE', latitude: 50.85, longitude: 4.35,
+    timeZone: 'Europe/Brussels' };
+  const phnomPenh = { source: 'GeoNames', geonameId: 2, datasetVersion: 'a'.repeat(64),
+    label: 'Phnom Penh', countryCode: 'KH', latitude: 11.56, longitude: 104.93,
+    timeZone: 'Asia/Phnom_Penh' };
+  try {
+    localStorage.removeItem(key);
+    Storage.saveBirthplace(brussels);
+    assert.deepEqual(Storage.getCatalogBirthplaces(), [brussels], 'Existing selected places become a chip');
+    Storage.saveCatalogBirthplaces([brussels, phnomPenh]);
+    assert.deepEqual(Storage.getCatalogBirthplaces(), [brussels, phnomPenh]);
+    Storage.saveCatalogBirthplaces([phnomPenh]);
+    assert.deepEqual(Storage.getCatalogBirthplaces(), [phnomPenh]);
+    assert.deepEqual(Storage.getBirthplace(), brussels, 'Deleting a reusable chip leaves the active place alone');
+    Storage.saveCatalogBirthplaces([]);
+    assert.deepEqual(Storage.getCatalogBirthplaces(), [], 'A deleted selected place is not recreated on reopen');
+  } finally {
+    if (previousRaw === null) localStorage.removeItem(key);
+    else localStorage.setItem(key, previousRaw);
+    Storage.saveBirthplace(previousPlace);
+  }
+});
+
+test('astrology settings gate zodiac and Ganzhi calculations in dialogs', async () => {
+  const { Storage, DEFAULT_SETTINGS, enabledAstrologyFeatures } = await server.ssrLoadModule('/src/data/Storage.ts');
   const { DateDetailsDialogModal, EventDetailsDialogModal } = await server.ssrLoadModule('/src/ui/Modals.ts');
   const { EventRepository } = await server.ssrLoadModule('/src/data/EventRepository.ts');
 
   assert.equal(DEFAULT_SETTINGS.showWesternZodiac, true, 'Default settings must have showWesternZodiac on');
+  assert.equal(DEFAULT_SETTINGS.enableAstrologyAndZodiac, true, 'Master astrology switch is on by default');
 
   const dateModal = new DateDetailsDialogModal(() => {}, () => {});
   const eventModal = new EventDetailsDialogModal(() => {}, () => {});
+  const assertLastColumnsDisplayOnly = (expectedCount, expectDashes = false) => {
+    const tables = [...dateModal.overlay.innerHTML.matchAll(/<table class="(?:western-zodiac-table|ganzhi-table)[\s\S]*?<\/table>/gu)];
+    assert.equal(tables.length, expectedCount, 'Expected astrology tables are present');
+    for (const [markup] of tables) {
+      const body = markup.match(/<tbody>([\s\S]*?)<\/tbody>/u)?.[1] ?? '';
+      const rows = [...body.matchAll(/<tr>[\s\S]*?<\/tr>/gu)];
+      assert.ok(rows.length > 0, 'Astrology table has data rows');
+      for (const [row] of rows) {
+        const lastCell = [...row.matchAll(/<td(?:\s[^>]*)?>[\s\S]*?<\/td>/gu)].at(-1)?.[0] ?? '';
+        assert.ok(lastCell, 'Astrology row has a last-column cell');
+        assert.doesNotMatch(lastCell, /<button\b|role="button"|tabindex=/u, 'Last-column cells have no interactive controls');
+        if (expectDashes) assert.match(lastCell, />—<\/td>/u, 'Uncomputed last-column cells show a dash');
+      }
+    }
+  };
   const event = EventRepository.getYearEvents(2026).find(e => e.date === '2026-09-24');
   const pastDate = '2025-09-24'; // Fixed past date: its hour and rising sign need a selected time.
+  const previousPlace = Storage.getBirthplace();
+  Storage.saveBirthplace({ source: 'manual', label: 'Phnom Penh', latitude: 11.5564,
+    longitude: 104.9282, timeZone: 'Asia/Phnom_Penh' });
 
   // Default / on: Western zodiac is visible
   Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: true, todayTimeZone: 'cambodia' });
   dateModal.open(pastDate, [], false);
+  assert.ok(dateModal.overlay.innerHTML.includes('<span class="btn-time-chip-text">12:00</span>'),
+    'Past dates start at the saved default time');
+  dateModal.setTime(null);
+  const pickerModes = [];
+  dateModal.timeAndLocationModal = {
+    setOnSelect() {},
+    open(_time, _place, _khmer, _todayZone, withLocation) {
+      pickerModes.push(withLocation);
+      return Promise.resolve();
+    }
+  };
+  dateModal.openTimeAndLocation();
+  assert.equal(pickerModes.at(-1), 'both', 'Big 3 opens time and location');
+  dateModal.timeAndLocationModal = undefined;
   assert.ok(dateModal.overlay.innerHTML.includes('dialog-watermark-western'), 'Western watermark should show when showWesternZodiac is true');
   assert.ok(dateModal.overlay.innerHTML.includes('western-zodiac-table'), 'Western zodiac Big 3 table should show when showWesternZodiac is true');
   assert.ok(dateModal.overlay.innerHTML.includes('Big 3'), 'Big 3 heading should show in English');
@@ -599,25 +736,25 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   assert.match(dateModal.overlay.innerHTML, /<tr><th scope="row">Sign<\/th><td class="highlight-cell">/u, 'Ganzhi Year sign cell has highlight-cell class');
   assert.ok(dateModal.overlay.innerHTML.includes('scope="col">Hour'), 'Past dates show the hour pillar column header');
   assert.ok(dateModal.overlay.innerHTML.includes('scope="col">Rising sign'), 'Past dates show the rising sign column header');
-  assert.ok(dateModal.overlay.innerHTML.includes('class="btn-time-pick"'), 'Uncomputed past values display time pick button');
-  assert.ok(dateModal.overlay.innerHTML.includes('>🕒</button>'), 'Uncomputed past values display 🕒 compact button');
-  assert.match(dateModal.overlay.innerHTML, /<div class="date-details-header-badge">\s*<button type="button" class="btn-time-pick"/u, 'Header also offers time selection before a time is set');
+  assert.match(dateModal.overlay.innerHTML, /<div class="date-details-header-badge">\s*<button type="button" class="btn-time-pick"/u, 'Header offers time selection before a time is set');
+  assert.match(dateModal.overlay.innerHTML, /<button type="button" class="btn-time-pick"[^>]*><span aria-hidden="true">🇰🇭<\/span><\/button>/u,
+    'Big 3 shows the country flag emoji when time is unset');
+  assertLastColumnsDisplayOnly(2, true);
 
   // Test setting custom time on not-today date
   dateModal.setTime('14:30');
   assert.ok(dateModal.overlay.innerHTML.includes('btn-time-chip'), 'Setting custom time displays header time chip');
   assert.ok(dateModal.overlay.innerHTML.includes('14:30'), 'Header time chip shows set time');
-  assert.ok(dateModal.overlay.innerHTML.includes('time-interactive-cell'), 'Computed columns become interactive cells');
+  assertLastColumnsDisplayOnly(2);
   assert.ok(dateModal.overlay.innerHTML.includes('Aquarius'), 'Rising sign for 2025-09-24 14:30 in Cambodia is computed as Aquarius');
   assert.ok(dateModal.overlay.innerHTML.includes('Goat') || dateModal.overlay.innerHTML.includes('Sheep'), 'Hour pillar animal for 14:30 is Goat/Sheep');
-  assert.equal(dateModal.overlay.innerHTML.includes('btn-time-pick'), false, 'Time pick buttons are replaced when time is set');
+  assert.equal(dateModal.overlay.innerHTML.includes('btn-time-pick'), false, 'Header clock changes to a time chip when time is set');
 
-  // Test clearing custom time reverts to 🕒 button
+  // Clearing custom time restores the location picker.
   dateModal.setTime(null);
   assert.equal(dateModal.overlay.innerHTML.includes('btn-time-chip'), false, 'Clearing time removes header time chip');
   assert.match(dateModal.overlay.innerHTML, /<div class="date-details-header-badge"><button type="button" class="btn-time-pick"/u, 'Clearing time restores the header picker');
-  assert.ok(dateModal.overlay.innerHTML.includes('class="btn-time-pick"'), 'Reverts back to time pick button');
-  assert.ok(dateModal.overlay.innerHTML.includes('>🕒</button>'), 'Reverts back to 🕒 compact button');
+  assertLastColumnsDisplayOnly(2, true);
 
   dateModal.open(pastDate, [], true);
   assert.equal((dateModal.overlay.innerHTML.match(/September 24, 2025/g) || []).length, 1, 'Khmer date details have one Gregorian date title');
@@ -634,7 +771,7 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   const timeAfterOpen = dateTimeInZone(new Date(), 'cambodia').time;
   assert.ok(dateModal.overlay.innerHTML.includes('រះ'), 'Rising sign column header displays រះ in Khmer mode');
   assert.ok([timeBeforeOpen, timeAfterOpen].some(time => dateModal.overlay.innerHTML.includes(`<span class="btn-time-chip-text">${time}</span>`)), 'Today opens with the current time in an editable chip');
-  assert.ok(dateModal.overlay.innerHTML.includes('time-interactive-cell'), 'Today hour and rising sign cells can open the time picker');
+  assertLastColumnsDisplayOnly(2);
   assert.equal(dateModal.overlay.innerHTML.includes('date-details-today-badge'), false, 'The Today badge is replaced by the editable time chip');
 
   dateModal.setTime('14:30');
@@ -642,7 +779,7 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   dateModal.setTime(null);
   assert.equal(dateModal.overlay.innerHTML.includes('btn-time-chip'), false, 'Clearing Today removes the time chip');
   assert.match(dateModal.overlay.innerHTML, /<div class="date-details-header-badge"><button type="button" class="btn-time-pick"/u, 'Clearing Today restores the header picker');
-  assert.ok(dateModal.overlay.innerHTML.includes('btn-time-pick'), 'Clearing Today restores the time picker buttons');
+  assertLastColumnsDisplayOnly(2, true);
   dateModal.open(todayStr, [], true);
   assert.ok(dateModal.overlay.innerHTML.includes('btn-time-chip'), 'Reopening Today selects the current time again');
 
@@ -652,14 +789,27 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
   // Off / false: Western zodiac is hidden
   Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: false });
   dateModal.open(pastDate, [], false);
+  dateModal.timeAndLocationModal = {
+    setOnSelect() {},
+    open(_time, _place, _khmer, _todayZone, withLocation) {
+      pickerModes.push(withLocation);
+      return Promise.resolve();
+    }
+  };
+  dateModal.openTimeAndLocation();
+  assert.equal(pickerModes.at(-1), 'time', 'Ganzhi alone opens time-only picker');
+  dateModal.timeAndLocationModal = undefined;
   assert.equal(dateModal.overlay.innerHTML.includes('dialog-watermark-western'), false, 'Western watermark should be hidden when showWesternZodiac is false');
   assert.equal(dateModal.overlay.innerHTML.includes('western-zodiac-table'), false, 'Western zodiac table should be hidden when showWesternZodiac is false');
+  assert.match(dateModal.overlay.innerHTML, /<button type="button" class="btn-time-chip"[^>]*><span aria-hidden="true">🕒<\/span>/u,
+    'Ganzhi-only header keeps the clock emoji');
 
   dateModal.open('1800-09-24', [], false);
+  dateModal.setTime(null);
   assert.ok(dateModal.overlay.innerHTML.includes('ganzhi-range-note'), 'Ganzhi solar year and month are marked unavailable outside 1900–2100');
-  assert.match(dateModal.overlay.innerHTML, /<div class="date-details-header-badge">\s*<button type="button" class="btn-time-pick"/u, 'Ganzhi hour remains selectable outside the solar pillar range');
+  assert.match(dateModal.overlay.innerHTML, /<div class="date-details-header-badge">\s*<button type="button" class="btn-time-pick"/u, 'Header clock remains available outside the solar pillar range');
   dateModal.setTime('14:30');
-  assert.ok(dateModal.overlay.innerHTML.includes('time-interactive-cell'), 'Selected Ganzhi hour is computed and editable outside the solar pillar range');
+  assertLastColumnsDisplayOnly(1);
 
   Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: false, showGanzhi: false });
   const { Zodiac } = await server.ssrLoadModule('/src/domain/Zodiac.ts');
@@ -672,7 +822,7 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
     assert.match(dateModal.overlay.innerHTML, /<div class="date-details-header-badge">\s*<\/div>/u, 'Header omits time picker when both time-dependent tables are hidden');
     dateModal.open(todayStr, [], false);
     assert.match(dateModal.overlay.innerHTML, /<div class="date-details-header-badge">\s*<\/div>/u, 'Today header omits its automatic time chip when both tables are hidden');
-    assert.equal(dateModal.timePickerModal, undefined, 'Hidden time picker is not constructed');
+    assert.equal(dateModal.timeAndLocationModal, undefined, 'Hidden time and location dialog is not constructed');
 
     eventModal.open(event, false);
     assert.equal(eventModal.overlay.innerHTML.includes('dialog-watermark-western'), false, 'Event details watermark should be hidden when showWesternZodiac is false');
@@ -680,6 +830,29 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
     Zodiac.forMonthDay = originalSignLookup;
     Zodiac.getWesternDrawable = originalWesternDrawable;
   }
+
+  // Master off: keep the individual preferences on, but do not enter either engine path.
+  Storage.saveSettings({ ...DEFAULT_SETTINGS, enableAstrologyAndZodiac: false });
+  assert.deepEqual(enabledAstrologyFeatures(Storage.getSettings()), { western: false, ganzhi: false });
+  Zodiac.forMonthDay = () => { throw new Error('Master-disabled Western sign lookup ran'); };
+  Zodiac.getWesternDrawable = () => { throw new Error('Master-disabled Western watermark lookup ran'); };
+  try {
+    dateModal.open(pastDate, [], false);
+    assert.equal(dateModal.overlay.innerHTML.includes('western-zodiac-table'), false);
+    assert.equal(dateModal.overlay.innerHTML.includes('ganzhi-table-wrap'), false);
+    assert.equal(dateModal.overlay.innerHTML.includes('dialog-watermark-western'), false);
+    assert.match(dateModal.overlay.innerHTML, /<div class="date-details-header-badge">\s*<\/div>/u);
+    assert.equal(dateModal.openTimeAndLocation, undefined, 'Master off leaves no time/location picker action');
+    dateModal.setTime('14:30');
+    assert.equal(dateModal.overlay.innerHTML.includes('ganzhi-table-wrap'), false, 'Programmatic time updates cannot run Ganzhi');
+    eventModal.open(event, false);
+    assert.equal(eventModal.overlay.innerHTML.includes('dialog-watermark-western'), false);
+  } finally {
+    Zodiac.forMonthDay = originalSignLookup;
+    Zodiac.getWesternDrawable = originalWesternDrawable;
+  }
+  assert.equal(Storage.getSettings().showWesternZodiac, true, 'Master off preserves Western choice');
+  assert.equal(Storage.getSettings().showGanzhi, true, 'Master off preserves Ganzhi choice');
 
   // Emoji toggle for Western Zodiac
   Storage.saveSettings({ ...DEFAULT_SETTINGS, showWesternZodiac: true, useEmojiForWesternZodiac: true });
@@ -697,23 +870,7 @@ test('showWesternZodiac setting defaults to true and toggles zodiac visibility i
 
   dateModal.close();
 
-  // Test TimePickerModal
-  const { TimePickerModal } = await server.ssrLoadModule('/src/ui/Modals.ts');
-  let pickedTime = null;
-  const timePicker = new TimePickerModal((t) => { pickedTime = t; });
-  timePicker.open('09:15', false, 'Asia/Phnom_Penh');
-  assert.ok(timePicker.overlay.innerHTML.includes('time-picker-dialog'), 'Time picker dialog renders');
-  assert.ok(timePicker.overlay.innerHTML.includes('09:15'), 'Initial time value is populated');
-  assert.ok(timePicker.overlay.innerHTML.includes('btn-time-clear'), 'Clear button is visible when initial time is set');
-  assert.ok(timePicker.overlay.innerHTML.includes('btn-time-save'), 'Save button is visible');
-  assert.ok(timePicker.overlay.innerHTML.includes('btn-time-cancel'), 'Cancel button is visible');
-  timePicker.close();
-
-  // Test when initialTime is null
-  timePicker.open(null, true, 'Asia/Phnom_Penh');
-  assert.equal(timePicker.overlay.innerHTML.includes('btn-time-clear'), false, 'Clear button is hidden when no initial time');
-  timePicker.close();
-
   // Cleanup settings
   Storage.saveSettings(DEFAULT_SETTINGS);
+  Storage.saveBirthplace(previousPlace);
 });

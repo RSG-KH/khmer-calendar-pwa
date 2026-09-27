@@ -54,10 +54,21 @@ function showUrlDialog(title: string, urlText: string, k: boolean): () => void {
 
 export function showCalendarSources(k: boolean): () => void {
   const text = (key: string) => escapeHtml(L.text(key, k));
-  const link = (url: string, label = url) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`;
   const license = (title: string, content: string) => `<section class="source-license"><h3>${escapeHtml(title)}</h3><pre>${escapeHtml(content)}</pre></section>`;
   const engineDescription = text('about.calendar_engine').replace('Khmer Calendar Engine',
-    link('https://github.com/RSG-KH/khmer-calendar-engine', 'Khmer Calendar Engine'));
+    '<a class="source-engine-link" href="https://github.com/RSG-KH/khmer-calendar-engine" target="_blank" rel="noopener noreferrer">Khmer Calendar Engine</a>');
+  const sourceUrls = [
+    'https://www.geonames.org/',
+    'https://creativecommons.org/licenses/by/4.0/',
+    'https://en.wikipedia.org/wiki/Provinces_of_Cambodia',
+    'https://en.wikipedia.org/wiki/List_of_districts,_municipalities_and_sections_in_Cambodia',
+    'https://en.wikipedia.org/wiki/List_of_communes_in_Cambodia',
+    'https://openadmindata.org/api/kh/'
+  ].join('\n');
+  const sourceUrlsTitle = k ? 'អាសយដ្ឋានប្រភព' : 'Source URLs';
+  const divisionDescription = k
+    ? 'ក្រៅកម្ពុជា តំបន់រដ្ឋបាលយោងតាមទិន្នន័យ GeoNames ក្រោមអាជ្ញាបណ្ណ CC BY 4.0។ នៅកម្ពុជា បញ្ជីខេត្ត ស្រុក ខណ្ឌ ឃុំ និងសង្កាត់របស់ Wikipedia ជាប្រភពយោងសំខាន់ ដោយមានកំណត់ត្រាបន្ថែមខ្លះពី CambodiaPostalCode។ កូអរដោនេតំបន់រដ្ឋបាលកម្ពុជាភាគច្រើនបានមកពី Open Admin Data ក្រោមអាជ្ញាបណ្ណ CC BY 4.0 ហើយកូអរដោនេបន្ថែមយោងតាម OCHA / Department of Geography, GeoNames, OpenStreetMap និង Wikidata។'
+    : 'Outside Cambodia, administrative divisions come from GeoNames under CC BY 4.0. In Cambodia, Wikipedia’s province, district, and commune lists are the main references, with some additional records from CambodiaPostalCode. Most Cambodian division coordinates come from Open Admin Data under CC BY 4.0; supplemental coordinates draw on OCHA / Department of Geography, GeoNames, OpenStreetMap, and Wikidata.';
 
   const holidayText = L.text('about.public_holiday_source', k);
   const holidayCandidates = k
@@ -73,7 +84,7 @@ export function showCalendarSources(k: boolean): () => void {
   const holidayIndex = holidayText.indexOf(holidayName);
   const holidayDescription = holidayIndex < 0
     ? escapeHtml(holidayText)
-    : `${escapeHtml(holidayText.slice(0, holidayIndex))}<a href="https://www.ocm.gov.kh/" class="source-url-link" data-url-source="holiday">${escapeHtml(holidayName)}</a>${escapeHtml(holidayText.slice(holidayIndex + holidayName.length))}`;
+    : `${escapeHtml(holidayText.slice(0, holidayIndex))}<button type="button" class="source-url-link" data-url-source="holiday">${escapeHtml(holidayName)}</button>${escapeHtml(holidayText.slice(holidayIndex + holidayName.length))}`;
 
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -85,6 +96,9 @@ export function showCalendarSources(k: boolean): () => void {
         <p>${text('rules.source_summary')}</p>
         <p>${holidayDescription}</p>
         <p>${engineDescription}</p>
+        <div class="source-data-credits">
+          <p>${escapeHtml(divisionDescription)} <button type="button" class="source-url-link" data-url-source="data">${escapeHtml(k ? 'មើលអាសយដ្ឋានប្រភព' : 'View source URLs')}</button>${k ? '។' : '.'}</p>
+        </div>
         <details class="source-licenses">
           <summary>${text('ui.open_source_license.ab00af')}</summary>
           ${license(`${L.text('app.name', k)} · Apache-2.0`, `${attributionNotice}\n\n${appLicense}`)}
@@ -111,6 +125,10 @@ export function showCalendarSources(k: boolean): () => void {
     event.preventDefault();
     childClose?.();
     childClose = showUrlDialog(holidayTitle, holidayUrls, k);
+  });
+  overlay.querySelector('[data-url-source="data"]')?.addEventListener('click', () => {
+    childClose?.();
+    childClose = showUrlDialog(sourceUrlsTitle, sourceUrls, k);
   });
   overlay.addEventListener('click', event => { if (event.target === overlay) close(); });
   document.body.appendChild(overlay);

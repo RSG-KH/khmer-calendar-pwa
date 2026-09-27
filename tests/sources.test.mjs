@@ -248,6 +248,56 @@ function createMockDom() {
   };
 }
 
+test('division credits form one paragraph and their URLs open in one copyable dialog', async () => {
+  const expectedUrls = [
+    'https://www.geonames.org/',
+    'https://creativecommons.org/licenses/by/4.0/',
+    'https://en.wikipedia.org/wiki/Provinces_of_Cambodia',
+    'https://en.wikipedia.org/wiki/List_of_districts,_municipalities_and_sections_in_Cambodia',
+    'https://en.wikipedia.org/wiki/List_of_communes_in_Cambodia',
+    'https://openadmindata.org/api/kh/'
+  ];
+  for (const [khmer, opening, sentenceEnd, title] of [
+    [false, 'Outside Cambodia, administrative divisions come from GeoNames', '.', 'Source URLs'],
+    [true, 'ក្រៅកម្ពុជា តំបន់រដ្ឋបាលយោងតាមទិន្នន័យ GeoNames', '។', 'អាសយដ្ឋានប្រភព']
+  ]) {
+    const dom = createMockDom();
+    const closeSources = showCalendarSources(khmer);
+    const content = dom.body.querySelector('.sources-content');
+    const credits = content.querySelector('.source-data-credits');
+    const licenses = content.querySelector('.source-licenses');
+    assert.ok(credits);
+    const paragraphs = credits.querySelectorAll('p');
+    assert.equal(paragraphs.length, 1);
+    assert.equal(credits.children.length, 1);
+    assert.ok(paragraphs[0].textContent.startsWith(opening));
+    assert.ok(paragraphs[0].textContent.endsWith(sentenceEnd));
+    assert.ok(paragraphs[0].textContent.includes('CambodiaPostalCode'));
+    assert.ok(paragraphs[0].textContent.includes('Open Admin Data'));
+    assert.equal(content.children.indexOf(credits) + 1, content.children.indexOf(licenses));
+    assert.equal(credits.querySelectorAll('a').length, 0, 'Division credits should contain no direct links');
+    const directLinks = content.querySelectorAll('a');
+    assert.equal(directLinks.length, 1, 'The project engine link remains directly clickable');
+    assert.equal(directLinks[0].textContent, 'Khmer Calendar Engine');
+    assert.equal(directLinks[0].getAttribute('href'), 'https://github.com/RSG-KH/khmer-calendar-engine');
+    assert.equal(directLinks[0].getAttribute('rel'), 'noopener noreferrer');
+
+    const urlsButton = credits.querySelector('[data-url-source="data"]');
+    assert.ok(urlsButton);
+    assert.equal(urlsButton.tagName, 'BUTTON');
+    assert.equal(urlsButton.parentNode, paragraphs[0]);
+    assert.equal(urlsButton.textContent, khmer ? 'មើលអាសយដ្ឋានប្រភព' : 'View source URLs');
+    urlsButton.dispatchEvent(new Event('click'));
+    assert.equal(dom.body.querySelector('.source-url-title')?.textContent, title);
+    assert.deepEqual(dom.body.querySelectorAll('.source-url-text').map(el => el.textContent), expectedUrls);
+    dom.body.querySelector('.source-url-copy').dispatchEvent(new Event('click'));
+    await new Promise(resolve => setTimeout(resolve, 0));
+    assert.equal(dom.getClipboard(), expectedUrls.join('\n'));
+    assert.equal(dom.body.querySelector('.source-url-dialog'), null);
+    closeSources();
+  }
+});
+
 test('sources dialog omits retired archive credit and renders official government websites credit and copies all URLs', async () => {
   const dom = createMockDom();
 

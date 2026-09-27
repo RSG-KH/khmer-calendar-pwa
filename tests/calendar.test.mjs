@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { test, after } from 'node:test';
 import { createServer } from 'vite';
+import { readFileSync } from 'node:fs';
+import { gunzipSync } from 'node:zlib';
 
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom', optimizeDeps: { noDiscovery: true, include: [] } });
 after(() => server.close());
@@ -11,10 +13,43 @@ const { Storage, DEFAULT_SETTINGS } = await server.ssrLoadModule('/src/data/Stor
 const { EventRepository } = await server.ssrLoadModule('/src/data/EventRepository.ts');
 const { escapeHtml } = await server.ssrLoadModule('/src/ui/html.ts');
 const { MonthPickerDraft } = await server.ssrLoadModule('/src/ui/MonthPicker.ts');
+const { parseCoordinate, parseCoordinatePair } = await server.ssrLoadModule('/src/domain/Coordinates.ts');
 const { effectiveTheme, appearanceBackground } = await server.ssrLoadModule('/src/ui/Appearance.ts');
 const { ganzhiColumns, ganzhiAnimalLabel, ganzhiEmojiSummary } = await server.ssrLoadModule('/src/domain/Ganzhi.ts');
 const values = new Map();
-globalThis.localStorage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
+globalThis.localStorage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value), removeItem: key => values.delete(key) };
+
+test('decimal coordinates preserve Google Maps order and precision', () => {
+  assert.deepEqual(parseCoordinatePair('41.40338, 2.17403'), { latitude: 41.40338, longitude: 2.17403 });
+  assert.deepEqual(parseCoordinatePair(' -33.86514, 151.20990\n'), { latitude: -33.86514, longitude: 151.2099 });
+  assert.deepEqual(parseCoordinatePair('0, -180'), { latitude: 0, longitude: -180 });
+  assert.equal(parseCoordinate('80.123456789', 'latitude'), 80.123456789);
+  assert.equal(parseCoordinate('90', 'latitude'), 90);
+  assert.equal(parseCoordinate('-180', 'longitude'), -180);
+  for (const value of ['91, 10', '10, -181', '41,40338, 2,17403']) {
+    assert.equal(parseCoordinatePair(value), null, value);
+  }
+});
+
+test('Google Maps DMS and decimal-minute coordinates convert to decimal degrees', () => {
+  assert.deepEqual(parseCoordinatePair('41°24\'12.2"N 2°10\'26.5"E'),
+    { latitude: 41.403388889, longitude: 2.174027778 });
+  assert.deepEqual(parseCoordinatePair('41 24.2028, 2 10.4418'),
+    { latitude: 41.40338, longitude: 2.17403 });
+  assert.equal(parseCoordinate('N 41°24′12.2″', 'latitude'), 41.403388889);
+  assert.equal(parseCoordinate('2°10\'26.5"E', 'longitude'), 2.174027778);
+  assert.deepEqual(parseCoordinatePair('122°05\'06.24"W 37°25\'19.07"N'),
+    { latitude: 37.421963889, longitude: -122.085066667 });
+});
+
+test('coordinate formats reject invalid directions, components, and ranges', () => {
+  for (const value of ['41W', '90°0\'1"N', '41°60\'0"N', '41°24\'60"N',
+    '-41°24\'12"N', '1e2', 'not a coordinate']) {
+    assert.equal(parseCoordinate(value, 'latitude'), null, value);
+  }
+  assert.equal(parseCoordinate('181°W', 'longitude'), null);
+  assert.equal(parseCoordinatePair('41°24\'12.2"N 2°10\'60"E'), null);
+});
 
 test('matches the Android festival and Buddhist Era anchors', () => {
   for (const [date, expected] of [
@@ -153,8 +188,40 @@ test('legacy events and preferences remain readable', () => {
   assert.equal(Storage.getSettings().highlightWeekdayNames, true);
   assert.equal(Storage.getSettings().showObservances, true);
   assert.equal(Storage.getSettings().showGanzhi, true);
+  assert.equal(Storage.getSettings().enableAstrologyAndZodiac, true);
   assert.equal(Storage.getSettings().useEmojiForGanzhiAnimals, false);
   assert.equal(Storage.getCustomEvents()[0].date, '2026-09-13');
+  values.clear();
+});
+
+test('astrology defaults use noon and Sangkat Voat Phnum, while legacy Rising places migrate', () => {
+  values.clear();
+  const fresh = Storage.getSettings();
+  assert.equal(fresh.enableAstrologyAndZodiac, true);
+  assert.equal(fresh.pastFutureTime, '12:00');
+  assert.equal(fresh.risingPlace.source, 'CambodiaDivisions');
+  assert.equal(fresh.risingPlace.divisionId, '018ae4a2-6397-49c9-8e5d-f5e0adabff2b');
+  assert.equal(fresh.risingPlace.label, 'Sangkat Voat Phnum');
+  assert.deepEqual([fresh.risingPlace.latitude, fresh.risingPlace.longitude], [11.5745158, 104.9241723]);
+  assert.equal(fresh.risingPlace.countryCode, 'KH');
+  assert.equal(fresh.risingPlace.timeZone, 'Asia/Phnom_Penh');
+
+  const legacyPlace = { source: 'manual', label: 'Brussels', latitude: 50.85,
+    longitude: 4.35, timeZone: 'Europe/Brussels' };
+  Storage.saveBirthplace(legacyPlace);
+  localStorage.setItem('khmer_calendar_settings', JSON.stringify({ language: 'en', pastFutureTime: '25:61' }));
+  const migrated = Storage.getSettings();
+  assert.equal(migrated.enableAstrologyAndZodiac, true);
+  assert.equal(migrated.pastFutureTime, '12:00');
+  assert.deepEqual(migrated.risingPlace, legacyPlace);
+
+  Storage.saveSettings({ ...migrated, pastFutureTime: '06:15', risingPlace: fresh.risingPlace });
+  assert.equal(Storage.getSettings().pastFutureTime, '06:15');
+  assert.deepEqual(Storage.getSettings().risingPlace, fresh.risingPlace);
+  Storage.saveSettings({ ...Storage.getSettings(), enableAstrologyAndZodiac: false });
+  assert.equal(Storage.getSettings().enableAstrologyAndZodiac, false);
+  localStorage.setItem('khmer_calendar_settings', JSON.stringify({ enableAstrologyAndZodiac: 'false' }));
+  assert.equal(Storage.getSettings().enableAstrologyAndZodiac, true);
   values.clear();
 });
 
@@ -307,7 +374,8 @@ test('Western Zodiac Big 3 columns compute Sun, Moon, and conditional Rising sig
   assert.equal(westernZodiacEmoji(pastCols[0].sign), '♎️');
 
   // Today with hour and minute -> Sun, Moon, Rising sign (3 columns)
-  const todayCols = westernZodiacColumns({ year: 2026, month: 9, day: 26, hour: 14, minute: 30, timeZone: 'cambodia' });
+  const todayCols = westernZodiacColumns({ year: 2026, month: 9, day: 26, hour: 14, minute: 30,
+    timeZone: 'cambodia', latitude: 11.5564, longitude: 104.9282 });
   assert.equal(todayCols.length, 3);
   assert.equal(todayCols[0].key, 'sun');
   assert.equal(todayCols[1].key, 'moon');
@@ -317,37 +385,26 @@ test('Western Zodiac Big 3 columns compute Sun, Moon, and conditional Rising sig
   assert.equal(todayCols[2].sign.englishName, 'Aquarius');
 });
 
-test('Rising sign uses the selected date and the representative location of its time zone', async () => {
+test('Rising sign requires an explicit birthplace and a valid selected time', async () => {
   const { westernZodiacColumns } = await server.ssrLoadModule('/src/domain/WesternZodiac.ts');
   const previousZone = process.env.TZ;
   process.env.TZ = 'Europe/Brussels';
   try {
     const rising = options => westernZodiacColumns(options)[2].sign?.englishName ?? null;
-    const date = { year: 2026, month: 9, day: 26, hour: 14, minute: 30 };
-    assert.equal(rising({ ...date, timeZone: 'cambodia' }), 'Aquarius');
-    assert.equal(rising({ ...date, timeZone: 'local' }), 'Sagittarius');
-    assert.equal(rising({ ...date, timeZone: 'Europe/Brussels' }), 'Sagittarius');
-
-    // Same past date and 00:30 wall time: only the selected zone changes.
-    const pastMidnight = { year: 2026, month: 1, day: 15, hour: 0, minute: 30 };
-    assert.equal(rising({ ...pastMidnight, timeZone: 'cambodia' }), 'Scorpio');
-    assert.equal(rising({ ...pastMidnight, timeZone: 'local' }), 'Libra');
-
-    // The country-only Belgium case sits on the Leo/Virgo boundary. DST had
-    // ended on October 26, so the selected date uses UTC+1, not today's UTC+2.
     const boundary = { year: 2008, month: 10, day: 27, hour: 1, minute: 30 };
-    assert.equal(eventInstant('2008-10-27', '01:30', 'local'), '2008-10-27T00:30:00.000Z');
-    assert.equal(rising({ ...boundary, timeZone: 'cambodia' }), 'Leo');
-    assert.equal(rising({ ...boundary, timeZone: 'local' }), 'Virgo');
-    assert.equal(rising({ ...boundary, timeZone: 'Europe/Brussels' }), 'Virgo');
+    assert.equal(rising({ ...boundary, timeZone: 'cambodia' }), null);
+    assert.equal(rising({ ...boundary, timeZone: 'local' }), null);
+    assert.equal(rising({ ...boundary, timeZone: 'Europe/Brussels' }), null);
 
-    // Belgium changes between UTC+1 and UTC+2; today's offset must not be
-    // reused for dates in a different season.
-    assert.equal(rising({ year: 2026, month: 1, day: 15, hour: 2, minute: 30, timeZone: 'local' }), 'Scorpio');
-    assert.equal(rising({ year: 2026, month: 7, day: 15, hour: 0, minute: 30, timeZone: 'local' }), 'Aries');
+    // A place supplies both coordinates and the zone used for this date.
+    const place = { latitude: 50.85, longitude: 4.35, timeZone: 'Europe/Brussels' };
+    assert.equal(eventInstant('2008-10-27', '01:30', 'local'), '2008-10-27T00:30:00.000Z');
+    assert.ok(rising({ ...boundary, ...place }));
+    assert.equal(rising({ ...boundary, latitude: place.latitude, longitude: place.longitude }), null);
+    assert.equal(rising({ year: 2008, month: 10, day: 27, ...place }), null);
 
     // No instant exists during the spring-forward gap, so Rising is unavailable.
-    assert.equal(rising({ year: 2026, month: 3, day: 29, hour: 2, minute: 30, timeZone: 'local' }), null);
+    assert.equal(rising({ year: 2026, month: 3, day: 29, hour: 2, minute: 30, ...place }), null);
   } finally {
     if (previousZone === undefined) delete process.env.TZ;
     else process.env.TZ = previousZone;

@@ -3,6 +3,7 @@
 import { dateTimeInZone, TodayTimeZone } from '../domain/DateTime';
 import type { EventRepeat } from '../domain/EventRepeat';
 import { defaultFontScale, type FontScale } from '../ui/Platform';
+import { DEFAULT_RISING_PLACE, validBirthplace, type BirthplaceSelection } from './Birthplaces';
 
 export type AccentColor = 'blue' | 'lavender' | 'rose' | 'amber' | 'lime';
 export type ThemeMode = 'system' | 'light' | 'dark';
@@ -20,8 +21,11 @@ export interface AppSettings {
   showLongerWeekdayNames: boolean;
   highlightWeekdayNames: boolean;
   showCopyButtons: boolean;
+  enableAstrologyAndZodiac: boolean;
   showWesternZodiac: boolean;
   useEmojiForWesternZodiac: boolean;
+  pastFutureTime: string;
+  risingPlace: BirthplaceSelection;
   showGanzhi: boolean;
   useEmojiForGanzhiAnimals: boolean;
   showObservances: boolean;
@@ -45,8 +49,11 @@ export const DEFAULT_SETTINGS: AppSettings = {
   showLongerWeekdayNames: false,
   highlightWeekdayNames: true,
   showCopyButtons: false,
+  enableAstrologyAndZodiac: true,
   showWesternZodiac: true,
   useEmojiForWesternZodiac: false,
+  pastFutureTime: '12:00',
+  risingPlace: DEFAULT_RISING_PLACE,
   showGanzhi: true,
   useEmojiForGanzhiAnimals: false,
   showObservances: true,
@@ -57,6 +64,13 @@ export const DEFAULT_SETTINGS: AppSettings = {
   shavingDayReminder: false,
   holidayReminder: true
 };
+
+export function enabledAstrologyFeatures(settings: AppSettings): { western: boolean; ganzhi: boolean } {
+  return {
+    western: settings.enableAstrologyAndZodiac && settings.showWesternZodiac,
+    ganzhi: settings.enableAstrologyAndZodiac && settings.showGanzhi
+  };
+}
 
 export interface CustomEvent {
   id: string;
@@ -71,8 +85,66 @@ export interface CustomEvent {
 
 const LOCAL_EVENTS_KEY = 'khmer_calendar_custom_events';
 const LOCAL_SETTINGS_KEY = 'khmer_calendar_settings';
+const LOCAL_BIRTHPLACE_KEY = 'khmer_calendar_rising_place';
+const LOCAL_MANUAL_BIRTHPLACES_KEY = 'khmer_calendar_manual_rising_places';
+const LOCAL_CATALOG_BIRTHPLACES_KEY = 'khmer_calendar_catalog_rising_places';
 
 class StorageManager {
+  getCatalogBirthplaces(): BirthplaceSelection[] {
+    try {
+      const raw = localStorage.getItem(LOCAL_CATALOG_BIRTHPLACES_KEY);
+      const saved: unknown = raw ? JSON.parse(raw) : [];
+      const places = Array.isArray(saved) ? saved.filter((place): place is BirthplaceSelection =>
+        validBirthplace(place) && place.source !== 'manual') : [];
+      const current = this.getBirthplace();
+      if (!raw && current && current.source !== 'manual') places.push(current);
+      return places;
+    } catch { return []; }
+  }
+
+  saveCatalogBirthplaces(places: BirthplaceSelection[]): void {
+    if (!places.every(place => validBirthplace(place) && place.source !== 'manual')) {
+      throw new RangeError('Invalid catalog place');
+    }
+    localStorage.setItem(LOCAL_CATALOG_BIRTHPLACES_KEY, JSON.stringify(places));
+  }
+
+  getManualBirthplaces(): BirthplaceSelection[] {
+    try {
+      const raw = localStorage.getItem(LOCAL_MANUAL_BIRTHPLACES_KEY);
+      const saved: unknown = raw ? JSON.parse(raw) : [];
+      const places = Array.isArray(saved) ? saved.filter((place): place is BirthplaceSelection =>
+        validBirthplace(place) && place.source === 'manual') : [];
+      const current = this.getBirthplace();
+      if (!raw && current?.source === 'manual') {
+        places.push(current);
+      }
+      return places;
+    } catch { return []; }
+  }
+
+  saveManualBirthplaces(places: BirthplaceSelection[]): void {
+    if (!places.every(place => validBirthplace(place) && place.source === 'manual')) {
+      throw new RangeError('Invalid manual place');
+    }
+    localStorage.setItem(LOCAL_MANUAL_BIRTHPLACES_KEY, JSON.stringify(places));
+  }
+
+  getBirthplace(): BirthplaceSelection | null {
+    try {
+      const raw = localStorage.getItem(LOCAL_BIRTHPLACE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return validBirthplace(parsed) ? parsed : null;
+    } catch { return null; }
+  }
+
+  saveBirthplace(place: BirthplaceSelection | null): void {
+    if (place && !validBirthplace(place)) throw new RangeError('Invalid Rising-sign place');
+    if (place) localStorage.setItem(LOCAL_BIRTHPLACE_KEY, JSON.stringify(place));
+    else localStorage.removeItem(LOCAL_BIRTHPLACE_KEY);
+  }
+
   getSettings(): AppSettings {
     try {
       const stored = localStorage.getItem(LOCAL_SETTINGS_KEY);
@@ -81,12 +153,18 @@ class StorageManager {
         if (parsed.showWesternZodiac === undefined && typeof parsed.hideWesternZodiac === 'boolean') {
           parsed.showWesternZodiac = !parsed.hideWesternZodiac;
         }
-        return { ...DEFAULT_SETTINGS, ...parsed };
+        const pastFutureTime = typeof parsed.pastFutureTime === 'string' &&
+          /^([01]\d|2[0-3]):[0-5]\d$/.test(parsed.pastFutureTime) ? parsed.pastFutureTime : DEFAULT_SETTINGS.pastFutureTime;
+        const risingPlace = validBirthplace(parsed.risingPlace) ? parsed.risingPlace
+          : this.getBirthplace() ?? DEFAULT_RISING_PLACE;
+        const enableAstrologyAndZodiac = typeof parsed.enableAstrologyAndZodiac === 'boolean'
+          ? parsed.enableAstrologyAndZodiac : DEFAULT_SETTINGS.enableAstrologyAndZodiac;
+        return { ...DEFAULT_SETTINGS, ...parsed, enableAstrologyAndZodiac, pastFutureTime, risingPlace };
       }
     } catch (e) {
       console.warn('Failed to load settings:', e);
     }
-    return { ...DEFAULT_SETTINGS };
+    return { ...DEFAULT_SETTINGS, risingPlace: this.getBirthplace() ?? DEFAULT_RISING_PLACE };
   }
 
   saveSettings(settings: AppSettings): void {

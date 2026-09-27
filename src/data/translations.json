@@ -1595,6 +1595,30 @@
     "km": "ហោរាសាស្ត្រ និងរាសីចក្រ",
     "en": "Astrology & Zodiac"
   },
+  "ui.enable_astrology_zodiac": {
+    "km": "បើកហោរាសាស្ត្រ និងរាសីចក្រ",
+    "en": "Enable astrology and zodiac"
+  },
+  "ui.enable_astrology_zodiac_subtitle": {
+    "km": "តារានិករ និងហោរាសាស្ត្រ 干支",
+    "en": "Western zodiac and Chinese Ganzhi"
+  },
+  "ui.set_time_for_past_future": {
+    "km": "ម៉ោងអតីតកាល និងអនាគតកាល",
+    "en": "Set time for past and future"
+  },
+  "ui.set_time_for_past_future_subtitle": {
+    "km": "សម្រាប់តារានិករ និងហោរាសាស្ត្រ 干支",
+    "en": "For western zodiac and Chinese Ganzhi"
+  },
+  "ui.location_for_rising_sign": {
+    "km": "កំណត់ទីតាំងសម្រាប់រាសីរះ",
+    "en": "Set location for rising sign"
+  },
+  "ui.location_for_rising_sign_subtitle": {
+    "km": "សម្រាប់តារានិករ · Big 3",
+    "en": "For western zodiac · Big 3"
+  },
   "ui.ganzhi_clash": {
     "km": "សត្វឆុង",
     "en": "Clash"

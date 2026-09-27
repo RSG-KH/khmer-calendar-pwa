@@ -1,6 +1,6 @@
 import { escapeHtml } from './html';
 
-export function settingsPicker(id: string, value: string, options: string[][]): string {
+export function settingsPicker(id: string, value: string, options: string[][], showCheck = true): string {
   const selected = options.find(option => option[0] === value) ?? options[0];
   return `<div class="settings-picker">
     <button type="button" class="settings-select" id="${id}" aria-labelledby="${id}-label ${id}-value" aria-haspopup="menu" aria-expanded="false" aria-controls="${id}-menu">
@@ -9,7 +9,7 @@ export function settingsPicker(id: string, value: string, options: string[][]): 
     </button>
     <div class="settings-picker-menu" id="${id}-menu" role="menu" aria-labelledby="${id}-label" hidden>
       ${options.map(([key, label]) => `<button type="button" class="settings-picker-option" role="menuitemradio" aria-checked="${key === selected[0]}" tabindex="-1" data-value="${escapeHtml(key)}">
-        <span>${escapeHtml(label)}</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8 3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>${escapeHtml(label)}</span>${showCheck ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8 3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
       </button>`).join('')}
     </div>
   </div>`;

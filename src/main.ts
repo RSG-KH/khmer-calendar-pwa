@@ -8,7 +8,7 @@ import { Zodiac } from './domain/Zodiac';
 import { ganzhiEmojiSummary } from './domain/Ganzhi';
 import { CalendarWords, L } from './data/i18n';
 import { EventRepository, CalendarEvent } from './data/EventRepository';
-import { Storage, AppSettings } from './data/Storage';
+import { Storage, AppSettings, enabledAstrologyFeatures } from './data/Storage';
 import { Icons } from './ui/Icons';
 import { MonthPickerModal, CustomEventModal, DateDetailsDialogModal, EventDetailsDialogModal } from './ui/Modals';
 import { dateTimeInZone, todayInZone } from './domain/DateTime';
@@ -331,9 +331,11 @@ class KhmerCalendarApp {
     /**
      * Maintainer-certified PWA summary (docs/maintainer-certified-calendar-ui.md).
      * Gregorian date, optional Western zodiac, then optional always-emoji Ganzhi;
-     * keep the two toggles independent and the detail table's emoji mode separate.
+     * Keep the two feature toggles independent under the master switch, and the
+     * detail table's emoji mode separate.
      */
-    const ganzhiSummary = this.settings.showGanzhi
+    const astrology = enabledAstrologyFeatures(this.settings);
+    const ganzhiSummary = astrology.ganzhi
       ? ganzhiEmojiSummary(selectedDetails.year, selectedDetails.month, selectedDetails.day)
       : null;
     const dateSummaryHtml = `
@@ -345,7 +347,7 @@ class KhmerCalendarApp {
           <div class="date-summary-gregorian">
             ${CalendarWords.month(selectedDetails.month, false)} ${selectedDetails.day}, ${selectedDetails.year}
           </div>
-          ${this.settings.showWesternZodiac ? `
+          ${astrology.western ? `
             <div class="date-summary-zodiac">
               ${Zodiac.label(selectedDetails.zodiac, false)}
             </div>

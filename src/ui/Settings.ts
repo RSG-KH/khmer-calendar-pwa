@@ -7,6 +7,8 @@ import { appVersion as version } from '../../package.json';
 import { AppUpdater, AppUpdateState } from './AppUpdater';
 import { fontScaleOptions } from './Platform';
 import { effectiveTheme } from './Appearance';
+import { TimeAndLocationModal } from './BirthplacePicker';
+import { escapeHtml } from './html';
 
 export function renderSettings(container: HTMLElement, settings: AppSettings, onChange: (settings: AppSettings) => void, updater: AppUpdater) {
   const k = settings.language === 'km';
@@ -18,7 +20,7 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
   if (!fontScales.includes(settings.fontScale)) fontScales.push(settings.fontScale);
   const installUrl = 'https://rsg-kh.github.io/khmer-calendar-pwa/';
   const installLink = `<a class="about-install-link" href="${installUrl}" target="_blank" rel="noopener noreferrer">${text('app.name')}</a>`;
-  const toggle = (key: 'mondayFirst' | 'showCopyButtons' | 'highlightSunday' | 'showLunar' | 'holyDayMarkers' | 'showHolyDaysInEvents' | 'backgroundAccent' | 'showLongerWeekdayNames' | 'highlightWeekdayNames' | 'showWesternZodiac' | 'useEmojiForWesternZodiac' | 'showGanzhi' | 'useEmojiForGanzhiAnimals' | 'showObservances', title: string, subtitle: string) => `
+  const toggle = (key: 'mondayFirst' | 'showCopyButtons' | 'highlightSunday' | 'showLunar' | 'holyDayMarkers' | 'showHolyDaysInEvents' | 'backgroundAccent' | 'showLongerWeekdayNames' | 'highlightWeekdayNames' | 'enableAstrologyAndZodiac' | 'showWesternZodiac' | 'useEmojiForWesternZodiac' | 'showGanzhi' | 'useEmojiForGanzhiAnimals' | 'showObservances', title: string, subtitle: string) => `
     <label class="settings-row" for="setting-${key}">
       <span class="settings-text-col"><span class="settings-title">${text(title)}</span><span class="settings-subtitle">${text(subtitle)}</span></span>
       <input class="settings-switch" type="checkbox" role="switch" id="setting-${key}" data-setting="${key}" ${settings[key] ? 'checked' : ''} />
@@ -74,10 +76,21 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
       </section>
       <h2 class="section-label">${text('ui.astrology_zodiac')}</h2>
       <section class="settings-card">
+        ${toggle('enableAstrologyAndZodiac', 'ui.enable_astrology_zodiac', 'ui.enable_astrology_zodiac_subtitle')}
+        ${settings.enableAstrologyAndZodiac ? `
+        <div class="settings-row">
+          <span class="settings-text-col"><span class="settings-title" id="past-future-time-label">${text('ui.set_time_for_past_future')}</span><span class="settings-subtitle">${text('ui.set_time_for_past_future_subtitle')}</span></span>
+          <button type="button" class="settings-dialog-button" id="past-future-time" aria-labelledby="past-future-time-label past-future-time-value"><span id="past-future-time-value">${escapeHtml(settings.pastFutureTime)}</span></button>
+        </div>
         ${toggle('showWesternZodiac', 'ui.show_western_zodiac', 'ui.show_western_zodiac_subtitle')}
         ${settings.showWesternZodiac ? toggle('useEmojiForWesternZodiac', 'ui.use_emoji_for_western_zodiac', 'ui.ganzhi_emoji_subtitle') : ''}
+        ${settings.showWesternZodiac ? `<div class="settings-row">
+          <span class="settings-text-col"><span class="settings-title" id="rising-place-label">${text('ui.location_for_rising_sign')}</span><span class="settings-subtitle">${text('ui.location_for_rising_sign_subtitle')}</span></span>
+          <button type="button" class="settings-dialog-button" id="rising-place" aria-labelledby="rising-place-label rising-place-value"><span id="rising-place-value">${escapeHtml(settings.risingPlace.label)}</span></button>
+        </div>` : ''}
         ${toggle('showGanzhi', 'ui.show_chinese_ganzhi', 'ui.show_chinese_ganzhi_subtitle')}
         ${settings.showGanzhi ? toggle('useEmojiForGanzhiAnimals', 'ui.ganzhi_emoji_toggle', 'ui.ganzhi_emoji_subtitle') : ''}
+        ` : ''}
       </section>
       <h2 class="section-label">${k ? 'ការជូនដំណឹង' : 'Notifications'}</h2>
       <section class="settings-card"><div class="settings-row">
@@ -140,6 +153,21 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
   };
   systemTheme.addEventListener('change', updateThemeChoices);
   container.querySelectorAll<HTMLInputElement>('[data-setting]').forEach(input => input.addEventListener('change', () => update({ [input.dataset.setting!]: input.checked })));
+  let astrologyDialog: TimeAndLocationModal | undefined;
+  container.querySelector('#past-future-time')?.addEventListener('click', () => {
+    const onSelect = (time: string | null) => { if (time) update({ pastFutureTime: time }); };
+    astrologyDialog ??= new TimeAndLocationModal(onSelect);
+    astrologyDialog.setOnSelect(onSelect);
+    void astrologyDialog.open(settings.pastFutureTime, settings.risingPlace, k, settings.todayTimeZone, 'time');
+  });
+  container.querySelector('#rising-place')?.addEventListener('click', () => {
+    const onSelect = (_time: string | null, place: AppSettings['risingPlace'] | null) => {
+      if (place) update({ risingPlace: place });
+    };
+    astrologyDialog ??= new TimeAndLocationModal(onSelect);
+    astrologyDialog.setOnSelect(onSelect);
+    void astrologyDialog.open(null, settings.risingPlace, k, settings.todayTimeZone, 'location');
+  });
   let closeSources: (() => void) | undefined;
   container.querySelector('.about-sources')!.addEventListener('click', () => {
     closeSources?.();
@@ -149,5 +177,5 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
     if (id === 'font-scale') update({ fontScale: Number(value) as FontScale });
     if (id === 'today-zone') update({ todayTimeZone: value as TodayTimeZone });
   });
-  return () => { unsubscribeUpdate(); cleanupPickers(); closeSources?.(); systemTheme.removeEventListener('change', updateThemeChoices); };
+  return () => { unsubscribeUpdate(); cleanupPickers(); closeSources?.(); astrologyDialog?.dispose(); systemTheme.removeEventListener('change', updateThemeChoices); };
 }

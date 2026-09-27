@@ -9,9 +9,15 @@ const ASSETS_TO_CACHE = /* __PRECACHE_ASSETS__ */ [];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
+    caches.open(CACHE_NAME).then(async (cache) => {
       // Revalidate stable URLs such as index.html instead of copying stale HTTP cache entries.
-      return cache.addAll(ASSETS_TO_CACHE.map(asset => new Request(new URL(asset, APP_URL).href, { cache: 'reload' })));
+      // Country assets are offline by first use. Small batches avoid hundreds of
+      // simultaneous requests on mobile browsers during a first install.
+      for (let offset = 0; offset < ASSETS_TO_CACHE.length; offset += 16) {
+        const batch = ASSETS_TO_CACHE.slice(offset, offset + 16)
+          .map(asset => new Request(new URL(asset, APP_URL).href, { cache: 'reload' }));
+        await cache.addAll(batch);
+      }
     })
   );
   // Updates wait for existing tabs to close, or a user-initiated update check.

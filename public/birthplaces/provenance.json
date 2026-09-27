@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 3,
+  "geonames": {
+    "source": "GeoNames allCountries.zip",
+    "sourceUrl": "https://download.geonames.org/export/dump/allCountries.zip",
+    "sourceSha256": "b5089a37b1030b4a428bb836ae46b2d1077504b46566ec00accded2fd96b0461",
+    "sourceBytes": 421993845,
+    "includedFeatureCodes": [
+      "ADM1",
+      "ADM2",
+      "ADM3"
+    ],
+    "statistics": {
+      "byLevel": [
+        3840,
+        47444,
+        149718
+      ],
+      "missingParents": 783,
+      "duplicateCodes": 0,
+      "countriesWithoutDivisions": [
+        "AQ",
+        "AW",
+        "BV",
+        "IO",
+        "VG",
+        "CX",
+        "CC",
+        "CW",
+        "FK",
+        "GI",
+        "HM",
+        "AN",
+        "NU",
+        "NF",
+        "PN",
+        "BL",
+        "MF",
+        "CS",
+        "SG",
+        "SX",
+        "GS",
+        "TC",
+        "VA",
+        "EH"
+      ],
+      "withoutTimeZone": 1836
+    }
+  },
+  "cambodia": {
+    "source": "Wikipedia-referenced Cambodia divisions with supplemental CambodiaPostalCode records, Open Admin Data and additional coordinate points",
+    "sourceVersion": "2026-09-27.2",
+    "sourceSha256": "cd970ad331ab3af3594b5498fb83063abd730d543ea800dc20d5acbf1d6717d1",
+    "divisions": 1898,
+    "withCoordinates": 1898,
+    "sourceNotice": "See ATTRIBUTION.txt and the source dataset NOTICE.md",
+    "datasetVersion": "2eddb97241b92329c5f5547f6101fb32ee02ccb3cf510ec1371fd91a84dc732f",
+    "coordinateFill": {
+      "sourceSha256": "37b6762eb8c8fd276796beff44f52436253693751f91e5a6ead22262bbdafb73",
+      "filledDivisions": 445,
+      "methodBreakdown": [
+        {
+          "coordinate_status": "filled_from_boundary_centroid",
+          "coordinate_confidence": "high_for_2018_boundary",
+          "count": 357
+        },
+        {
+          "coordinate_status": "filled_from_current_place_center",
+          "coordinate_confidence": "medium",
+          "count": 35
+        },
+        {
+          "coordinate_status": "filled_from_current_reference_point",
+          "coordinate_confidence": "high",
+          "count": 23
+        },
+        {
+          "coordinate_status": "filled_from_current_reference_point",
+          "coordinate_confidence": "low",
+          "count": 1
+        },
+        {
+          "coordinate_status": "filled_from_current_reference_point",
+          "coordinate_confidence": "medium",
+          "count": 21
+        },
+        {
+          "coordinate_status": "filled_with_representative_fallback",
+          "coordinate_confidence": "low",
+          "count": 5
+        },
+        {
+          "coordinate_status": "filled_with_representative_fallback",
+          "coordinate_confidence": "medium",
+          "count": 3
+        }
+      ],
+      "lowConfidenceDivisions": 6
+    }
+  }
+}

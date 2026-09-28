@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { test, after, beforeEach } from 'node:test';
 import { createServer } from 'vite';
 
@@ -79,3 +80,52 @@ test('Khmer grouped rows retain localized dates and escape personal-event text a
   assert.match(html, /A &quot;title&quot; &lt;script&gt; &amp;/);
   assert.equal(html.includes('<script>'), false);
 });
+
+test('monthly events heading is scoped to calendar-month-events-header and hidden in portrait mode', async () => {
+  const mainTs = await readFile(new URL('../src/main.ts', import.meta.url), 'utf8');
+  assert.match(mainTs, /<div class="calendar-month-events-header"[^>]*>[\s\S]*?ui\.all_events_in_month/);
+
+  const responsiveCss = await readFile(new URL('../src/styles/responsive.css', import.meta.url), 'utf8');
+  assert.match(responsiveCss, /@media\s*\(orientation:\s*portrait\)\s*\{[\s\S]*?\.calendar-month-events-header\s*\{\s*display:\s*none;\s*\}[\s\S]*?\}/);
+  assert.doesNotMatch(responsiveCss, /@media\s*\(orientation:\s*landscape\)\s*\{[\s\S]*?\.calendar-month-events-header\s*\{\s*display:\s*none;\s*\}[\s\S]*?\}/);
+});
+
+test('date details dialog event buttons have visual gap between title and event kind', async () => {
+  const modalsTs = await readFile(new URL('../src/ui/Modals.ts', import.meta.url), 'utf8');
+  assert.match(modalsTs, /class="dialog-event-content"\s+style="[^"]*gap:\s*3px/);
+
+  const appearanceCss = await readFile(new URL('../src/styles/appearance.css', import.meta.url), 'utf8');
+  assert.match(appearanceCss, /\.dialog-event-content\s*\{[^}]*gap:\s*3px/);
+  assert.match(appearanceCss, /\.dialog-event-title\s*\{[^}]*line-height:\s*1\.4/);
+  assert.match(appearanceCss, /\.dialog-event-kind\s*\{[^}]*line-height:\s*1\.3/);
+});
+
+test('modal overlay background dim is 30% for light theme and increased to 55% for dark theme', async () => {
+  const themeCss = await readFile(new URL('../src/styles/theme.css', import.meta.url), 'utf8');
+  assert.match(themeCss, /:root\s*\{[\s\S]*?--modal-scrim:\s*rgba\(0,\s*0,\s*0,\s*0\.3\);/);
+  assert.match(themeCss, /\[data-theme="dark"\]\s*\{[\s\S]*?--modal-scrim:\s*rgba\(0,\s*0,\s*0,\s*0\.55\);/);
+
+  const appearanceCss = await readFile(new URL('../src/styles/appearance.css', import.meta.url), 'utf8');
+  assert.match(appearanceCss, /:root\s*\{[\s\S]*?--modal-scrim:\s*rgba\(0,\s*0,\s*0,\s*0\.3\);/);
+  assert.match(appearanceCss, /\[data-theme="dark"\]\s*\{[\s\S]*?--modal-scrim:\s*rgba\(0,\s*0,\s*0,\s*0\.55\);/);
+  assert.match(appearanceCss, /\.modal-overlay\s*\{[^}]*background:\s*var\(--modal-scrim,\s*rgba\(0,\s*0,\s*0,\s*0\.3\)\);/);
+});
+
+test('engine calculation attributions in event details and astrology popups use 10px font size', async () => {
+  const modalsTs = await readFile(new URL('../src/ui/Modals.ts', import.meta.url), 'utf8');
+  assert.match(modalsTs, /isEngineCalculated\s*\?\s*'10px'\s*:\s*'13px'/);
+
+  const appearanceCss = await readFile(new URL('../src/styles/appearance.css', import.meta.url), 'utf8');
+  assert.match(appearanceCss, /\.astrology-engine-attribution\s*\{[^}]*font-size:\s*calc\(10px\s*\*\s*var\(--font-scale\)\);/);
+});
+
+test('event details popup footer has 30px gap before action buttons matching other popups', async () => {
+  const modalsTs = await readFile(new URL('../src/ui/Modals.ts', import.meta.url), 'utf8');
+  assert.match(modalsTs, /class="event-detail-footer"[^>]*margin-top:\s*30px/);
+
+  const appearanceCss = await readFile(new URL('../src/styles/appearance.css', import.meta.url), 'utf8');
+  assert.match(appearanceCss, /\.event-detail-footer\s*\{[^}]*margin-top:\s*30px;/);
+});
+
+
+

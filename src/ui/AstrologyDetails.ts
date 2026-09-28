@@ -1,4 +1,5 @@
 import { L } from '../data/i18n';
+import { calendarEngine } from '../domain/KhmerCalendar';
 import { Zodiac, ZODIAC_SIGNS } from '../domain/Zodiac';
 import { ganzhiAnimalLabel, type GanzhiColumn } from '../domain/Ganzhi';
 import type { WesternZodiacColumn } from '../domain/WesternZodiac';
@@ -96,11 +97,12 @@ export class AstrologyDetailsModal {
       const role = L.text(`ui.western_zodiac_${column.key}`, details.khmer);
       return `<div class="astrology-sign-detail" data-sign="${column.key}" aria-label="${escapeHtml(`${role}: ${label}`)}">${escapeHtml(label)}</div>`;
     }).join('')}</div>` : '';
+    const attribution = L.text('astrology.engine_calculations', details.khmer, { version: calendarEngine.version });
     this.overlay.innerHTML = `<div class="modal-dialog-surface astrology-details-dialog">
       ${background ? `<span class="dialog-watermark-animal tinted-watermark" style="--watermark-image: url('${escapeHtml(background)}')" aria-hidden="true"></span>` : ''}
       <h2 class="astrology-details-title">${escapeHtml(title)}</h2>
       <div class="card-divider"></div>
-      <div class="astrology-details-content">${details.tableHtml}${rows}</div>
+      <div class="astrology-details-content">${details.tableHtml}${rows}<div class="astrology-engine-attribution">${escapeHtml(attribution)}</div></div>
       <div class="astrology-details-actions">
         ${askAiButton(details.khmer)}
         <button type="button" class="btn-today-pill btn-astrology-close">${escapeHtml(L.text('ui.close.7df7dc', details.khmer))}</button>

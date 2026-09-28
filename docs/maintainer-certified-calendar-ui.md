@@ -77,13 +77,15 @@ The Earthly Branch emoji sequence, indexed from Rat through Pig, is **`🐭 🐮
 
 **Maintainer requested — 27 September 2026.** The shared Time and location picker footer has a **30px top margin**, matching the date-details action row. Keep this spacing in catalog and custom-location modes, as well as the time-only and location-only variants.
 
+**Maintainer requested — 28 September 2026.** The event details popup footer and action row (`.event-detail-footer`) has a **30px top margin**, matching the 30px spacing of the date-details action row, the astrology child popups, and the Time and location picker footer.
+
 ## Astrology table detail popups
 
 **Maintainer requested — 28 September 2026.** The entire Western Big 3 or Ganzhi table in date details, including its headings and body rows, opens a separate detail popup. Each table is one keyboard focus target: Enter or Space opens it. Horizontal or vertical dragging scrolls without opening a popup. Preserve the table dimensions, typography, column widths, highlighting and emoji preferences specified above. Values remain read-only; the date-details header remains the time/location picker control.
 
 Both clickable tables show an immediate 14% accent background while pressed by a primary touch, pen or mouse pointer. The highlight clears on release, cancellation, leaving the table, or movement beyond the existing 8px drag threshold. Scrolling still does not open a popup; keyboard focus keeps its visible outline. This feedback does not change table dimensions or use timers.
 
-The popup titles are **Zodiac · Big 3** / **តារានិករ · Big 3** and **Chinese Ganzhi (干支)** / **ហោរាសាស្ត្រចិន (干支)**. Each popup repeats the exact table currently displayed in its parent, using the same selected date, time and place. Its table does not open another popup. Big 3 adds three rows in Sun, Moon, Rising order after an 18px gap, using the bundled catalog's emoji, English sign name, element and planet (for example `♏️ Scorpio (Water · Pluto)`). These rows use **12px × font scale**, **20px × font scale** line height and a **10px gap**. An unavailable sign displays an em dash. Ganzhi has no extra sign-detail rows.
+The popup titles are **Zodiac · Big 3** / **តារានិករ · Big 3** and **Chinese Ganzhi (干支)** / **ហោរាសាស្ត្រចិន (干支)**. Each popup repeats the exact table currently displayed in its parent, using the same selected date, time and place. Its table does not open another popup. Big 3 adds three rows in Sun, Moon, Rising order after an 18px gap, using the bundled catalog's emoji, English sign name, element and planet (for example `♏️ Scorpio (Water · Pluto)`). These rows use **12px × font scale**, **20px × font scale** line height and a **10px gap**. An unavailable sign displays an em dash. Ganzhi has no extra sign-detail rows. Both popups display an engine calculation attribution line (`.astrology-engine-attribution`) below the content: **“Calculations by Khmer Calendar Engine v{version}.”** / **“ការគណនាធ្វើឡើងដោយ Khmer Calendar Engine កំណែ {version} ។”** (10px × font scale, line height 1.5, `var(--on-surface-variant)`).
 
 Reuse the date-details watermark styling with the calculated **Sun sign** for Big 3 and **Year animal** for Ganzhi. If that sign or pillar is unavailable, omit its watermark; do not substitute another animal for an unsupported solar year. Popups retain the existing responsive bottom-sheet/centered-dialog behavior, with scrollable content on short screens.
 
@@ -114,6 +116,12 @@ Show the large day number and weekday only in the first event row of each day, l
 The weekday sits slightly closer to the large day number, following the maintainer's request for roughly 20% tighter spacing. Its top margin is `calc(-1px - 0.2em)`, reducing the gap by 2px at default text size and scaling with the weekday font. Keep the existing font sizes and line heights.
 
 In the calendar's monthly event list and the Events tab, today's entire day group has a background of **2% accent color over the normal surface**, including its shared date column and every event row. This background tint is the only today-specific visual change. Preserve the original event-type colors, holiday date color, category bars, text, separators, chevrons, personal-event artwork, and focus/pressed styling. Do not add a stripe or replace the surface with a solid accent color. Today follows the configured calendar time zone and refreshes when the day changes. Other dates and the separate selected-day list retain their normal background.
+
+**Maintainer requested — 28 September 2026.** Hide the monthly events heading (`.calendar-month-events-header`, showing `ui.all_events_in_month.ab923a` and event count) in portrait orientation, matching the Android portrait layout where monthly event cards sit directly below the month card. Keep the heading displayed in landscape orientation above the right-hand events column as before.
+
+## Modal background dim (scrim)
+
+**Maintainer requested — 28 September 2026.** Popups and dialogs use `--modal-scrim` on `.modal-overlay`. For light theme, preserve the certified 30% background dim (`rgba(0, 0, 0, 0.3)`). For dark theme, increase the background dim to 55% (`rgba(0, 0, 0, 0.55)`) so popup dialog surfaces (`var(--bg-surface)`) stand out with sufficient contrast and depth over dark calendar content behind the overlay.
 
 ## Sync and review rule
 

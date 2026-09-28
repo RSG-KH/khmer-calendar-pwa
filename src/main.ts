@@ -381,7 +381,7 @@ class KhmerCalendarApp {
           </div>
 
           <div class="calendar-col-right">
-            <div style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant); margin: 6px 0 10px 4px;">
+            <div class="calendar-month-events-header" style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant); margin: 6px 0 10px 4px;">
               ${L.text('ui.all_events_in_month.ab923a', k, { month: CalendarWords.month(this.currentMonth, k) })} (${CalendarWords.number(monthEvents.length, k)})
             </div>
             <div class="events-list-container">${renderEventRows(monthEvents, k, todayStr)}</div>

@@ -12,6 +12,7 @@
 .calendar-col-right { margin-top: 16px; }
 @media (orientation: portrait) {
   :root[data-phone] .cal-cell { height: calc(52px * var(--font-scale)); }
+  .calendar-month-events-header { display: none; }
 }
 @media (orientation: landscape) {
   .cal-cell { height: calc(62px * var(--font-scale)); }

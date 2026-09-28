@@ -147,6 +147,14 @@ async function inspect(profile) {
       check(events.width <= card.width * (profile.phone ? 1 : 2) + 1, 'Monthly events exceed their width cap');
       if (profile.width === 1920 && profile.font <= 1) check(near(events.width, card.width * 2), 'Wide desktop should expand events to 2x when space allows');
     }
+    const monthHeader = layout.querySelector('.calendar-month-events-header');
+    if (monthHeader) {
+      if (profile.height >= profile.width) {
+        check(getComputedStyle(monthHeader).display === 'none', 'Monthly events header must be hidden in portrait mode');
+      } else {
+        check(getComputedStyle(monthHeader).display !== 'none', 'Monthly events header must remain visible in landscape mode');
+      }
+    }
     const container = layout.parentElement;
     const outer = container.getBoundingClientRect();
     const content = layout.getBoundingClientRect();

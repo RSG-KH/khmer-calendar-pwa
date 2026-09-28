@@ -443,8 +443,11 @@ test('event details dialog renders clean categories and descriptions without raw
   modal.open(kohKer, true);
   const kohKerHtml = modal.overlay.innerHTML;
   assert.ok(kohKerHtml.includes('ព្រឹត្តិការណ៍តាមការគណនា'));
-  assert.ok(kohKerHtml.includes('ការគណនាប្រតិទិនធ្វើឡើងដោយ Khmer Calendar Engine។'));
-  assert.ok(kohKerHtml.includes('font-size: calc(12px * var(--font-scale))'), 'Engine calculations description should use 12px');
+  assert.ok(kohKerHtml.includes('ការគណនាធ្វើឡើងដោយ Khmer Calendar Engine កំណែ 0.6.0 ។'));
+  modal.open(kohKer, false);
+  assert.ok(modal.overlay.innerHTML.includes('Calculations by Khmer Calendar Engine v0.6.0.'));
+  modal.open(kohKer, true);
+  assert.ok(kohKerHtml.includes('font-size: calc(10px * var(--font-scale))'), 'Engine calculations description should use 10px');
   assert.ok(kohKerHtml.includes('Koh Ker inscribed on the UNESCO World Heritage List'));
   assert.equal(kohKerHtml.includes('SHA-256'), false, 'Must not contain SHA-256');
   assert.equal(kohKerHtml.includes('calendar-events.tsv'), false, 'Must not contain calendar-events.tsv');

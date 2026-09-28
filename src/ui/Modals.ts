@@ -6,6 +6,7 @@ import { Storage, CustomEvent, enabledAstrologyFeatures } from '../data/Storage'
 import { CalendarEvent } from '../data/EventRepository';
 import { knowledgeById } from '../data/RecurringEvents';
 import { KhmerDateDetails } from '../domain/KhmerDateDetails';
+import { calendarEngine } from '../domain/KhmerCalendar';
 import { Zodiac } from '../domain/Zodiac';
 import { dateTimeInZone, eventInstant, isSupportedDate, namedTimeZone, timeZoneOffsetLabel } from '../domain/DateTime';
 import { escapeHtml } from './html';
@@ -260,9 +261,9 @@ export class DateDetailsDialogModal {
               ${events.map(e => `
                 <button class="dialog-event-item" data-ev-id="${escapeHtml(e.id)}" style="display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 10px; background: color-mix(in srgb, var(--bg-surface-variant) 50%, transparent); cursor: pointer;">
                   <span class="mark-shape ${e.kind.toLowerCase()}"></span>
-                  <div style="flex: 1; display: flex; flex-direction: column;">
-                    <span style="font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--text-primary);">${escapeHtml(isKhmer ? e.titleKm : e.titleEn)}</span>
-                    <span style="font-size: calc(11px * var(--font-scale)); color: var(--on-surface-variant);">${L.text(e.kind === 'HOLIDAY' ? 'ui.holiday.253332' : e.kind === 'HOLY_DAY' ? 'ui.holy_day.28786d' : e.kind === 'CUSTOM' ? 'ui.custom.917053' : 'ui.observance.5b9a87', isKhmer)}${e.time ? ' · ' + escapeHtml(e.time) : ''}</span>
+                  <div class="dialog-event-content" style="flex: 1; display: flex; flex-direction: column; gap: 3px;">
+                    <span class="dialog-event-title" style="font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--text-primary); line-height: 1.4;">${escapeHtml(isKhmer ? e.titleKm : e.titleEn)}</span>
+                    <span class="dialog-event-kind" style="font-size: calc(11px * var(--font-scale)); color: var(--on-surface-variant); line-height: 1.3;">${L.text(e.kind === 'HOLIDAY' ? 'ui.holiday.253332' : e.kind === 'HOLY_DAY' ? 'ui.holy_day.28786d' : e.kind === 'CUSTOM' ? 'ui.custom.917053' : 'ui.observance.5b9a87', isKhmer)}${e.time ? ' · ' + escapeHtml(e.time) : ''}</span>
                   </div>
                   <span style="font-size: calc(18px * var(--font-scale)); color: var(--on-surface-variant);">›</span>
                 </button>
@@ -426,7 +427,7 @@ export class EventDetailsDialogModal {
     } else if (event.kind === 'HOLIDAY') {
       categoryDesc = L.text('ui.listed_in_cambodia_s_official_year_holiday_calendar.044398', isKhmer, { year: CalendarWords.number(parts[0], isKhmer) });
     } else {
-      categoryDesc = L.text('events.engine_calculations', isKhmer);
+      categoryDesc = L.text('events.engine_calculations', isKhmer, { version: calendarEngine.version });
       isEngineCalculated = true;
     }
 
@@ -482,7 +483,7 @@ export class EventDetailsDialogModal {
               ${escapeHtml(titleWithOriginYear)}
             </div>
           ` : ''}
-          ${categoryDesc ? `<div style="font-size: calc(${isEngineCalculated ? '12px' : '13px'} * var(--font-scale)); line-height: 1.6; color: var(--on-surface-variant);">${categoryDesc}</div>` : ''}
+          ${categoryDesc ? `<div style="font-size: calc(${isEngineCalculated ? '10px' : '13px'} * var(--font-scale)); line-height: 1.6; color: var(--on-surface-variant);">${categoryDesc}</div>` : ''}
 
           ${(event.kind === 'HOLIDAY' && ((isKhmer ? event.citationKm : event.citationEn) || event.citation)) ? `
             <div class="event-citation" style="font-size: calc(13px * var(--font-scale)); line-height: 1.5; color: var(--on-surface-variant); margin-top: 2px;">
@@ -491,7 +492,7 @@ export class EventDetailsDialogModal {
           ` : ''}
         </div>
 
-        <div class="event-detail-footer" style="position: relative; z-index: 1;">
+        <div class="event-detail-footer" style="position: relative; z-index: 1; margin-top: 30px;">
           ${isCustom ? `<div class="event-delete-confirmation" hidden>
             <p class="form-error" role="alert">${L.text(event.seriesId ? 'repeat.delete_confirm' : 'ui.delete_this_event.925263', isKhmer)}</p>
             <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px;">
@@ -499,7 +500,7 @@ export class EventDetailsDialogModal {
               <button class="btn-today-pill btn-confirm-delete" style="color: var(--tertiary);">${L.text('ui.delete.4708f4', isKhmer)}</button>
             </div>
           </div>` : ''}
-          <div class="event-detail-actions" style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
+          <div class="event-detail-actions" style="display: flex; justify-content: space-between; align-items: center;">
             ${isCustom ? `
               <button class="btn-today-pill btn-ev-delete" ${event.seriesId ? 'data-series' : ''} style="color: #FF5252; background: transparent; border: 1px solid #FF5252;">
                 ${L.text(event.seriesId ? 'repeat.delete_series' : 'ui.delete.4708f4', isKhmer)}

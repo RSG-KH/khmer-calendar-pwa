@@ -36,6 +36,7 @@
   --accent-container: rgba(69, 100, 181, 0.12);
   --on-accent: #FFFFFF;
   --on-surface-variant: #6D7485;
+  --modal-scrim: rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="dark"] {
@@ -53,6 +54,7 @@
   --accent-container: rgba(168, 191, 255, 0.14);
   --on-accent: #182139;
   --on-surface-variant: #A2A8B7;
+  --modal-scrim: rgba(0, 0, 0, 0.55);
 }
 
 /* Accent overrides */

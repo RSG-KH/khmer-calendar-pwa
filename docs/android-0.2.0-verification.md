@@ -1,5 +1,7 @@
 # Android 0.2.0 parity verification
 
+**Historical report.** Version numbers, test counts, generated-cache behavior and measurements below apply to the revision verified on 16 September 2026. For current architecture and build/test instructions, see the [engine/data guide](shared-engine.md) and [development guide](../DEVELOPMENT.md).
+
 Verified 16 September 2026 against the [implementation plan](android-0.2.0-pwa-plan.md). Application implementation is complete. The user approved committing and pushing after reviewing the preview. Physical installed-device checks remain outstanding. Package version remains **0.1.8**, with **0.1.8.1** displayed in Settings.
 
 ## Automated results

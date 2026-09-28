@@ -1,5 +1,7 @@
 # Stability and performance audit — 27 September 2026
 
+**Historical audit.** Test counts, bundle sizes and measurements below belong to the audited revision and its nested-event-popup follow-up. Later astrology detail popups are documented in the [current UI contract](maintainer-certified-calendar-ui.md#astrology-table-detail-popups); their focused regression coverage is listed in the [development guide](../DEVELOPMENT.md#build-and-test). The measurements below do not include those later popups.
+
 Audited app version **0.12.0.1**, starting from commit `30790dd` plus the pending Sources and licenses translation corrections. This audit does not change the release version or the maintainer-certified calendar layout.
 
 ## Findings and fixes

@@ -483,7 +483,7 @@ test('event details dialog renders clean categories and descriptions without raw
   const summaryKmIdx = learnHtml.indexOf(escapeHtml(entry.summaryKm));
   assert.ok(summaryEnIdx >= 0 && summaryKmIdx >= 0, 'Both language summaries render');
   assert.ok(summaryEnIdx < summaryKmIdx, 'English summary must lead when the app is English');
-  assert.ok(learnHtml.includes('Search online'), 'Search online action present');
+  assert.ok(learnHtml.includes('Ask AI'), 'Ask AI action present');
   assert.ok(learnHtml.includes('Opens in external browser'), 'External-browser hint labels the open-in-new icon');
   assert.equal(buildOnlineSearchQuery(constDay, false), 'Constitution Day · 33rd Cambodia history and significance');
   assert.equal(buildOnlineSearchQuery(constDay, true), `${constDay.titleKm} ប្រវត្តិ សារៈសំខាន់`);

@@ -1355,10 +1355,6 @@
     "km": "ស្វែងរកព្រឹត្តិការណ៍",
     "en": "Search events"
   },
-  "ui.search_online": {
-    "km": "ស្វែងរកលើអ៊ីនធឺណិត",
-    "en": "Search online"
-  },
   "ui.select_time.eacac3": {
     "km": "ជ្រើសរើសម៉ោង",
     "en": "Select time"
@@ -1698,5 +1694,21 @@
   "ui.western_zodiac_sign": {
     "km": "រាសី",
     "en": "Sign"
+  },
+  "ui.ask_ai": {
+    "en": "Ask AI",
+    "km": "សួរ AI"
+  },
+  "ui.zodiac_big3_title": {
+    "en": "Zodiac · Big 3",
+    "km": "តារានិករ · Big 3"
+  },
+  "ui.chinese_ganzhi_title": {
+    "en": "Chinese Ganzhi (干支)",
+    "km": "ហោរាសាស្ត្រចិន (干支)"
+  },
+  "ui.astrology_ai_query": {
+    "en": "Explain the traditional astrological meanings of {details}.",
+    "km": "ពន្យល់អត្ថន័យតាមហោរាសាស្ត្រនៃ {details}។"
   }
 }

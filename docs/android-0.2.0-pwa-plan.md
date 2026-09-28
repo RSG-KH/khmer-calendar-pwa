@@ -1,5 +1,7 @@
 # PWA implementation plan for Android 0.2.0 parity
 
+**Historical plan.** The versions, generated event cache and implementation steps below describe the September 2026 migration baseline. The current app evaluates catalog events live and uses a newer engine; see the [current engine/data guide](shared-engine.md), [UI contract](maintainer-certified-calendar-ui.md) and [development guide](../DEVELOPMENT.md).
+
 Reviewed and implemented on 16 September 2026. Status: **implementation complete; automated and browser verification passed**. Physical installed-device checks remain before release. See the [verification report](android-0.2.0-verification.md) and [engine/data guide](shared-engine.md).
 
 The plan below records the original comparison and agreed scope. The implementation adds the shared engine, precomputed event dates, appearance improvements and navigation/lifecycle changes while preserving responsive layout, saved events and offline updates.

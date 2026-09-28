@@ -15,10 +15,12 @@ import { setupTimeField } from './TimeField';
 import { setupCopyButton } from './CopyButton';
 import { holyDayLotus } from './HolyDayLotus';
 import { EventRepeatField, repeatDateLabel } from './EventRepeatField';
-import { ganzhiAnimalLabel, ganzhiColumns } from '../domain/Ganzhi';
+import { ganzhiAnimalLabel, ganzhiColumns, type GanzhiColumn } from '../domain/Ganzhi';
 import { westernZodiacColumns, westernZodiacLabel, westernZodiacTooltip, type WesternZodiacColumn } from '../domain/WesternZodiac';
 import { TimeAndLocationModal, timeAndLocationTitle } from './BirthplacePicker';
 import type { BirthplaceSelection } from '../data/Birthplaces';
+import { AstrologyDetailsModal, astrologyTitle, bindAstrologyTable, type AstrologyKind } from './AstrologyDetails';
+import { askAiButton, launchAiSearch } from './AskAi';
 
 function renderLocationEmoji(place: BirthplaceSelection | null): string {
   const country = place?.countryCode;
@@ -42,13 +44,10 @@ function renderTimePickButton(label: string, icon: string): string {
  */
 function renderGanzhiTable(
   year: number,
-  month: number,
-  day: number,
-  hour: number | undefined,
+  columns: readonly GanzhiColumn[],
   khmer: boolean,
   useEmoji: boolean
 ): string {
-  const columns = ganzhiColumns(year, month, day, hour);
   const label = (key: string) => L.text(`ui.ganzhi_${key}`, khmer);
   const solarSupported = year >= 1900 && year <= 2100;
   const animal = (index: number, clash: boolean) => {
@@ -75,24 +74,15 @@ function renderGanzhiTable(
 /**
  * Maintainer-certified PWA date-details Western Zodiac Big 3 table (docs/maintainer-certified-calendar-ui.md).
  * Keep `☸️ Big 3` in the first column header, followed by Sun, Moon, and Rising sign;
- * the single body row is Sign. `useEmoji` toggles between emoji symbols and localized sign names.
+ * the single body row is Sign. `useEmoji` toggles between emoji symbols and English sign names.
  */
 function renderWesternZodiacTable(
-  year: number,
-  month: number,
-  day: number,
-  hour: number | undefined,
-  minute: number | undefined,
-  timeZone: string,
+  columns: readonly WesternZodiacColumn[],
   khmer: boolean,
-  useEmoji: boolean,
-  place: BirthplaceSelection | null = null
+  useEmoji: boolean
 ): string {
-  const columns = westernZodiacColumns({ year, month, day, hour, minute,
-    timeZone: place?.timeZone ?? timeZone, latitude: place?.latitude, longitude: place?.longitude });
   const label = (key: string) => L.text(`ui.western_zodiac_${key}`, khmer);
   const signCell = (col: WesternZodiacColumn) => {
-    if (col.key === 'rising' && !place) return '—';
     if (!col.sign) return '—';
     const textContent = westernZodiacLabel(col.sign, khmer, useEmoji);
     const titleContent = westernZodiacTooltip(col.sign, khmer, useEmoji);
@@ -124,6 +114,7 @@ export class DateDetailsDialogModal {
   private onAddEvent: (dateStr: string) => void;
   private cleanupDateCopy?: () => void;
   private timeAndLocationModal?: TimeAndLocationModal;
+  private astrologyModal?: AstrologyDetailsModal;
   private customTime: string | null = null;
   private birthplace: BirthplaceSelection | null = null;
   private openTimeAndLocation?: () => void;
@@ -147,6 +138,8 @@ export class DateDetailsDialogModal {
   }
 
   open(dateStr: string, events: CalendarEvent[], isKhmer: boolean) {
+    this.astrologyModal?.dispose();
+    this.astrologyModal = undefined;
     this.cleanupDateCopy?.();
     const parts = dateStr.split('-').map(Number);
     const info = KhmerDateDetails.fromGregorian(parts[0], parts[1], parts[2]);
@@ -191,13 +184,21 @@ export class DateDetailsDialogModal {
       return { hour: undefined, minute: undefined };
     };
 
-    const initialTime = getEffectiveTime();
-    const westernZodiacHtml = showWesternZodiac
-      ? renderWesternZodiacTable(info.year, info.month, info.day, initialTime.hour, initialTime.minute, settings.todayTimeZone, isKhmer, settings.useEmojiForWesternZodiac, this.birthplace)
-      : '';
-    const ganzhiHtml = showGanzhi
-      ? renderGanzhiTable(info.year, info.month, info.day, initialTime.hour, isKhmer, settings.useEmojiForGanzhiAnimals)
-      : '';
+    let western: WesternZodiacColumn[] = [];
+    let ganzhi: GanzhiColumn[] = [];
+    let westernZodiacHtml = '', ganzhiHtml = '';
+    const calculateTables = () => {
+      const { hour, minute } = getEffectiveTime();
+      western = showWesternZodiac ? westernZodiacColumns({ year: info.year, month: info.month, day: info.day,
+        hour, minute, timeZone: this.birthplace?.timeZone ?? settings.todayTimeZone,
+        latitude: this.birthplace?.latitude, longitude: this.birthplace?.longitude }) : [];
+      ganzhi = showGanzhi ? ganzhiColumns(info.year, info.month, info.day, hour) : [];
+      westernZodiacHtml = showWesternZodiac ? renderWesternZodiacTable(western, isKhmer, settings.useEmojiForWesternZodiac) : '';
+      ganzhiHtml = showGanzhi ? renderGanzhiTable(info.year, ganzhi, isKhmer, settings.useEmojiForGanzhiAnimals) : '';
+    };
+    calculateTables();
+    const clickableTable = (kind: AstrologyKind, html: string) => html
+      ? `<div class="astrology-table-trigger" data-astrology="${kind}" role="button" tabindex="0" aria-haspopup="dialog" aria-label="${escapeHtml(astrologyTitle(kind, isKhmer))}">${html}</div>` : '';
 
     this.overlay.innerHTML = `
       <div class="modal-dialog-surface date-details-dialog" style="position: relative; overflow: hidden; max-width: 480px; width: 92%;">
@@ -247,8 +248,8 @@ export class DateDetailsDialogModal {
           ` : ''}
           ${showAstrology ? `
             <div style="display: flex; flex-direction: column; gap: 9px;">
-              ${westernZodiacHtml}
-              ${ganzhiHtml}
+              ${clickableTable('big3', westernZodiacHtml)}
+              ${clickableTable('ganzhi', ganzhiHtml)}
             </div>
           ` : ''}
 
@@ -289,14 +290,15 @@ export class DateDetailsDialogModal {
     };
 
     const updateTables = () => {
-      const eff = getEffectiveTime();
+      this.astrologyModal?.close();
+      calculateTables();
       const ganzhiTable = this.overlay.querySelector<HTMLElement>('.ganzhi-table-wrap:not(.western-zodiac-table-wrap)');
       if (ganzhiTable && showGanzhi) {
-        ganzhiTable.outerHTML = renderGanzhiTable(info.year, info.month, info.day, eff.hour, isKhmer, settings.useEmojiForGanzhiAnimals);
+        ganzhiTable.outerHTML = ganzhiHtml;
       }
       const westernTable = this.overlay.querySelector<HTMLElement>('.western-zodiac-table-wrap');
       if (westernTable && showWesternZodiac) {
-        westernTable.outerHTML = renderWesternZodiacTable(info.year, info.month, info.day, eff.hour, eff.minute, settings.todayTimeZone, isKhmer, settings.useEmojiForWesternZodiac, this.birthplace);
+        westernTable.outerHTML = westernZodiacHtml;
       }
       const headerBadge = this.overlay.querySelector<HTMLElement>('.date-details-header-badge');
       const restoreHeaderFocus = headerBadge?.contains(document.activeElement);
@@ -322,6 +324,14 @@ export class DateDetailsDialogModal {
     } : undefined;
     this.updateInteractiveContent = () => updateTables();
     bindTimePickers();
+    this.overlay.querySelectorAll<HTMLElement>('.astrology-table-trigger').forEach(element => {
+      const kind = element.dataset.astrology as AstrologyKind;
+      bindAstrologyTable(element, () => {
+        this.astrologyModal ??= new AstrologyDetailsModal();
+        this.astrologyModal.open({ kind, khmer: isKhmer, western, ganzhi,
+          tableHtml: kind === 'big3' ? westernZodiacHtml : ganzhiHtml });
+      });
+    });
 
     this.cleanupDateCopy = setupCopyButton(
       this.overlay.querySelector<HTMLButtonElement>('.btn-copy-date')!,
@@ -353,6 +363,8 @@ export class DateDetailsDialogModal {
   }
 
   close() {
+    this.astrologyModal?.dispose();
+    this.astrologyModal = undefined;
     this.cleanupDateCopy?.();
     this.cleanupDateCopy = undefined;
     this.timeAndLocationModal?.dispose();
@@ -604,15 +616,7 @@ export function buildOnlineSearchQuery(event: CalendarEvent, isKhmer: boolean): 
 
 /** Opens the search in a new browser tab straight to Google AI mode; the app itself never opens a network connection. */
 function launchOnlineSearch(event: CalendarEvent, isKhmer: boolean): void {
-  const query = buildOnlineSearchQuery(event, isKhmer);
-  if (!query) return;
-  // hl enforces the app's selected language for the search UI and the AI summary.
-  const searchUrl = `https://www.google.com/search?${new URLSearchParams({ q: query, hl: isKhmer ? 'km' : 'en', udm: '50' })}`;
-  // 'noopener' cannot go through window.open features: the spec makes it return null even on
-  // success, which would read as a blocked popup. Sever the opener manually instead.
-  const opened = window.open(searchUrl, '_blank');
-  if (opened) opened.opener = null;
-  else window.alert(L.text('ui.no_browser_or_search_app', isKhmer));
+  launchAiSearch(buildOnlineSearchQuery(event, isKhmer), isKhmer);
 }
 
 export class LearnMoreModal {
@@ -654,11 +658,7 @@ export class LearnMoreModal {
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; position: relative; z-index: 1;">
-          <button type="button" class="btn-today-pill btn-search-online" style="border: 1px solid var(--outline); background: transparent; color: var(--text-primary);">
-            <span class="btn-icon" aria-hidden="true">${Icons.search}</span>
-            ${L.text('ui.search_online', isKhmer)}
-            <span class="btn-icon" role="img" aria-label="${L.text('ui.opens_in_external_browser', isKhmer)}">${Icons.openInNew}</span>
-          </button>
+          ${askAiButton(isKhmer)}
           <button type="button" class="btn-today-pill btn-learn-close" style="background: var(--accent); color: var(--on-accent); padding: 8px 20px; border-radius: 20px;">
             ${L.text('ui.close.7df7dc', isKhmer)}
           </button>

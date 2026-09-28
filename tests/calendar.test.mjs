@@ -264,8 +264,8 @@ test('v0.8.0 personal event, notification and reminder translations match Androi
 test('v0.9.0 learn-more, online-search and date-label translations match Android', () => {
   assert.equal(L.text('ui.learn_more', false), 'Learn more');
   assert.equal(L.text('ui.learn_more', true), 'ស្វែងយល់បន្ថែម');
-  assert.equal(L.text('ui.search_online', false), 'Search online');
-  assert.equal(L.text('ui.search_online', true), 'ស្វែងរកលើអ៊ីនធឺណិត');
+  assert.equal(L.text('ui.ask_ai', false), 'Ask AI');
+  assert.equal(L.text('ui.ask_ai', true), 'សួរ AI');
   assert.equal(L.text('ui.opens_in_external_browser', false), 'Opens in external browser');
   assert.equal(L.text('ui.opens_in_external_browser', true), 'បើកនៅក្នុងកម្មវិធីរុករកខាងក្រៅ');
   assert.equal(L.text('ui.no_browser_or_search_app', false), 'No browser or search app available');

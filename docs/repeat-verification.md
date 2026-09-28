@@ -1,7 +1,9 @@
 # Recurring events verification
 
+**Historical report.** The test counts and generated-event-cache checks below describe the revision verified on 17 September 2026. The current app evaluates catalog events live; see the [engine/data guide](shared-engine.md) and [development guide](../DEVELOPMENT.md) for current behavior and test commands.
+
 Verified on 2026-09-17 with the additional regression tests in
-`tests/repeat-crosscheck.test.mjs`. These changes will be released as app version
+`tests/repeat-crosscheck.test.mjs`. The changes targeted app version
 **0.3.0.0**.
 
 ## Automated checks

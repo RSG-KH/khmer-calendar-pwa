@@ -108,10 +108,8 @@ export class TimeAndLocationModal {
     let mode: 'catalog' | 'manual' = current?.source === 'manual' ? 'manual' : 'catalog';
     let catalogPlace: BirthplaceSelection | null = current?.source !== 'manual' ? current : null;
     let catalogPlaces = Storage.getCatalogBirthplaces();
-    let catalogRemoved = false;
     let manualPlaces = Storage.getManualBirthplaces();
     let editingManualLabel: string | null = current?.source === 'manual' ? current.label : null;
-    let manualRemoved = false;
 
     this.overlay.innerHTML = `
       <div class="modal-dialog-surface birthplace-dialog time-location-dialog ${nativeTimePicker ? '' : 'custom-time-editor'}">
@@ -174,24 +172,19 @@ export class TimeAndLocationModal {
       }).join('');
     };
     renderCatalogChips();
-    let restoreCatalog = (_place: BirthplaceSelection | null, _removed = false): void => {};
+    let restoreCatalog = (_place: BirthplaceSelection | null): void => {};
     catalogChips.addEventListener('click', event => {
       const button = (event.target as Element).closest<HTMLButtonElement>('button[data-index]');
       if (!button) return;
       const place = catalogPlaces[Number(button.dataset.index)];
       if (!place) return;
       if (button.classList.contains('birthplace-chip-delete')) {
+        // Saved chips are shortcuts; deleting one must not change the active draft.
         catalogPlaces = catalogPlaces.filter(saved => !sameCatalogPlace(saved, place));
         Storage.saveCatalogBirthplaces(catalogPlaces);
-        if (sameCatalogPlace(catalogPlace, place)) {
-          catalogPlace = null;
-          catalogRemoved = true;
-          restoreCatalog(null, true);
-        }
         renderCatalogChips();
       } else {
         catalogPlace = place;
-        catalogRemoved = false;
         restoreCatalog(place);
         error.hidden = true;
       }
@@ -241,14 +234,13 @@ export class TimeAndLocationModal {
       this.cleanupTimeField = setupTimeField(form.querySelector('.custom-time-field')!, timeInput!, khmer);
     }
 
-    const fillManual = (place: BirthplaceSelection | null) => {
-      manualInput('label').value = place?.label ?? '';
-      manualInput('latitude').value = place ? String(place.latitude) : '';
-      manualInput('longitude').value = place ? String(place.longitude) : '';
+    const fillManual = (place: BirthplaceSelection) => {
+      manualInput('label').value = place.label;
+      manualInput('latitude').value = String(place.latitude);
+      manualInput('longitude').value = String(place.longitude);
       syncManualClearButtons();
-      timeZoneSearch.setValue(place?.timeZone ?? '');
-      editingManualLabel = place?.label ?? null;
-      manualRemoved = !place;
+      timeZoneSearch.setValue(place.timeZone);
+      editingManualLabel = place.label;
     };
     const chips = manual.querySelector<HTMLElement>('.birthplace-manual-chips')!;
     const renderChips = () => {
@@ -267,7 +259,6 @@ export class TimeAndLocationModal {
       if (button.classList.contains('birthplace-chip-delete')) {
         manualPlaces = manualPlaces.filter((_, item) => item !== index);
         Storage.saveManualBirthplaces(manualPlaces);
-        if (editingManualLabel === place.label) fillManual(null);
         renderChips();
       } else {
         fillManual(place);
@@ -288,7 +279,7 @@ export class TimeAndLocationModal {
     form.addEventListener('submit', event => {
       event.preventDefault();
       let place: BirthplaceSelection | null = catalogPlace;
-      if (mode === 'catalog' && !place && current && !catalogRemoved) {
+      if (mode === 'catalog' && !place && current) {
         error.textContent = t('Choose a place before saving.', 'សូមជ្រើសរើសទីកន្លែងមុនរក្សាទុក។');
         error.hidden = false;
         return;
@@ -319,8 +310,7 @@ export class TimeAndLocationModal {
             saved.label.toLocaleLowerCase() !== label.toLocaleLowerCase());
           manualPlaces.push(candidate);
           Storage.saveManualBirthplaces(manualPlaces);
-        } else if (manualRemoved) place = null;
-        else {
+        } else {
           error.textContent = t('Enter a custom location or choose Pick location.',
             'សូមបញ្ចូលទីកន្លែងផ្ទាល់ខ្លួន ឬជ្រើសរើសទីកន្លែង។');
           error.hidden = false;
@@ -360,7 +350,6 @@ export class TimeAndLocationModal {
           removeAfter(index + 1);
           if (index === 0) ++this.request;
           catalogPlace = null;
-          catalogRemoved = false;
           status.textContent = '';
           onEditStep?.();
         },
@@ -383,7 +372,6 @@ export class TimeAndLocationModal {
       while (selectedAdm1?.parentId) selectedAdm1 = byId.get(selectedAdm1.parentId);
       const chooseDivision = (division: GeoNamesDivision) => {
         catalogPlace = null;
-        catalogRemoved = false;
         if (!division.timeZone) {
           status.textContent = t('Time zone unavailable. Enter a custom location for this division.',
             'គ្មានតំបន់ម៉ោង។ សូមបញ្ចូលទីកន្លែងផ្ទាល់ខ្លួន។');
@@ -396,7 +384,6 @@ export class TimeAndLocationModal {
           return;
         }
         catalogPlace = selectionFromGeoNamesDivision(division, document);
-        catalogRemoved = false;
         status.textContent = '';
       };
       const showLowerDivisions = (adm1: GeoNamesDivision) => {
@@ -460,14 +447,12 @@ export class TimeAndLocationModal {
             aliases: [...commune.aliases, ...district.aliases] })));
         addStep(t('ADM 2 · ADM 3', 'ស្រុក / ខណ្ឌ · ឃុំ / សង្កាត់'), choices, choice => {
           catalogPlace = null;
-          catalogRemoved = false;
           if (choice.value.latitude === null || choice.value.longitude === null) {
             status.textContent = t('Coordinates unavailable. Enter a custom location for this commune.',
               'គ្មានកូអរដោនេ។ សូមបញ្ចូលទីកន្លែងផ្ទាល់ខ្លួន។');
             return;
           }
           catalogPlace = selectionFromDivision(choice.value, document, khmer);
-          catalogRemoved = false;
           status.textContent = '';
         }, choices.find(choice => choice.key === selectedCommune?.id), undefined, true);
       };
@@ -508,19 +493,18 @@ export class TimeAndLocationModal {
             'មិនអាចផ្ទុកទិន្នន័យទីកន្លែងបាន។ សូមព្យាយាមម្ដងទៀត។');
         }
       };
-      restoreCatalog = (place, removed = false) => {
+      restoreCatalog = place => {
         ++this.request;
         removeAfter(0);
         catalogPlace = place;
-        catalogRemoved = removed;
         status.textContent = '';
         const selected = place?.countryCode
           ? choices.find(choice => choice.key === place.countryCode) : undefined;
         addStep(t('Country / territory', 'ប្រទេស / ដែនដី'), choices,
-          choice => { catalogPlace = null; catalogRemoved = false; void loadCountry(choice); }, selected);
+          choice => { catalogPlace = null; void loadCountry(choice); }, selected);
         if (selected) void loadCountry(selected, place ?? undefined);
       };
-      restoreCatalog(catalogPlace, catalogRemoved);
+      restoreCatalog(catalogPlace);
     } catch {
       if (request === this.request) status.textContent = t('Place data unavailable. Please try again.',
         'មិនអាចផ្ទុកទិន្នន័យទីកន្លែងបាន។ សូមព្យាយាមម្ដងទៀត។');

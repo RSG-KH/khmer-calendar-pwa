@@ -9,6 +9,7 @@ import { fontScaleOptions } from './Platform';
 import { effectiveTheme } from './Appearance';
 import { TimeAndLocationModal } from './BirthplacePicker';
 import { escapeHtml } from './html';
+import { cambodiaDivisions } from '../data/CambodiaDivisions';
 
 export function renderSettings(container: HTMLElement, settings: AppSettings, onChange: (settings: AppSettings) => void, updater: AppUpdater) {
   const k = settings.language === 'km';
@@ -116,6 +117,18 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
       </section>
     </div>`;
 
+  // Saved names may be in a different language; resolve the display name by ID.
+  let risingPlaceValue = container.querySelector<HTMLElement>('#rising-place-value');
+  const place = settings.risingPlace;
+  if (risingPlaceValue && place.source === 'CambodiaDivisions' && place.countryCode === 'KH') {
+    void cambodiaDivisions().then(document => {
+      const division = document.divisions.find(item => item.id === place.divisionId);
+      if (risingPlaceValue && division) {
+        risingPlaceValue.textContent = (k ? division.nameKm : division.nameEn) || division.nameEn || place.label;
+      }
+    }).catch(() => { /* Keep the saved name when the catalog is unavailable. */ });
+  }
+
   const update = (patch: Partial<AppSettings>) => onChange({ ...settings, ...patch });
   const updateButton = container.querySelector<HTMLButtonElement>('.about-update')!;
   const updateStatus = container.querySelector<HTMLElement>('.app-update-status')!;
@@ -177,5 +190,10 @@ export function renderSettings(container: HTMLElement, settings: AppSettings, on
     if (id === 'font-scale') update({ fontScale: Number(value) as FontScale });
     if (id === 'today-zone') update({ todayTimeZone: value as TodayTimeZone });
   });
-  return () => { unsubscribeUpdate(); cleanupPickers(); closeSources?.(); astrologyDialog?.dispose(); systemTheme.removeEventListener('change', updateThemeChoices); };
+  return () => {
+    // Release the row immediately and ignore a lookup finishing after navigation.
+    risingPlaceValue = null;
+    unsubscribeUpdate(); cleanupPickers(); closeSources?.(); astrologyDialog?.dispose();
+    systemTheme.removeEventListener('change', updateThemeChoices);
+  };
 }

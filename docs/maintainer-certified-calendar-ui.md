@@ -77,7 +77,7 @@ The Earthly Branch emoji sequence, indexed from Rat through Pig, is **`🐭 🐮
 
 **Maintainer requested — 27 September 2026.** The shared Time and location picker footer has a **30px top margin**, matching the date-details action row. Keep this spacing in catalog and custom-location modes, as well as the time-only and location-only variants.
 
-**Maintainer requested — 28 September 2026.** The event details popup footer and action row (`.event-detail-footer`) has a **30px top margin**, matching the 30px spacing of the date-details action row, the astrology child popups, and the Time and location picker footer.
+**Maintainer requested — 28 September 2026.** The event details popup footer and action row (`.event-detail-footer`) has a **30px top margin**, matching the 30px spacing of the date-details action row, the astrology child popups, and the Time and location picker footer. In event details, calculated observances display the shared engine attribution: **“Calculations by Khmer Calendar Engine v{version}.”** / **“ការគណនាធ្វើឡើងដោយ Khmer Calendar Engine កំណែ {version} ។”** (10px × font scale, line height 1.6, `var(--on-surface-variant)`).
 
 ## Astrology table detail popups
 
@@ -110,6 +110,8 @@ The action row has a **30px top margin**, **Ask AI** / **សួរ AI** on the l
 ## Same-day event lists
 
 **Maintainer requested — 27 September 2026.** Group the calendar's selected-day and monthly lists and the Events page by date. Keep dates chronological. Within each day, show personal events in ascending time order, then personal events without a time, then holidays, observances, and enabled Buddhist holy days. Equal-time personal events keep their saved order. The date-details event buttons follow the same ordering.
+ 
+**Maintainer requested — 28 September 2026.** Date-details event buttons (`.dialog-event-item .dialog-event-content`) use a **3px vertical gap** between the event title (`.dialog-event-title`, line height 1.4) and the event kind/time subtitle (`.dialog-event-kind`, line height 1.3), providing clean vertical separation.
 
 Show the large day number and weekday only in the first event row of each day, leaving that column empty in subsequent rows. Keep the date colored as a holiday when any visible event that day is a holiday, even when a personal event comes first. Use full-width separators between dates; within a date, start separators at the event bar so they never cross the shared date column. Each event remains independently clickable and includes its full date in its accessible name. Filtering and searching rebuild the groups from the visible results.
 

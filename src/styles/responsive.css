@@ -4,8 +4,9 @@
    Preserve during Android sync: docs/maintainer-certified-calendar-ui.md. */
 .left-nav-rail { display: none; }
 .bottom-bar { display: flex; }
-/* The measured month-card height caps both aligned columns; retain fixed rows. */
+/* A five-row reference sets the cap; the visible month keeps its actual row count. */
 .calendar-two-columns { width: 100%; max-width: min(640px, var(--calendar-max-width, 640px)); }
+.calendar-width-reference { position: fixed; top: 0; left: 0; visibility: hidden; pointer-events: none; contain: layout style; }
 .calendar-col-left, .calendar-col-right { min-width: 0; }
 .date-summary-card, .selected-day-events { display: none; }
 .calendar-col-right { margin-top: 16px; }
@@ -24,6 +25,12 @@
      of leaving a permanent blank strip below the status bar. */
   .screen-container:has(> .calendar-two-columns) { padding-block: 0; }
   .calendar-two-columns { --calendar-column-gap: 20px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--calendar-column-gap); max-width: min(1440px, calc(2 * var(--calendar-max-width, 710px) + var(--calendar-column-gap))); height: 100%; min-height: 0; }
+  /* On tablets/desktops, spare width goes to events up to twice the visible card.
+     Subtract one gutter pair so classic-scrollbar and overlay-scrollbar caps agree. */
+  :root:not([data-phone]) .calendar-two-columns {
+    grid-template-columns: minmax(0, min(var(--calendar-max-width, 710px), calc((100% - var(--calendar-column-gap)) / 2))) minmax(0, 1fr);
+    max-width: calc(3 * var(--calendar-max-width, 710px) - var(--calendar-column-gutters, 0px) + var(--calendar-column-gap));
+  }
   .calendar-col-left, .calendar-col-right { height: 100%; overflow-y: auto; overscroll-behavior: contain; padding-top: var(--calendar-top-padding); padding-bottom: 20px; scrollbar-width: thin; }
   .calendar-col-right { margin-top: 0; padding-top: calc(var(--calendar-top-padding) + 14px); padding-bottom: var(--sab); }
   .month-picker-dialog { max-width: 600px !important; }

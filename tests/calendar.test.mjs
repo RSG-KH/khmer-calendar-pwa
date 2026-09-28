@@ -78,7 +78,7 @@ test('Ganzhi pillars match Android at solar boundaries and the 23:00 hour rollov
   assert.equal(ganzhiAnimalLabel(late[3].pillar.branch, false, false), 'Rat');
   assert.equal(ganzhiAnimalLabel(late[3].pillar.branch, true, false), 'ជូត');
   assert.equal(ganzhiAnimalLabel(late[3].pillar.clashBranch, false, true), '🐴');
-  assert.equal(ganzhiEmojiSummary(2026, 9, 11), '☯️ 干支 (🐴🐔🐭 x 🐭🐰🐴)');
+  assert.equal(ganzhiEmojiSummary(2026, 9, 11), '☯️ (🐴🐔🐭 x 🐭🐰🐴)');
   assert.equal(ganzhiEmojiSummary(1800, 1, 1), null);
   const historical = ganzhiColumns(1800, 1, 1);
   assert.equal(historical[0].pillar, null);

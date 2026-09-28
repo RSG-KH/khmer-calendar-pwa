@@ -6,9 +6,11 @@ Android remains a reference for applicable behavior and shared calculations. Its
 
 ## Calendar width
 
-**Maintainer requested — 27 September 2026.** The month card's width is capped at **1.25 times its natural height**, including the weekday headings, grid, padding, divider and legend, but excluding the navigation header and date summary. Narrow screens may use a smaller width. Preserve the row heights below; do not increase the card height to enforce an aspect ratio.
+**Maintainer requested — 28 September 2026.** The month card's width is capped at **1.25 times a fixed five-row reference height**, including the weekday headings, five certified grid rows and their gaps, padding, divider and standard legend, but excluding the navigation header, date summary and optional personal-event legend item. This replaces the earlier cap based on the displayed month's height. At the same viewport and settings, four-, five- and six-row months have the same width and horizontal position. Only their visible height changes; do not add blank rows or stretch cells to enforce an aspect ratio.
 
-The calendar header, summary and selected-day events stay aligned with the month card. The centered landscape layout retains two equal columns and its existing gap, with the monthly event list following the same width cap. The cap is recalculated when the month, text size, fonts or responsive row heights change. Measure before applying the cap so a wrapping legend cannot cause alternating widths.
+The calendar header, summary and selected-day events stay aligned with the month card. Narrow screens may use a smaller width, and portrait retains its 640px ceiling. In the two-column landscape layout (at least 740px wide), tablets and desktops give the monthly event list the remaining width, capped at **2 times the visible calendar width**. Phone landscape keeps equal columns. Center the combined columns when the cap leaves spare space, retaining the existing outer padding, inter-column gap and platform scrollbar gutters.
+
+`src/ui/CalendarWidth.ts` measures one hidden, inert five-row reference using the same PWA CSS row heights, typography and standard legend. Its measurement width comes from the available viewport space, not the capped card. Resolve the cap synchronously before paint; never clear the visible cap and schedule another frame to measure it. Observe the containing viewport and font completion, not the card being resized. Remove the reference, observer and font listener when rebuilding or leaving Calendar. Month/event contents must not feed back into the width. Font size, language, loaded fonts and responsive breakpoints may legitimately change the reference dimensions.
 
 ## Month grid row heights
 
@@ -34,7 +36,7 @@ The summary card appears only in landscape at viewport width **960px or more** a
 | Element | Certified behavior |
 | --- | --- |
 | Western zodiac | Controlled by the master `enableAstrologyAndZodiac` switch and `showWesternZodiac`; English sign, element and planet; 11px × font scale, one line. |
-| Ganzhi | Controlled by the master `enableAstrologyAndZodiac` switch and independently by `showGanzhi`; always emoji regardless of `useEmojiForGanzhiAnimals`; year, month and day sign animals followed by their three clash animals. Exact format: `☯️ 干支 (🐴🐔🐭 x 🐭🐰🐴)` for 11 September 2026. Omit the line when year/month pillars are unavailable outside 1900–2100. |
+| Ganzhi | Controlled by the master `enableAstrologyAndZodiac` switch and independently by `showGanzhi`; always emoji regardless of `useEmojiForGanzhiAnimals`; year, month and day sign animals followed by their three clash animals. Exact format: `☯️ (🐴🐔🐭 x 🐭🐰🐴)` for 11 September 2026. The maintainer requested removing `干支` from this summary on 28 September 2026; the dialog headings retain it. Omit the line when year/month pillars are unavailable outside 1900–2100. |
 | Right column | Sizes to its content instead of a fixed 40% width; zodiac and Ganzhi stay on one line. |
 | Narrow landscape card | At 960–1159px viewport width, stack the date/zodiac/Ganzhi side below the full Khmer date and align it left. At 1160px and above, keep the two sides beside one another. |
 
@@ -97,4 +99,4 @@ During an Android release sync, compare new calculations, data, settings and use
 
 Before accepting a UI change here, review phone portrait and landscape, tablet/desktop landscape including a short window, 80% and 150% text size, both Ganzhi and Western emoji settings, the `enableAstrologyAndZodiac`, `showGanzhi` and `showWesternZodiac` switches, and an out-of-range solar year. Run `npm test` for calculation/settings regressions and inspect the affected layouts in a browser or device preview.
 
-Implementation anchors: `src/styles/responsive.css`, `src/styles/appearance.css`, `src/styles/components.css`, `src/main.ts`, `src/ui/Modals.ts`, `src/ui/AstrologyDetails.ts`, `src/ui/AskAi.ts`, `src/domain/Ganzhi.ts`, `src/domain/WesternZodiac.ts`, and `src/ui/Platform.ts`.
+Implementation anchors: `src/styles/responsive.css`, `src/styles/appearance.css`, `src/styles/components.css`, `src/main.ts`, `src/ui/CalendarWidth.ts`, `src/ui/Modals.ts`, `src/ui/AstrologyDetails.ts`, `src/ui/AskAi.ts`, `src/domain/Ganzhi.ts`, `src/domain/WesternZodiac.ts`, and `src/ui/Platform.ts`.

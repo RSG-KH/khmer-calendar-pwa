@@ -2,6 +2,8 @@
 
 **Historical audit.** Test counts, bundle sizes and measurements below belong to the audited revision and its nested-event-popup follow-up. Later astrology detail popups are documented in the [current UI contract](maintainer-certified-calendar-ui.md#astrology-table-detail-popups); their focused regression coverage is listed in the [development guide](../DEVELOPMENT.md#build-and-test). The measurements below do not include those later popups.
 
+The 28 September sizing update also supersedes this audit's displayed-height width cap: the [current calendar width contract](maintainer-certified-calendar-ui.md#calendar-width) uses a fixed five-row reference and a 2× monthly-event limit. Its browser regression runner is documented in the development guide.
+
 Audited app version **0.12.0.1**, starting from commit `30790dd` plus the pending Sources and licenses translation corrections. This audit does not change the release version or the maintainer-certified calendar layout.
 
 ## Findings and fixes

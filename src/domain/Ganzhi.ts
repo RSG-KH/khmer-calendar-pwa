@@ -31,7 +31,7 @@ export function ganzhiAnimalLabel(branch: EarthlyBranch, khmer: boolean, useEmoj
 }
 
 /**
- * Maintainer-certified summary line: `☯️ 干支 (🐴🐔🐭 x 🐭🐰🐴)` on 2026-09-11.
+ * Maintainer-certified summary line: `☯️ (🐴🐔🐭 x 🐭🐰🐴)` on 2026-09-11.
  * Always use emoji, independently of the detail table's emoji/name setting.
  * Return null unless the year, month and day pillars are all available.
  * Keep the year–month–day order and exact ` x ` separator during Android sync.
@@ -41,5 +41,5 @@ export function ganzhiEmojiSummary(year: number, month: number, day: number): st
   if (pillars.length !== 3) return null;
   const animals = pillars.map(pillar => ganzhiAnimalLabel(pillar.branch, false, true)).join('');
   const clashes = pillars.map(pillar => ganzhiAnimalLabel(pillar.clashBranch, false, true)).join('');
-  return `☯️ 干支 (${animals} x ${clashes})`;
+  return `☯️ (${animals} x ${clashes})`;
 }

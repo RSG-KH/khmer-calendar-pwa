@@ -36,6 +36,8 @@ The PWA shares one visual design across platforms. `main.ts` imports [src/styles
 
 [Platform.ts](src/ui/Platform.ts) owns device-specific choices for native time pickers, native scrollbars and per-device font-size defaults; the font-size picker itself offers the same 80-150% range on every device. [Scrollbars.ts](src/ui/Scrollbars.ts) enables the scrollbar attribute and manages the idle fade on selected desktop platforms; Android and Apple devices keep native scrollbars. Keep platform exceptions explicit instead of naming shared controls after an OS.
 
+[CalendarWidth.ts](src/ui/CalendarWidth.ts) derives the month width cap from a fixed five-row reference using the certified PWA row heights and standard legend. Four-, five- and six-row months retain their actual heights at the same width. One viewport observer and font-completion listener update the cap before paint; they never observe the resized card or remove its cap to measure it. The calendar render cleanup disposes the hidden reference and listeners. In tablet/desktop landscape, CSS gives remaining space to monthly events up to twice the visible calendar width, accounting for scrollbar gutters and retaining outer padding. Phone landscape keeps equal columns.
+
 [Modals.ts](src/ui/Modals.ts) calculates and renders the date-details astrology tables. The whole-table controls open [AstrologyDetails.ts](src/ui/AstrologyDetails.ts), which reuses those rendered tables and calculation results, adds Big 3 catalog details, and chooses the Sun-sign or Year-animal watermark. Pointer scrolling stays separate from activation; Enter and Space also open the popup. The parent owns and disposes its child modal, and closing the child restores focus without changing the parent's time or place. [AskAi.ts](src/ui/AskAi.ts) supplies the shared Ask AI button and browser launch for these popups and event Learn more. Astrology queries contain sign/pillar names and clash animals, excluding date, time, place and coordinates; event queries retain their catalog title and anniversary anchoring.
 
 The app root stays in normal flow. Browser tabs use `100dvh` (with a `100%` fallback) to follow browser toolbars; installed apps use `100vh` on `html`, `body` and `#app`. With the `black-translucent` status bar, WebKit can undercount `dvh` by the status bar height while still starting the page behind that bar. Fixed bottom anchoring also left a blank strip on installed iPads. Do not add a hardcoded screen height or add safe-area insets to the viewport height.
@@ -60,6 +62,16 @@ npm run preview   # Serve the production build locally
 ```
 
 For a build without tests, run `npm run build`. Output is in `dist/`. The production preview serves that build on a separate port (normally 4173); use the address printed in the terminal. Source edits require a new build.
+
+With `npm run dev` running in another terminal, check calendar sizing in a real Chromium layout engine:
+
+```sh
+node tests/calendar-width-browser.mjs
+# Optional URL, including a production preview:
+node tests/calendar-width-browser.mjs http://localhost:4173/
+```
+
+The runner locates Edge/Chrome on Windows or Chromium/Chrome on Linux; set `BROWSER_PATH` for another installation. It uses and removes its own temporary browser profile, leaving personal events and settings in your regular browser untouched. Its 42 profiles cover phone/tablet/desktop and short windows, English/Khmer, 80%/100%/150% text, both emoji preferences, month transitions across four/five/six rows and the optional personal-event legend. It checks first-frame width stability, row heights, the 2× event cap, side gaps and sizing-observer/reference cleanup. Android/Apple overlay scrollbars are simulated; physical-device and Safari checks remain separate. Set `CALENDAR_SCREENSHOT` to a PNG path to save the Khmer tablet portrait result.
 
 The tests cover full-range calendar continuity and recurrence mapping, event catalog expectations (recorded dates, overrides, official holiday calendars, anniversary ordinals), the bundled event knowledge companion, license-text parity, time zones, saved events, appearance defaults, picker drafts, date-details time selection and astrology switches, foreground refresh, input escaping, modal viewport behavior, month swipes, platform controls and offline caching. [astrology-details.test.mjs](tests/astrology-details.test.mjs) covers whole-table pointer/keyboard activation, unchanged popup table values, English/Khmer and emoji choices, background selection, Ask AI query contents, focus restoration, and child-overlay/viewport-listener cleanup across repeated open/close cycles.
 

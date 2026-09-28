@@ -1,3 +1,5 @@
 # Repository instructions
 
 Before syncing Android UI changes into the PWA, read [the maintainer-certified calendar UI contract](docs/maintainer-certified-calendar-ui.md). The month-grid row heights, compact-row spacing, date summary, and date-details Ganzhi table in that document are **maintainer preferred and certified PWA decisions**. Preserve them during routine Android syncs. Android native dimensions and placement do not override this contract; change it only for an explicit maintainer request, updating the code and document together.
+
+Before reviewing or changing interaction feedback, read the contract's [button press feedback decisions](docs/maintainer-certified-calendar-ui.md#button-press-feedback). No pressed effect on the bottom navigation tabs or side navigation rail is intentional; do not report that absence as a bug or add an effect during cleanup. Their selected indicators and keyboard focus outlines must remain. Preserve accent-colored event/table feedback and the separate foreground-colored action-button feedback. Change these decisions only at the maintainer's explicit request, updating the contract with the implementation.

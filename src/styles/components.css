@@ -141,10 +141,6 @@
   transition: background 0.15s, color 0.15s;
 }
 
-.btn-today-pill:active {
-  background: var(--accent-container);
-}
-
 .btn-today-pill.is-today-selected {
   color: var(--text-primary);
 }
@@ -223,7 +219,7 @@
 }
 
 .cal-cell.active-day:not(.today) {
-  box-shadow: inset 0 0 0 2px var(--accent);
+  --button-shadow: inset 0 0 0 2px var(--accent);
 }
 
 .cell-day-num {
@@ -385,10 +381,6 @@
   mask: url('/assets/drawables/custom_event_star.png') right center / contain no-repeat;
   opacity: 0.05;
   pointer-events: none;
-}
-
-.event-row-card:active {
-  background: var(--bg-surface-variant);
 }
 
 .event-row-date {
@@ -686,7 +678,7 @@
 .choice-pill.active {
   background: var(--bg-surface);
   color: var(--accent);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  --button-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 /* Accent Color Circles */
@@ -724,7 +716,7 @@
   align-items: center;
   justify-content: center;
   font-size: 26px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  --button-shadow: 0 4px 12px rgba(0,0,0,0.3);
   cursor: pointer;
   z-index: 30;
   transition: transform 0.15s;

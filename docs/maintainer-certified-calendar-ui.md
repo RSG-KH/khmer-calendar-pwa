@@ -81,11 +81,27 @@ The Earthly Branch emoji sequence, indexed from Rat through Pig, is **`🐭 🐮
 
 **Maintainer requested — 28 September 2026.** The entire Western Big 3 or Ganzhi table in date details, including its headings and body rows, opens a separate detail popup. Each table is one keyboard focus target: Enter or Space opens it. Horizontal or vertical dragging scrolls without opening a popup. Preserve the table dimensions, typography, column widths, highlighting and emoji preferences specified above. Values remain read-only; the date-details header remains the time/location picker control.
 
+Both clickable tables show an immediate 14% accent background while pressed by a primary touch, pen or mouse pointer. The highlight clears on release, cancellation, leaving the table, or movement beyond the existing 8px drag threshold. Scrolling still does not open a popup; keyboard focus keeps its visible outline. This feedback does not change table dimensions or use timers.
+
 The popup titles are **Zodiac · Big 3** / **តារានិករ · Big 3** and **Chinese Ganzhi (干支)** / **ហោរាសាស្ត្រចិន (干支)**. Each popup repeats the exact table currently displayed in its parent, using the same selected date, time and place. Its table does not open another popup. Big 3 adds three rows in Sun, Moon, Rising order after an 18px gap, using the bundled catalog's emoji, English sign name, element and planet (for example `♏️ Scorpio (Water · Pluto)`). These rows use **12px × font scale**, **20px × font scale** line height and a **10px gap**. An unavailable sign displays an em dash. Ganzhi has no extra sign-detail rows.
 
 Reuse the date-details watermark styling with the calculated **Sun sign** for Big 3 and **Year animal** for Ganzhi. If that sign or pillar is unavailable, omit its watermark; do not substitute another animal for an unsupported solar year. Popups retain the existing responsive bottom-sheet/centered-dialog behavior, with scrollable content on short screens.
 
 The action row has a **30px top margin**, **Ask AI** / **សួរ AI** on the left and **Close** on the right, wrapping when needed. Ask AI uses the same search and external-browser icons as event Learn more; that popup's former Search online button also becomes Ask AI. A user-initiated Google AI-mode query contains the available Sun/Moon/Rising names or Ganzhi pillars and clash animals, without the selected date, time, place name or coordinates. Closing a child restores focus to its parent table and preserves the parent's selected time/place. Closing or replacing the parent disposes its child popup and viewport listeners.
+
+## Button press feedback
+
+**Maintainer requested and approved — 28 September 2026.** These are deliberate interaction choices for the PWA. The absence of navigation press feedback is intentional and must not be classified as a missing-feedback bug. Do not add it during a consistency pass, accessibility review or Android sync. Preserve keyboard access and focus indicators; revise these choices only at the maintainer's explicit request.
+
+| Control | Press feedback | Behavior to preserve |
+| --- | --- | --- |
+| Bottom navigation tabs (`.nav-tab`) and side navigation rail (`.rail-item`) | **None.** Both navigation layouts are intentionally excluded. | Navigation still works; selected-tab accent text and icon-pill backgrounds, selection transitions and keyboard focus outlines remain. This exception does not include calendar month/year arrows, Today, or other action buttons. |
+| Western Big 3 and Ganzhi whole-table controls | Immediate **14% selected-accent background**. | Primary touch, pen or mouse press only; clear on release, cancellation, leaving the control or dragging more than 8px. Dragging scrolls without opening a popup. Keyboard Enter/Space activation and focus outlines remain. Tables inside the child detail popups are read-only, not additional triggers. |
+| Event rows in selected-day/monthly lists and the Events tab (`.event-row-card`), plus date-details event buttons (`.dialog-event-item`) | Immediate **14% selected-accent inset layer**. | Keep the normal surface or today's 2% tint underneath; no separate gray pressed background. Preserve event-type colors, text, category bars, artwork, separators and dimensions. Follow all five accents in both themes. |
+| Other enabled native buttons, including Ask AI, Close, Save, Cancel, copy controls and Settings actions | Immediate **14% current-text-color inset layer**. | Filled, outlined and text buttons retain their own foreground/background colors. This foreground-colored feedback is intentional; it is not required to match the event-row accent layer. |
+| Disabled buttons | None. | Keep the existing disabled appearance and behavior. |
+
+`src/styles/appearance.css` owns the shared native-button state layer and navigation exclusion. `--button-press-color` selects the event-row accent; `--button-shadow` preserves existing shadows and calendar selection rings. The layer works over inline backgrounds, appears immediately even on controls with `transition: all`, and ends with the browser's native active state. It adds no listeners or timers and does not change layout. The scrollable table controls use the existing local pointer handlers in `src/ui/AstrologyDetails.ts` for their drag-aware highlight; do not add timers or global pointer listeners for this feedback.
 
 ## Same-day event lists
 
@@ -100,6 +116,8 @@ In the calendar's monthly event list and the Events tab, today's entire day grou
 ## Sync and review rule
 
 During an Android release sync, compare new calculations, data, settings and user-visible behavior for applicability, but **do not replace these certified PWA dimensions or table/summary presentation simply to match Android Compose sizing or placement**. If an Android change conflicts with this contract, record the difference and preserve the PWA behavior until the maintainer requests a revision.
+
+UI reviews and maintenance must also preserve the [press-feedback decisions](#button-press-feedback), especially the intentional navigation exception. A difference from another control or the Android app is not, by itself, a defect.
 
 Before accepting a UI change here, review phone portrait and landscape, tablet/desktop landscape including a short window, 80% and 150% text size, both Ganzhi and Western emoji settings, the `enableAstrologyAndZodiac`, `showGanzhi` and `showWesternZodiac` switches, and an out-of-range solar year. Run `npm test` for calculation/settings regressions and inspect the affected layouts in a browser or device preview.
 

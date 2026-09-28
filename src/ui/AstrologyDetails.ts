@@ -48,15 +48,22 @@ export function astrologySearchQuery(details: AstrologyDetails): string {
 /** Keep horizontal/vertical scrolling separate from whole-table activation. */
 export function bindAstrologyTable(element: HTMLElement, open: () => void): void {
   let startX = 0, startY = 0, moved = false, tracking = false;
-  const activate = () => { element.focus({ preventScroll: true }); open(); };
+  const release = () => { tracking = false; element.classList.remove('is-pressed'); };
+  const activate = () => { release(); element.focus({ preventScroll: true }); open(); };
   element.addEventListener('pointerdown', event => {
+    if (event.button !== 0 || !event.isPrimary) return;
     startX = event.clientX; startY = event.clientY; moved = false; tracking = true;
+    element.classList.add('is-pressed');
   });
   element.addEventListener('pointermove', event => {
-    if (tracking && Math.hypot(event.clientX - startX, event.clientY - startY) > 8) moved = true;
+    if (tracking && Math.hypot(event.clientX - startX, event.clientY - startY) > 8) {
+      moved = true;
+      release();
+    }
   });
-  element.addEventListener('pointerup', () => { tracking = false; });
-  element.addEventListener('pointercancel', () => { tracking = false; moved = true; });
+  element.addEventListener('pointerup', release);
+  element.addEventListener('pointercancel', () => { moved = true; release(); });
+  element.addEventListener('pointerleave', () => { if (tracking) { moved = true; release(); } });
   element.addEventListener('click', event => {
     const wasDrag = moved;
     moved = false;

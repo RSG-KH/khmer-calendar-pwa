@@ -102,7 +102,7 @@ You can also use the calendar directly in your browser without installing it.
 
 This is the web version of [Khmer Calendar for Android](https://github.com/RSG-KH/khmer-calendar). Both apps use [Khmer Calendar Engine](https://github.com/RSG-KH/khmer-calendar-engine) for calendar calculations. Calendar algorithms, source references and validation are documented in the [engine project](https://github.com/RSG-KH/khmer-calendar-engine#verification-and-accuracy).
 
-For setup, testing and hosting, see [DEVELOPMENT.md](DEVELOPMENT.md). Dependency and event catalog updates are covered in the [engine integration guide](docs/shared-engine.md). The calendar grid, summary, Western Big 3 and Ganzhi tables have a [maintainer-certified PWA layout contract](docs/maintainer-certified-calendar-ui.md) for future Android syncs.
+For setup, testing and hosting, see [DEVELOPMENT.md](DEVELOPMENT.md). Dependency and event catalog updates are covered in the [engine integration guide](docs/shared-engine.md). The calendar grid, summary, Western Big 3 and Ganzhi tables, and touch-feedback choices have a [maintainer-certified PWA UI contract](docs/maintainer-certified-calendar-ui.md) for maintenance reviews and future Android syncs.
 
 ## License
 

@@ -75,6 +75,7 @@ function fixture() {
 
 function fire(target, type, values = {}) {
   const event = new Event(type, { cancelable: true });
+  if (type.startsWith('pointer')) Object.assign(event, { button: 0, isPrimary: true });
   Object.assign(event, values);
   target.dispatchEvent(event);
   return event;
@@ -87,17 +88,36 @@ test('table activation handles hover, click and keyboard without treating scroll
   fire(element, 'click', { detail: 1 });
   assert.equal(opens, 1, 'Moving a mouse over the table must not block a normal click');
   fire(element, 'pointerdown', { clientX: 180, clientY: 40 });
+  assert.equal(element.classList.contains('is-pressed'), true, 'Touch down must highlight the whole table');
   fire(element, 'pointermove', { clientX: 40, clientY: 40 });
+  assert.equal(element.classList.contains('is-pressed'), false, 'Scrolling must clear the touch highlight');
   fire(element, 'pointerup');
   assert.equal(fire(element, 'click', { detail: 1 }).defaultPrevented, true);
   assert.equal(opens, 1);
   fire(element, 'pointerdown', { clientX: 40, clientY: 40 });
   fire(element, 'pointercancel');
+  assert.equal(element.classList.contains('is-pressed'), false);
   fire(element, 'click', { detail: 1 });
   assert.equal(opens, 1);
+  fire(element, 'pointerdown', { clientX: 40, clientY: 40 });
+  fire(element, 'pointerleave');
+  assert.equal(element.classList.contains('is-pressed'), false, 'Leaving the table must clear the highlight');
+  fire(element, 'click', { detail: 1 });
+  assert.equal(opens, 1);
+  fire(element, 'pointerdown', { clientX: 40, clientY: 40 });
+  fire(element, 'pointermove', { clientX: 42, clientY: 41 });
+  assert.equal(element.classList.contains('is-pressed'), true, 'Small finger movement must retain feedback');
+  fire(element, 'pointerup');
+  assert.equal(element.classList.contains('is-pressed'), false);
+  fire(element, 'click', { detail: 1 });
+  assert.equal(opens, 2, 'A fresh tap after a cancelled gesture must still open the popup');
+  fire(element, 'pointerdown', { clientX: 40, clientY: 40, button: 2 });
+  assert.equal(element.classList.contains('is-pressed'), false, 'A secondary click must not show touch feedback');
+  fire(element, 'pointerdown', { clientX: 40, clientY: 40, isPrimary: false });
+  assert.equal(element.classList.contains('is-pressed'), false);
   for (const key of ['Enter', ' ']) assert.equal(fire(element, 'keydown', { key, repeat: false }).defaultPrevented, true);
   fire(element, 'keydown', { key: 'Enter', repeat: true });
-  assert.equal(opens, 3, 'Held keys must not open multiple popups');
+  assert.equal(opens, 4, 'Held keys must not open multiple popups');
 });
 
 test('backgrounds use calculated Sun and solar Year, with unavailable values omitted from AI queries', () => {

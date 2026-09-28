@@ -4,7 +4,7 @@ This TypeScript/Vite project is the web port of [Khmer Calendar for Android](htt
 
 The [engine integration guide](docs/shared-engine.md) covers the pinned dependency, PWA adapters and the event catalog. Calendar algorithms, calculation sources and reference evidence are maintained in [Khmer Calendar Engine](https://github.com/RSG-KH/khmer-calendar-engine).
 
-The [maintainer-certified calendar UI contract](docs/maintainer-certified-calendar-ui.md) records the PWA month-grid row heights, summary card, Western Big 3 and Ganzhi tables and their detail popups. Preserve these PWA-specific choices when reviewing later Android releases.
+The [maintainer-certified calendar UI contract](docs/maintainer-certified-calendar-ui.md) records the PWA month-grid row heights, summary card, Western Big 3 and Ganzhi tables and their detail popups, and [intentional press-feedback differences](docs/maintainer-certified-calendar-ui.md#button-press-feedback). Preserve these PWA-specific choices during UI reviews and when reviewing later Android releases.
 
 [KhmerCalendar.ts](src/domain/KhmerCalendar.ts) validates civil dates and adapts the engine result. Personal event repeats are implemented separately in [EventRepeat.ts](src/domain/EventRepeat.ts). The app's built-in observance definitions are passed to the engine through [RecurringEvents.ts](src/data/RecurringEvents.ts).
 
@@ -36,6 +36,8 @@ The PWA shares one visual design across platforms. `main.ts` imports [src/styles
 
 [Platform.ts](src/ui/Platform.ts) owns device-specific choices for native time pickers, native scrollbars and per-device font-size defaults; the font-size picker itself offers the same 80-150% range on every device. [Scrollbars.ts](src/ui/Scrollbars.ts) enables the scrollbar attribute and manages the idle fade on selected desktop platforms; Android and Apple devices keep native scrollbars. Keep platform exceptions explicit instead of naming shared controls after an OS.
 
+Press feedback is shared in `appearance.css`: native action buttons use a foreground-colored inset layer, event rows override its color with the selected accent, and only the bottom navigation tabs and side rail are excluded. Navigation selection indicators and keyboard focus remain. Whole-table astrology feedback is handled locally in `AstrologyDetails.ts` so dragging can clear the highlight and suppress activation. Follow the contract before treating any of these differences as bugs.
+
 [CalendarWidth.ts](src/ui/CalendarWidth.ts) derives the month width cap from a fixed five-row reference using the certified PWA row heights and standard legend. Four-, five- and six-row months retain their actual heights at the same width. One viewport observer and font-completion listener update the cap before paint; they never observe the resized card or remove its cap to measure it. The calendar render cleanup disposes the hidden reference and listeners. In tablet/desktop landscape, CSS gives remaining space to monthly events up to twice the visible calendar width, accounting for scrollbar gutters and retaining outer padding. Phone landscape keeps equal columns.
 
 [Modals.ts](src/ui/Modals.ts) calculates and renders the date-details astrology tables. The whole-table controls open [AstrologyDetails.ts](src/ui/AstrologyDetails.ts), which reuses those rendered tables and calculation results, adds Big 3 catalog details, and chooses the Sun-sign or Year-animal watermark. Pointer scrolling stays separate from activation; Enter and Space also open the popup. The parent owns and disposes its child modal, and closing the child restores focus without changing the parent's time or place. [AskAi.ts](src/ui/AskAi.ts) supplies the shared Ask AI button and browser launch for these popups and event Learn more. Astrology queries contain sign/pillar names and clash animals, excluding date, time, place and coordinates; event queries retain their catalog title and anniversary anchoring.
@@ -62,6 +64,10 @@ npm run preview   # Serve the production build locally
 ```
 
 For a build without tests, run `npm run build`. Output is in `dist/`. The production preview serves that build on a separate port (normally 4173); use the address printed in the terminal. Source edits require a new build.
+
+For a release, run `npm test` with both `VITE_BASE_PATH=/` and `VITE_BASE_PATH=/khmer-calendar-pwa/`; the latter matches GitHub Pages. Tests that mock asset requests must use Vite's configured base path.
+
+When changing press feedback, check actual pointer presses and release in the browser, not only clicks after release. Verify filled/outlined/text actions, disabled buttons and keyboard focus; event-row accents in both themes while preserving today's tint and event-type colors; astrology table tap versus drag/cancel; and both navigation layouts. Navigation must have no pressed layer while its selected indicator still changes. `tests/astrology-details.test.mjs` covers table gesture cleanup and activation; the CSS states and color appearance require a browser check.
 
 With `npm run dev` running in another terminal, check calendar sizing in a real Chromium layout engine:
 

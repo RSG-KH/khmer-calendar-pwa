@@ -276,6 +276,8 @@ svg { flex-shrink: 0; }
 @media (hover: hover) { .astrology-table-trigger:hover { background: color-mix(in srgb, var(--accent) 5%, transparent); } }
 .astrology-table-trigger.is-pressed { background: color-mix(in srgb, var(--accent) 14%, transparent); }
 .astrology-details-dialog { position: relative; display: flex; flex-direction: column; max-width: 480px; width: 92%; overflow: hidden !important; }
+/* Decoration follows the content-sized popup; fit the full artwork even in short windows. */
+.astrology-details-dialog > .tinted-watermark { inset: 12px 12px 12px 40%; width: auto; aspect-ratio: auto; -webkit-mask-position: right bottom; mask-position: right bottom; }
 .astrology-details-dialog > :not(.tinted-watermark) { position: relative; z-index: 1; }
 .astrology-details-title { flex-shrink: 0; margin: 0; color: var(--accent); font-size: calc(16px * var(--font-scale)); line-height: 1.5; font-weight: 600; }
 .astrology-details-dialog > .card-divider { flex-shrink: 0; margin: 14px 0; }

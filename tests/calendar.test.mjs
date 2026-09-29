@@ -272,7 +272,7 @@ test('v0.9.0 learn-more, online-search and date-label translations match Android
   assert.equal(L.text('ui.no_browser_or_search_app', true), 'គ្មានកម្មវិធីរុករក ឬកម្មវិធីស្វែងរក');
   // Khmer date labels carry the ទី day-number prefix.
   assert.equal(CalendarWords.date(2026, 9, 8, true), 'ថ្ងៃអង្គារ ទី៨ ខែកញ្ញា ២០២៦');
-  assert.equal(CalendarWords.date(2026, 9, 8, false), 'Tuesday, 8 September 2026');
+  assert.equal(CalendarWords.date(2026, 9, 8, false), 'Tuesday, September 8, 2026');
 });
 
 test('new appearance preferences round-trip while preserving existing explicit theme choices', () => {

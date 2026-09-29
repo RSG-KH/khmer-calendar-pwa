@@ -22,6 +22,7 @@ import { TimeAndLocationModal, timeAndLocationTitle } from './BirthplacePicker';
 import type { BirthplaceSelection } from '../data/Birthplaces';
 import { AstrologyDetailsModal, astrologyTitle, bindAstrologyTable, type AstrologyKind } from './AstrologyDetails';
 import { askAiButton, launchAiSearch } from './AskAi';
+import { formatEventSubtitle, getCustomEventTimeInfo } from './EventTime';
 
 function renderLocationEmoji(place: BirthplaceSelection | null): string {
   const country = place?.countryCode;
@@ -258,16 +259,18 @@ export class DateDetailsDialogModal {
           ${events.length > 0 ? `
             ${showAstrology || !showHolyDay ? '<div class="card-divider" style="margin: 0;"></div>' : ''}
             <div style="display: flex; flex-direction: column; gap: 6px;">
-              ${events.map(e => `
+              ${events.map(e => {
+                const subtitle = formatEventSubtitle(e, isKhmer, settings.todayTimeZone);
+                return `
                 <button class="dialog-event-item" data-ev-id="${escapeHtml(e.id)}" style="display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 10px; background: color-mix(in srgb, var(--bg-surface-variant) 50%, transparent); cursor: pointer;">
                   <span class="mark-shape ${e.kind.toLowerCase()}"></span>
                   <div class="dialog-event-content" style="flex: 1; display: flex; flex-direction: column; gap: 3px;">
                     <span class="dialog-event-title" style="font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--text-primary); line-height: 1.4;">${escapeHtml(isKhmer ? e.titleKm : e.titleEn)}</span>
-                    <span class="dialog-event-kind" style="font-size: calc(11px * var(--font-scale)); color: var(--on-surface-variant); line-height: 1.3;">${L.text(e.kind === 'HOLIDAY' ? 'ui.holiday.253332' : e.kind === 'HOLY_DAY' ? 'ui.holy_day.28786d' : e.kind === 'CUSTOM' ? 'ui.custom.917053' : 'ui.observance.5b9a87', isKhmer)}${e.time ? ' · ' + escapeHtml(e.time) : ''}</span>
+                    <span class="dialog-event-kind ${e.kind.toLowerCase()}" style="font-size: calc(11px * var(--font-scale)); line-height: 1.3;">${escapeHtml(subtitle)}</span>
                   </div>
                   <span style="font-size: calc(18px * var(--font-scale)); color: var(--on-surface-variant);">›</span>
                 </button>
-              `).join('')}
+              `;}).join('')}
             </div>
           ` : ''}
         </div>
@@ -431,6 +434,8 @@ export class EventDetailsDialogModal {
       isEngineCalculated = true;
     }
 
+    const timeInfo = isCustom && event.time ? getCustomEventTimeInfo(event, isKhmer, settings.todayTimeZone) : null;
+
     this.overlay.innerHTML = `
       <div class="modal-dialog-surface event-detail-dialog" style="position: relative; max-width: 480px; width: 92%;">
         <span class="dialog-watermark-animal tinted-watermark" style="--watermark-image: url('${animalImg}')" aria-hidden="true"></span>
@@ -452,7 +457,7 @@ export class EventDetailsDialogModal {
         <div class="event-detail-content" style="position: relative; z-index: 1; display: flex; flex-direction: column; gap: 12px; font-size: calc(14px * var(--font-scale));">
           <!-- Date & Time -->
           <div style="font-weight: 500; color: var(--text-primary);">
-            ${CalendarWords.date(parts[0], parts[1], parts[2], isKhmer)}${event.time ? ` · ${escapeHtml(event.time)}` : ''}
+            ${CalendarWords.date(parts[0], parts[1], parts[2], isKhmer)}${!isCustom && event.time ? ` · ${escapeHtml(event.time)}` : ''}
           </div>
 
           ${event.repeat ? `<p class="settings-subtitle">${frequencyLabel} · ${L.text('repeat.end', isKhmer)} ${repeatDateLabel(event.repeat.until, isKhmer)}</p>` : ''}
@@ -468,10 +473,20 @@ export class EventDetailsDialogModal {
             </div>
           </div>
 
+          ${timeInfo ? `
+            <div class="event-detail-time-block" style="display: flex; flex-direction: column; gap: 4px;">
+              ${timeInfo.rows.map(r => `
+                <div class="event-detail-time" style="color: #E53935; font-size: calc(14px * var(--font-scale)); font-weight: 500;">
+                  ${escapeHtml(r.time)} · ${escapeHtml(r.label)}${r.dateSuffix ? ` · ${escapeHtml(r.dateSuffix)}` : ''}
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+
           <div class="card-divider" style="margin: 4px 0;"></div>
 
           <!-- Category & Description -->
-          <div style="font-weight: 600; color: var(--accent);">
+          <div class="event-detail-category ${event.kind.toLowerCase()}" style="font-weight: 600;">
             ${event.basis === 'calculated' ? L.text('rules.calculated_label', isKhmer) :
               event.kind === 'HOLIDAY' ? L.text('ui.holiday.253332', isKhmer) :
               event.kind === 'HOLY_DAY' ? L.text('ui.holy_day.28786d', isKhmer) :

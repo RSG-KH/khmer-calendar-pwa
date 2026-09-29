@@ -60,8 +60,8 @@
     "en": "Rooster"
   },
   "calendar.date_label": {
-    "km": "{weekday} ទី{day} {month}",
-    "en": "{weekday}, {day} {month}"
+    "km": "{weekday} ទី{day} {month} {year}",
+    "en": "{weekday}, {month} {day}, {year}"
   },
   "calendar.full_date": {
     "km": "{weekday} {lunar} ឆ្នាំ{animal} {sak} ពុទ្ធសករាជ {buddhist_year} ត្រូវនឹងថ្ងៃទី{day} ខែ{month} ឆ្នាំ{year}",
@@ -952,8 +952,8 @@
     "en": "Calculated from a recurring calendar rule. The date and any anniversary count are estimates, not a record of a celebration or an official day off. Annual announcements may change the schedule."
   },
   "rules.calculated_label": {
-    "km": "ព្រឹត្តិការណ៍តាមការគណនា",
-    "en": "Calculated observance"
+    "km": "ពិធី និងទិវា (តាមការគណនា)",
+    "en": "Observance (Calculated)"
   },
   "rules.coverage": {
     "km": "កំណត់ត្រាព្រឹត្តិការណ៍មានសម្រាប់តែឆ្នាំ ២០០០–២០៣០ ប៉ុណ្ណោះ។ ចំពោះឆ្នាំផ្សេងទៀត នឹងបង្ហាញត្រឹមពិធីបុណ្យដែលបានគណនា ថ្ងៃសីល និងព្រឹត្តិការណ៍ផ្ទាល់ខ្លួនរបស់អ្នក។",

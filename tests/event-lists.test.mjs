@@ -127,5 +127,53 @@ test('event details popup footer has 30px gap before action buttons matching oth
   assert.match(appearanceCss, /\.event-detail-footer\s*\{[^}]*margin-top:\s*30px;/);
 });
 
+test('date details subtitles and event details categories follow event type colors', async () => {
+  const appearanceCss = await readFile(new URL('../src/styles/appearance.css', import.meta.url), 'utf8');
+  const componentsCss = await readFile(new URL('../src/styles/components.css', import.meta.url), 'utf8');
+  const modalsTs = await readFile(new URL('../src/ui/Modals.ts', import.meta.url), 'utf8');
+
+  // Verify date details subtitle colors
+  assert.match(appearanceCss, /\.dialog-event-kind\.holiday\s*\{\s*color:\s*var\(--tertiary\);\s*\}/);
+  assert.match(appearanceCss, /\.dialog-event-kind\.holy_day\s*\{\s*color:\s*var\(--secondary\);\s*\}/);
+  assert.match(appearanceCss, /\.dialog-event-kind\.observance\s*\{\s*color:\s*var\(--accent\);\s*\}/);
+  assert.match(appearanceCss, /\.dialog-event-kind\.custom\s*\{\s*color:\s*#E53935;\s*\}/);
+
+  assert.match(componentsCss, /\.dialog-event-kind\.holiday\s*\{\s*color:\s*var\(--tertiary\);\s*\}/);
+  assert.match(componentsCss, /\.dialog-event-kind\.holy_day\s*\{\s*color:\s*var\(--secondary\);\s*\}/);
+  assert.match(componentsCss, /\.dialog-event-kind\.observance\s*\{\s*color:\s*var\(--accent\);\s*\}/);
+  assert.match(componentsCss, /\.dialog-event-kind\.custom\s*\{\s*color:\s*#E53935;\s*\}/);
+
+  // Verify Modals.ts renders dialog-event-kind with event kind class
+  assert.match(modalsTs, /class="dialog-event-kind \$\{e\.kind\.toLowerCase\(\)\}"/);
+
+  // Verify event details category colors
+  assert.match(appearanceCss, /\.event-detail-category\.holiday\s*\{\s*color:\s*var\(--tertiary\);\s*\}/);
+  assert.match(appearanceCss, /\.event-detail-category\.holy_day\s*\{\s*color:\s*var\(--secondary\);\s*\}/);
+  assert.match(appearanceCss, /\.event-detail-category\.observance\s*\{\s*color:\s*var\(--accent\);\s*\}/);
+  assert.match(appearanceCss, /\.event-detail-category\.custom\s*\{\s*color:\s*#E53935;\s*\}/);
+
+  assert.match(componentsCss, /\.event-detail-category\.holiday\s*\{\s*color:\s*var\(--tertiary\);\s*\}/);
+  assert.match(componentsCss, /\.event-detail-category\.holy_day\s*\{\s*color:\s*var\(--secondary\);\s*\}/);
+  assert.match(componentsCss, /\.event-detail-category\.observance\s*\{\s*color:\s*var\(--accent\);\s*\}/);
+  assert.match(componentsCss, /\.event-detail-category\.custom\s*\{\s*color:\s*#E53935;\s*\}/);
+
+  // Verify Modals.ts renders event-detail-category with event kind class
+  assert.match(modalsTs, /class="event-detail-category \$\{event\.kind\.toLowerCase\(\)\}"/);
+
+  // Verify event-detail-title styling
+  assert.match(appearanceCss, /\.event-detail-title\s*\{[^}]*color:\s*var\(--accent\);/);
+  assert.match(componentsCss, /\.event-detail-title\s*\{[^}]*color:\s*var\(--accent\);/);
+
+  // Verify event-detail-time styling
+  assert.match(appearanceCss, /\.event-detail-time\s*\{[^}]*color:\s*#E53935;[^}]*font-weight:\s*500;/);
+  assert.match(componentsCss, /\.event-detail-time\s*\{[^}]*color:\s*#E53935;[^}]*font-weight:\s*500;/);
+  assert.match(appearanceCss, /\.event-detail-time-block\s*\{[^}]*gap:\s*4px;/);
+  assert.match(componentsCss, /\.event-detail-time-block\s*\{[^}]*gap:\s*4px;/);
+  assert.match(modalsTs, /class="event-detail-time-block"/);
+  assert.match(modalsTs, /class="event-detail-time"/);
+});
+
+
+
 
 

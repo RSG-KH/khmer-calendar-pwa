@@ -1,11 +1,15 @@
 // Copyright (c) 2026 RSG-KH | Apache-2.0 License
 
 import type { CalendarEvent } from '../data/EventRepository';
-import { CalendarWords, L } from '../data/i18n';
+import { CalendarWords } from '../data/i18n';
+import { Storage } from '../data/Storage';
+import { TodayTimeZone } from '../domain/DateTime';
 import { escapeHtml } from './html';
+import { formatEventSubtitle } from './EventTime';
 
 /** Render repository-ordered events with a single visible date per day. */
-export function renderEventRows(events: readonly CalendarEvent[], khmer: boolean, today?: string): string {
+export function renderEventRows(events: readonly CalendarEvent[], khmer: boolean, today?: string, zone?: TodayTimeZone): string {
+  const activeZone = zone ?? Storage.getSettings().todayTimeZone;
   const days = new Map<string, CalendarEvent[]>();
   for (const event of events) {
     const day = days.get(event.date);
@@ -21,10 +25,7 @@ export function renderEventRows(events: readonly CalendarEvent[], khmer: boolean
       ${dayEvents.map((event, index) => {
         const kind = event.kind.toLowerCase();
         const title = khmer ? event.titleKm : event.titleEn;
-        const kindLabel = L.text(event.kind === 'HOLIDAY' ? 'ui.holiday.253332' :
-          event.kind === 'HOLY_DAY' ? 'ui.holy_day.28786d' :
-          event.kind === 'OBSERVANCE' ? 'ui.observance.5b9a87' : 'ui.custom.917053', khmer);
-        const subtitle = kindLabel + (event.time ? ` · ${event.time}` : '');
+        const subtitle = formatEventSubtitle(event, khmer, activeZone);
         return `<button class="event-row-card${event.kind === 'CUSTOM' ? ' custom-event-row' : ''}" data-event-id="${escapeHtml(event.id)}" data-event-date="${escapeHtml(date)}" aria-label="${escapeHtml(`${title}, ${dateLabel}, ${subtitle}`)}">
           <div class="event-row-date" aria-hidden="true">${index === 0 ? `
             <span class="event-row-daynum${holiday ? ' holiday' : ''}">${CalendarWords.number(day, khmer)}</span>

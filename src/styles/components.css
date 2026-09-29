@@ -449,6 +449,37 @@
 .event-row-kind.observance { color: var(--accent); }
 .event-row-kind.custom { color: #E53935; }
 
+.dialog-event-kind.holiday { color: var(--tertiary); }
+.dialog-event-kind.holy_day { color: var(--secondary); }
+.dialog-event-kind.observance { color: var(--accent); }
+.dialog-event-kind.custom { color: #E53935; }
+
+.event-detail-title {
+  color: var(--accent);
+}
+
+.event-detail-time-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.event-detail-time {
+  color: #E53935;
+  font-size: calc(14px * var(--font-scale));
+  font-weight: 500;
+}
+
+.event-detail-category {
+  font-weight: 600;
+  color: var(--accent);
+}
+.event-detail-category.holiday { color: var(--tertiary); }
+.event-detail-category.holy_day { color: var(--secondary); }
+.event-detail-category.observance { color: var(--accent); }
+.event-detail-category.custom { color: #E53935; }
+
+
 .event-row-chevron {
   font-size: 20px;
   color: var(--on-surface-variant);

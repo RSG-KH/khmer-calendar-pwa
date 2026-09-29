@@ -442,13 +442,15 @@ test('event details dialog renders clean categories and descriptions without raw
   const kohKer = EventRepository.getYearEvents(2026).find(e => e.id === 'koh_ker_unesco');
   modal.open(kohKer, true);
   const kohKerHtml = modal.overlay.innerHTML;
-  assert.ok(kohKerHtml.includes('ព្រឹត្តិការណ៍តាមការគណនា'));
+  assert.ok(kohKerHtml.includes('ពិធី និងទិវា (តាមការគណនា)'));
   assert.ok(kohKerHtml.includes('ការគណនាធ្វើឡើងដោយ Khmer Calendar Engine កំណែ 0.6.0 ។'));
   modal.open(kohKer, false);
+  assert.ok(modal.overlay.innerHTML.includes('Observance (Calculated)'));
   assert.ok(modal.overlay.innerHTML.includes('Calculations by Khmer Calendar Engine v0.6.0.'));
   modal.open(kohKer, true);
   assert.ok(kohKerHtml.includes('font-size: calc(10px * var(--font-scale))'), 'Engine calculations description should use 10px');
   assert.ok(kohKerHtml.includes('Koh Ker inscribed on the UNESCO World Heritage List'));
+  assert.ok(kohKerHtml.includes('class="event-detail-category observance"'));
   assert.equal(kohKerHtml.includes('SHA-256'), false, 'Must not contain SHA-256');
   assert.equal(kohKerHtml.includes('calendar-events.tsv'), false, 'Must not contain calendar-events.tsv');
   assert.equal(kohKerHtml.includes('khmer-lunar-calendar-capture'), false, 'Must not contain source id');
@@ -461,6 +463,7 @@ test('event details dialog renders clean categories and descriptions without raw
   assert.ok(constHtml.includes('ថ្ងៃព្រហស្បតិ៍ ទី២៤ ខែកញ្ញា ២០២៦'), 'Full Khmer date format with ទី day prefix, matching Android');
   assert.ok(constHtml.includes('១៣កើត ខែភទ្របទ<br>ឆ្នាំមមី អដ្ឋស័ក'), 'Lunar day, month, animal year, and sak');
   assert.ok(constHtml.includes('ថ្ងៃឈប់សម្រាក'));
+  assert.ok(constHtml.includes('class="event-detail-category holiday"'));
   assert.ok(constHtml.includes('បានបញ្ជាក់ក្នុងប្រតិទិនថ្ងៃឈប់សម្រាកផ្លូវការ ឆ្នាំ២០២៦។'));
   assert.ok(constHtml.includes('អនុក្រឹត្យលេខ ១៦៧'));
   assert.ok(constHtml.includes('event-citation'));
@@ -473,6 +476,94 @@ test('event details dialog renders clean categories and descriptions without raw
   assert.equal(constHtml.includes('SHA-256'), false);
   assert.ok(constHtml.includes('Constitution Day · 33rd (1993)'), 'Translated title shows ordinal count and origin year');
   assert.ok(constHtml.includes('btn-ev-learn-more'), 'Non-custom events expose a Learn more action');
+
+  // 2a. Custom Event with time: time is moved down with timezone, not in top date
+  const customEvent = {
+    id: 'custom_test_1',
+    title: 'Test',
+    titleKm: 'Test',
+    titleEn: 'Test',
+    date: '2026-09-29',
+    time: '09:00',
+    kind: 'CUSTOM',
+    basis: 'custom'
+  };
+  modal.open(customEvent, true);
+  const customHtmlKm = modal.overlay.innerHTML;
+  assert.ok(customHtmlKm.includes('class="event-detail-category custom"'), 'Category has custom kind class');
+  assert.ok(customHtmlKm.includes('ផ្ទាល់ខ្លួន'), 'Custom event Khmer label');
+  assert.ok(customHtmlKm.includes('class="event-detail-time"'), 'Time row has event-detail-time class');
+  assert.ok(customHtmlKm.includes('09:00 · ម៉ោងក្នុងតំបន់ (UTC+2)'), 'Dedicated time row includes local timezone with UTC offset in Khmer');
+  assert.ok(customHtmlKm.includes('14:00 · ម៉ោងកម្ពុជា (UTC+7)'), 'Dedicated time row includes Cambodia timezone in Khmer');
+  assert.doesNotMatch(customHtmlKm, /ថ្ងៃអង្គារ ទី២៩ ខែកញ្ញា ២០២៦\s*·\s*09:00/, 'Top date line does not append time');
+
+  modal.open(customEvent, false);
+  const customHtmlEn = modal.overlay.innerHTML;
+  assert.ok(customHtmlEn.includes('class="event-detail-category custom"'));
+  assert.ok(customHtmlEn.includes('Personal'), 'Custom event English label');
+  assert.ok(customHtmlEn.includes('Tuesday, September 29, 2026'), 'Top date line uses {weekday}, {month} {day}, {year}');
+  assert.ok(customHtmlEn.includes('09:00 · Local time (UTC+2)'), 'Dedicated time row includes local timezone with UTC offset in English');
+  assert.ok(customHtmlEn.includes('14:00 · Cambodia time (UTC+7)'), 'Dedicated time row includes Cambodia timezone in English');
+  assert.doesNotMatch(customHtmlEn, /Tuesday, September 29, 2026\s*·\s*09:00/, 'Top date line does not append time in English');
+
+  // Verify next-day shift across midnight (e.g. 23:00 Belgium UTC+2 -> 04:00 next day Cambodia UTC+7)
+  const lateEvent = {
+    id: 'custom-late-test',
+    title: 'Late Event',
+    titleKm: 'ព្រឹត្តិការណ៍យប់',
+    titleEn: 'Late Event',
+    date: '2026-09-29',
+    time: '23:00',
+    instant: '2026-09-29T21:00:00.000Z',
+    kind: 'CUSTOM',
+    basis: 'custom'
+  };
+  modal.open(lateEvent, false);
+  const lateHtmlEn = modal.overlay.innerHTML;
+  assert.ok(lateHtmlEn.includes('23:00 · Local time (UTC+2)'), 'Local time on same day has no date suffix');
+  assert.ok(lateHtmlEn.includes('04:00 · Cambodia time (UTC+7) · Sep 30'), 'Cambodia time on next day has Sep 30 suffix in English');
+
+  modal.open(lateEvent, true);
+  const lateHtmlKm = modal.overlay.innerHTML;
+  assert.ok(lateHtmlKm.includes('23:00 · ម៉ោងក្នុងតំបន់ (UTC+2)'), 'Khmer local time row');
+  assert.ok(lateHtmlKm.includes('04:00 · ម៉ោងកម្ពុជា (UTC+7) · ៣០ កញ្ញា'), 'Khmer Cambodia time on next day has ៣០ កញ្ញា suffix in Khmer');
+
+  // Verify event list subtitle clarity when local != Cambodia
+  const { formatEventSubtitle } = await server.ssrLoadModule('/src/ui/EventTime.ts');
+  assert.equal(
+    formatEventSubtitle(customEvent, false, 'cambodia'),
+    'Personal · 09:00 · Cambodia time (UTC+7)'
+  );
+  assert.equal(
+    formatEventSubtitle(customEvent, true, 'cambodia'),
+    'ផ្ទាល់ខ្លួន · 09:00 · ម៉ោងកម្ពុជា (UTC+7)'
+  );
+  assert.equal(
+    formatEventSubtitle(customEvent, false, 'local'),
+    'Personal · 09:00 · Local time (UTC+2)'
+  );
+  assert.equal(
+    formatEventSubtitle(customEvent, true, 'local'),
+    'ផ្ទាល់ខ្លួន · 09:00 · ម៉ោងក្នុងតំបន់ (UTC+2)'
+  );
+
+  // If time is 14:00 in Cambodia zone
+  const cambodiaCustomEvent = { ...customEvent, time: '14:00', instant: '2026-09-29T07:00:00.000Z' };
+  assert.equal(
+    formatEventSubtitle(cambodiaCustomEvent, false, 'cambodia'),
+    'Personal · 14:00 · Cambodia time (UTC+7)'
+  );
+  assert.equal(
+    formatEventSubtitle(cambodiaCustomEvent, true, 'cambodia'),
+    'ផ្ទាល់ខ្លួន · 14:00 · ម៉ោងកម្ពុជា (UTC+7)'
+  );
+
+  // Holy day event category
+  const holyDayEvent = EventRepository.getYearEvents(2026).find(e => e.kind === 'HOLY_DAY');
+  if (holyDayEvent) {
+    modal.open(holyDayEvent, false);
+    assert.ok(modal.overlay.innerHTML.includes('class="event-detail-category holy_day"'), 'Holy day category has holy_day class');
+  }
 
   // 2b. Learn more dialog: stacked bilingual knowledge, app language first, plus the online search query
   const { LearnMoreModal, buildOnlineSearchQuery } = await server.ssrLoadModule('/src/ui/Modals.ts');
@@ -556,7 +647,18 @@ test('event details dialog renders clean categories and descriptions without raw
   dateModal.open('2026-09-26', [], true);
   const disabledHolyHtmlKm = dateModal.overlay.innerHTML;
   assert.equal(disabledHolyHtmlKm.includes('holy_day_lotus'), false, 'Disabled holyDayMarkers must not show lotus on holy day');
-  assert.equal(disabledHolyHtmlKm.includes('ថ្ងៃសីល'), false, 'Disabled holyDayMarkers must not show ថ្ងៃសីល text');
+  // Date details event subtitles follow kind classes
+  dateModal.open('2026-09-29', [
+    { id: 'c1', title: 'Personal', titleKm: 'ផ្ទាល់ខ្លួន', titleEn: 'Personal', date: '2026-09-29', time: '09:00', kind: 'CUSTOM', basis: 'custom' },
+    { id: 'c2', title: 'Holiday', titleKm: 'បុណ្យ', titleEn: 'Holiday', date: '2026-09-29', kind: 'HOLIDAY', basis: 'official' },
+    { id: 'c3', title: 'Holy Day', titleKm: 'ថ្ងៃសីល', titleEn: 'Holy Day', date: '2026-09-29', kind: 'HOLY_DAY', basis: 'khmer_lunar' },
+    { id: 'c4', title: 'Observance', titleKm: 'ពិធី', titleEn: 'Observance', date: '2026-09-29', kind: 'OBSERVANCE', basis: 'calculated' }
+  ], true);
+  const dateEventsHtml = dateModal.overlay.innerHTML;
+  assert.ok(dateEventsHtml.includes('class="dialog-event-kind custom"'));
+  assert.ok(dateEventsHtml.includes('class="dialog-event-kind holiday"'));
+  assert.ok(dateEventsHtml.includes('class="dialog-event-kind holy_day"'));
+  assert.ok(dateEventsHtml.includes('class="dialog-event-kind observance"'));
 
   dateModal.close();
 

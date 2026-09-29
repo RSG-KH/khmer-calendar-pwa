@@ -273,7 +273,7 @@
 
 .cell-event-marks {
   display: flex;
-  gap: 2px;
+  gap: 4px;
   height: 7px;
   align-items: center;
   justify-content: center;

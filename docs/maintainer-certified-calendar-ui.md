@@ -29,6 +29,8 @@ The calendar header, summary and selected-day events stay aligned with the month
 
 The 50px and 40px overrides deliberately exclude `data-phone`, even when a phone's landscape viewport is 740px wide or wider. In the compact non-phone layout (width at least 740px, landscape, height at most 599px), `appearance.css` also uses 1.1 line height for the day and lunar labels, zero extra top margin on the lunar label, and a 5px event-mark row with zero top margin. Holiday, observance and personal markers are 5px; the holy-day triangle has 3px sides and a 5px bottom; the personal star uses 1.2 scale. These compact-only adjustments keep content inside the 40px row, including at 80% text size. Do not carry them into phone layouts.
 
+**Maintainer requested — 29 September 2026.** Adjacent event markers in a calendar cell keep a **4px horizontal gap** (`.cell-event-marks` in `components.css`, previously 2px), in every layout including the compact non-phone rows. Marker sizes and row heights are unchanged.
+
 ## Date summary card
 
 The summary card appears only in landscape at viewport width **960px or more** and height **600px or more**. Its right side presents the Gregorian date, optional Western zodiac, then optional Ganzhi line in that order.
@@ -58,7 +60,7 @@ When `showWesternZodiac` is on, the dialog renders the Western Zodiac Big 3 tabl
 
 | Element | Certified behavior |
 | --- | --- |
-| Dialog date title | Gregorian date title uses regular weight (`font-weight: 400`) at 16px × font scale. |
+| Dialog date title | Gregorian date title uses regular weight (`font-weight: 400`) at 16px × font scale. **Maintainer requested — 29 September 2026:** the title text uses the accent color (`var(--accent)`), matching the event-details title. |
 | Buddhist day marker | When enabled, Buddhist Holy Day or Shaving Day appears directly below the full lunar date and above the first content divider. It stays with the date information, whether or not either astrology table is visible. |
 | Symbol rows | Lotus, Western Big 3 (☸️) and Ganzhi (☯️) use a shared 24px-wide symbol slot and a 6px text gap. The lotus image is 20px; symbol emoji are 15px × font scale. |
 | Table text | Base table text is 12px × font scale. Named signs/animals follow `false`; emoji signs/animals follow `true`. Emoji cells are 19px × font scale. Primary astrological markers (Ganzhi Year sign and clash cells, and Western Big 3 Sun sign cell) use `.highlight-cell` (`font-weight: 600; color: var(--accent)`). |

@@ -209,7 +209,7 @@ export class DateDetailsDialogModal {
         ${showWesternZodiac ? `<span class="dialog-watermark-western tinted-watermark" style="--watermark-image: url('${Zodiac.getWesternDrawable(info.zodiac)}')" aria-hidden="true"></span>` : ''}
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; position: relative; z-index: 1;">
-          <span style="font-size: calc(16px * var(--font-scale)); font-weight: 400; color: var(--text-primary);">
+          <span style="font-size: calc(16px * var(--font-scale)); font-weight: 400; color: var(--accent);">
             ${escapeHtml(dialogTitle)}
           </span>
           <div class="date-details-header-badge">

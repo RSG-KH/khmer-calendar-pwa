@@ -80,6 +80,7 @@ See [Chrome's desktop installation guide](https://support.google.com/chrome/answ
 - Every catalog event carries a curated bilingual knowledge summary: tap an event, then **Learn more**. **Ask AI** / **សួរ AI** opens your browser on a Google AI-mode search for that event only when you tap it.
 - Your events and settings stay on your device. No account or sync; clearing app/site data removes them.
 - Personal events can repeat every X days, weekly, monthly or yearly, with a required end date and a preview. Choose how to handle missing month-end or leap-day dates; editing or deleting applies to the whole series.
+- Personal event times display both your device's local time zone and Cambodia time (UTC+7) in event details when local time differs from Cambodia time, including date shifts across midnight.
 - To update, tap **Check for update** in Settings. Available updates download and reload automatically; saved events and settings are kept.
 - Swipe left or right on the calendar to change months.
 - Tap the month to choose a month and year, then **Go**. **This year** changes the draft year and keeps your chosen month.

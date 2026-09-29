@@ -1528,11 +1528,11 @@
     "en": "Sat"
   },
   "events.engine_calculations": {
-    "km": "ការគណនាធ្វើឡើងដោយ Khmer Calendar Engine កំណែ {version} ។",
+    "km": "គណនាដោយ Khmer Calendar Engine កំណែ {version} ។",
     "en": "Calculations by Khmer Calendar Engine v{version}."
   },
   "astrology.engine_calculations": {
-    "km": "ការគណនាធ្វើឡើងដោយ Khmer Calendar Engine កំណែ {version} ។",
+    "km": "គណនាដោយ Khmer Calendar Engine កំណែ {version} ។",
     "en": "Calculations by Khmer Calendar Engine v{version}."
   },
   "ui.background_accent": {

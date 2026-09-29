@@ -76,7 +76,7 @@ test('grouped rows label each date once, retain holiday coloring, and give every
 
 test('Khmer grouped rows retain localized dates and escape personal-event text and attributes', () => {
   const html = renderEventRows([event('A "title" <script> &', 'CUSTOM')], true);
-  assert.match(html, /class="event-row-daynum">២៤</);
+  assert.match(html, /class="event-row-daynum custom">២៤</);
   assert.match(html, /A &quot;title&quot; &lt;script&gt; &amp;/);
   assert.equal(html.includes('<script>'), false);
 });
@@ -171,6 +171,51 @@ test('date details subtitles and event details categories follow event type colo
   assert.match(componentsCss, /\.event-detail-time-block\s*\{[^}]*gap:\s*4px;/);
   assert.match(modalsTs, /class="event-detail-time-block"/);
   assert.match(modalsTs, /class="event-detail-time"/);
+});
+
+test('holiday subtitle is formatted as Observance · Holiday and Events tab filter includes holidays in Observances', async () => {
+  const { formatEventSubtitle } = await server.ssrLoadModule('/src/ui/EventTime.ts');
+  const holidayEvent = event('pchum_ben', 'HOLIDAY');
+
+  assert.equal(formatEventSubtitle(holidayEvent, false, 'cambodia'), 'Observance · Holiday');
+  assert.equal(formatEventSubtitle(holidayEvent, true, 'cambodia'), 'ពិធី និងទិវា · ថ្ងៃឈប់សម្រាក');
+
+  // Verify renderEventRows renders Observance · Holiday with holiday class
+  const htmlEn = renderEventRows([holidayEvent], false);
+  assert.ok(htmlEn.includes('class="event-row-kind holiday"'));
+  assert.ok(htmlEn.includes('Observance · Holiday'));
+
+  const htmlKm = renderEventRows([holidayEvent], true);
+  assert.ok(htmlKm.includes('class="event-row-kind holiday"'));
+  assert.ok(htmlKm.includes('ពិធី និងទិវា · ថ្ងៃឈប់សម្រាក'));
+
+  // Verify main.ts filter logic: filter 1 has HOLIDAY only, filter 2 has both OBSERVANCE and HOLIDAY
+  const mainTs = await readFile(new URL('../src/main.ts', import.meta.url), 'utf8');
+  assert.match(mainTs, /if\s*\(this\.eventsFilter === 1 && e\.kind !== 'HOLIDAY'\)\s*return false;/);
+  assert.match(mainTs, /if\s*\(this\.eventsFilter === 2 && e\.kind !== 'OBSERVANCE' && e\.kind !== 'HOLIDAY'\)\s*return false;/);
+});
+
+test('personal event lists apply personal event color to big day number', async () => {
+  const customEvent = event('Meeting', 'CUSTOM');
+  const holidayEvent = event('Holiday', 'HOLIDAY');
+  const observanceEvent = event('Observance', 'OBSERVANCE');
+
+  const customHtml = renderEventRows([customEvent], false);
+  assert.match(customHtml, /class="event-row-daynum custom">24</);
+
+  const holidayHtml = renderEventRows([holidayEvent], false);
+  assert.match(holidayHtml, /class="event-row-daynum holiday">24</);
+
+  const mixedHtml = renderEventRows([customEvent, holidayEvent], false);
+  assert.match(mixedHtml, /class="event-row-daynum holiday">24</);
+
+  const observanceHtml = renderEventRows([observanceEvent], false);
+  assert.match(observanceHtml, /class="event-row-daynum">24</);
+  assert.equal(observanceHtml.includes('class="event-row-daynum holiday"'), false);
+  assert.equal(observanceHtml.includes('class="event-row-daynum custom"'), false);
+
+  const componentsCss = await readFile(new URL('../src/styles/components.css', import.meta.url), 'utf8');
+  assert.match(componentsCss, /\.event-row-daynum\.custom\s*\{\s*color:\s*#E53935;\s*\}/);
 });
 
 

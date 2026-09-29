@@ -155,7 +155,7 @@ test('both popup tables reuse updated time/place results and language/emoji choi
       if (kind === 'big3') assert.match(child.innerHTML, /♎️ Libra \(Air · Venus\)/);
       assert.match(child.innerHTML, khmer ? /សួរ AI/ : /Ask AI/);
       assert.match(child.innerHTML, khmer
-        ? /ការគណនាធ្វើឡើងដោយ Khmer Calendar Engine កំណែ 0\.6\.0/
+        ? /គណនាដោយ Khmer Calendar Engine កំណែ 0\.6\.0/
         : /Calculations by Khmer Calendar Engine v0\.6\.0/);
       assert.doesNotMatch(child.innerHTML, /role="button"|data-astrology=/);
       child.querySelector('.btn-ask-ai').dispatchEvent(new Event('click'));

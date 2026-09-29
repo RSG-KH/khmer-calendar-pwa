@@ -512,7 +512,7 @@ class KhmerCalendarApp {
       if (!this.settings.showHolyDaysInEvents && e.kind === 'HOLY_DAY') return false;
       if (!this.settings.showObservances && e.kind === 'OBSERVANCE') return false;
       if (this.eventsFilter === 1 && e.kind !== 'HOLIDAY') return false;
-      if (this.eventsFilter === 2 && e.kind !== 'OBSERVANCE') return false;
+      if (this.eventsFilter === 2 && e.kind !== 'OBSERVANCE' && e.kind !== 'HOLIDAY') return false;
       if (this.eventsFilter === 3 && e.kind !== 'HOLY_DAY') return false;
       if (this.eventsFilter === 4 && e.kind !== 'CUSTOM') return false;
 

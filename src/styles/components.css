@@ -403,6 +403,10 @@
   color: var(--tertiary);
 }
 
+.event-row-daynum.custom {
+  color: #E53935;
+}
+
 .event-row-weekday {
   font-size: calc(10px * var(--font-scale));
   color: var(--on-surface-variant);

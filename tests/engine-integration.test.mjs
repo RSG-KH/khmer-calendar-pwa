@@ -443,7 +443,7 @@ test('event details dialog renders clean categories and descriptions without raw
   modal.open(kohKer, true);
   const kohKerHtml = modal.overlay.innerHTML;
   assert.ok(kohKerHtml.includes('ពិធី និងទិវា (តាមការគណនា)'));
-  assert.ok(kohKerHtml.includes('ការគណនាធ្វើឡើងដោយ Khmer Calendar Engine កំណែ 0.6.0 ។'));
+  assert.ok(kohKerHtml.includes('គណនាដោយ Khmer Calendar Engine កំណែ 0.6.0 ។'));
   modal.open(kohKer, false);
   assert.ok(modal.overlay.innerHTML.includes('Observance (Calculated)'));
   assert.ok(modal.overlay.innerHTML.includes('Calculations by Khmer Calendar Engine v0.6.0.'));

@@ -21,6 +21,8 @@ export function renderEventRows(events: readonly CalendarEvent[], khmer: boolean
     const weekday = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
     const dateLabel = CalendarWords.date(year, month, day, khmer);
     const holiday = dayEvents.some(event => event.kind === 'HOLIDAY');
+    const custom = !holiday && dayEvents.some(event => event.kind === 'CUSTOM');
+    const daynumClass = holiday ? ' holiday' : custom ? ' custom' : '';
     return `<div class="event-day-group${date === today ? ' is-today' : ''}" data-date="${escapeHtml(date)}" role="group" aria-label="${escapeHtml(dateLabel)}"${date === today ? ' aria-current="date"' : ''}>
       ${dayEvents.map((event, index) => {
         const kind = event.kind.toLowerCase();
@@ -28,7 +30,7 @@ export function renderEventRows(events: readonly CalendarEvent[], khmer: boolean
         const subtitle = formatEventSubtitle(event, khmer, activeZone);
         return `<button class="event-row-card${event.kind === 'CUSTOM' ? ' custom-event-row' : ''}" data-event-id="${escapeHtml(event.id)}" data-event-date="${escapeHtml(date)}" aria-label="${escapeHtml(`${title}, ${dateLabel}, ${subtitle}`)}">
           <div class="event-row-date" aria-hidden="true">${index === 0 ? `
-            <span class="event-row-daynum${holiday ? ' holiday' : ''}">${CalendarWords.number(day, khmer)}</span>
+            <span class="event-row-daynum${daynumClass}">${CalendarWords.number(day, khmer)}</span>
             <span class="event-row-weekday">${CalendarWords.weekday(weekday, khmer, 'short')}</span>
           ` : ''}</div>
           <div class="event-row-bar ${kind}"></div>

@@ -77,12 +77,13 @@ export function formatEventSubtitle(
   khmer: boolean,
   zone: TodayTimeZone
 ): string {
-  const kindLabel = L.text(
-    event.kind === 'HOLIDAY' ? 'ui.holiday.253332' :
-    event.kind === 'HOLY_DAY' ? 'ui.holy_day.28786d' :
-    event.kind === 'OBSERVANCE' ? 'ui.observance.5b9a87' : 'ui.custom.917053',
-    khmer
-  );
+  const kindLabel = event.kind === 'HOLIDAY'
+    ? `${L.text('ui.observance.5b9a87', khmer)} · ${L.text('ui.holiday.253332', khmer)}`
+    : L.text(
+        event.kind === 'HOLY_DAY' ? 'ui.holy_day.28786d' :
+        event.kind === 'OBSERVANCE' ? 'ui.observance.5b9a87' : 'ui.custom.917053',
+        khmer
+      );
 
   if (!event.time) {
     return kindLabel;

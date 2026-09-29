@@ -4,6 +4,11 @@ import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { createServer } from 'vite';
 
+// The event-details time-row assertions expect local labels for UTC+2
+// (CEST). The pinned zone makes them deterministic on every runner, because
+// the event instants are fixed September 2026 dates regardless of season.
+process.env.TZ = 'Europe/Brussels';
+
 const server = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom', optimizeDeps: { noDiscovery: true, include: [] } });
 after(() => server.close());
 const { KhmerCalendar, calendarEngine, toEpochDay, fromEpochDay } = await server.ssrLoadModule('/src/domain/KhmerCalendar.ts');

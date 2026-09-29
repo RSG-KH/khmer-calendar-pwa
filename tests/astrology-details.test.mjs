@@ -161,8 +161,26 @@ test('both popup tables reuse updated time/place results and language/emoji choi
       child.querySelector('.btn-ask-ai').dispatchEvent(new Event('click'));
       const { url, result } = f.opened.at(-1); const parsed = new URL(url);
       assert.equal(parsed.searchParams.get('udm'), '50');
-      assert.equal(parsed.searchParams.get('hl'), khmer ? 'km' : 'en');
-      assert.doesNotMatch(parsed.searchParams.get('q'), /2026|08:35|Voat|11\.574/);
+      const query = parsed.searchParams.get('q');
+      if (khmer) {
+        assert.match(query, /២០២៦/);
+        if (kind === 'big3') {
+          assert.match(query, /ម៉ោង ០៨:៣៥ \(ទីតាំងមិនបានបញ្ជាក់\)៖/);
+          assert.match(query, /- ព្រះអាទិត្យ \(Sun\)៖ Libra/);
+        } else {
+          assert.match(query, /ម៉ោង ៨ និង ៣៥ នាទី៖/);
+          assert.match(query, /- ឆ្នាំ៖ 丙午/);
+        }
+      } else {
+        assert.match(query, /September 24, 2026, at 08:35/);
+        if (kind === 'big3') {
+          assert.match(query, /\(unspecified location\):/);
+          assert.match(query, /- Sun: Libra;/);
+        } else {
+          assert.match(query, /- Year: 丙午/);
+        }
+      }
+      assert.doesNotMatch(query, /Voat|11\.574/);
       assert.equal(result.opener, null);
       assert.equal(child.classList.contains('open'), true);
       child.querySelector('.btn-astrology-close').dispatchEvent(new Event('click'));
@@ -189,3 +207,75 @@ test('repeated open/close and parent replacement release child overlays and view
     assert.equal(parent.overlay.innerHTML, '');
   }
 });
+
+test('astrology AI queries format Ganzhi and Big 3 with date, time, and structured list items', () => {
+  const ganzhi = ganzhiColumns(2026, 9, 29, 20);
+  const western = [
+    { key: 'sun', sign: { englishName: 'Libra' } },
+    { key: 'moon', sign: { englishName: 'Taurus' } },
+    { key: 'rising', sign: { englishName: 'Gemini' } }
+  ];
+
+  const ganzhiEn = astrologySearchQuery({
+    kind: 'ganzhi',
+    khmer: false,
+    tableHtml: '',
+    western: [],
+    ganzhi,
+    date: { year: 2026, month: 9, day: 29 },
+    time: '20:58'
+  });
+  const expectedGanzhiEn = 'Please explain the traditional astrological meanings of the Chinese Ganzhi (干支) for September 29, 2026, at 20:58:\n'
+    + '- Year: 丙午 Horse (Clash: Rat);\n'
+    + '- Month: 丁酉 Rooster (Clash: Rabbit);\n'
+    + '- Day: 丙午 Horse (Clash: Rat);\n'
+    + '- Hour: 戊戌 Dog (Clash: Dragon).';
+  assert.equal(ganzhiEn, expectedGanzhiEn);
+
+  const ganzhiKm = astrologySearchQuery({
+    kind: 'ganzhi',
+    khmer: true,
+    tableHtml: '',
+    western: [],
+    ganzhi,
+    date: { year: 2026, month: 9, day: 29 },
+    time: '20:58'
+  });
+  const expectedGanzhiKm = 'ចូរពន្យល់អត្ថន័យតាមហោរាសាស្ត្រចិន(干支) ដែលត្រូវនឹងថ្ងៃទី ២៩ ខែកញ្ញា ឆ្នាំ ២០២៦ ម៉ោង ២០ និង ៥៨ នាទី៖\n'
+    + '- ឆ្នាំ៖ 丙午 មមី (ឆុង៖ ជូត)\n'
+    + '- ខែ៖ 丁酉 រកា (ឆុង៖ ថោះ)\n'
+    + '- ថ្ងៃ៖ 丙午 មមី (ឆុង៖ ជូត)\n'
+    + '- ម៉ោង៖ 戊戌 ច (ឆុង៖ រោង)។';
+  assert.equal(ganzhiKm, expectedGanzhiKm);
+
+  const big3En = astrologySearchQuery({
+    kind: 'big3',
+    khmer: false,
+    tableHtml: '',
+    western,
+    ganzhi: [],
+    date: { year: 2026, month: 9, day: 29 },
+    time: '20:58'
+  });
+  const expectedBig3En = 'Please explain the traditional astrological meanings of the Big 3 (Sun, Moon, and Rising) for September 29, 2026, at 20:58 (unspecified location):\n'
+    + '- Sun: Libra;\n'
+    + '- Moon: Taurus;\n'
+    + '- Rising: Gemini.';
+  assert.equal(big3En, expectedBig3En);
+
+  const big3Km = astrologySearchQuery({
+    kind: 'big3',
+    khmer: true,
+    tableHtml: '',
+    western,
+    ganzhi: [],
+    date: { year: 2026, month: 9, day: 29 },
+    time: '20:58'
+  });
+  const expectedBig3Km = 'ចូរពន្យល់ពីអត្ថន័យតាមក្បួនហោរាសាស្ត្រលោកខាងលិច នៃធាតុសំខាន់ទាំង ៣ (Big 3) សម្រាប់ថ្ងៃទី ២៩ ខែកញ្ញា ឆ្នាំ ២០២៦ ម៉ោង ២០:៥៨ (ទីតាំងមិនបានបញ្ជាក់)៖\n'
+    + '- ព្រះអាទិត្យ (Sun)៖ Libra\n'
+    + '- ព្រះចន្ទ (Moon)៖ Taurus\n'
+    + '- រះ (Rising)៖ Gemini ។';
+  assert.equal(big3Km, expectedBig3Km);
+});
+

@@ -1,4 +1,4 @@
-import { L } from '../data/i18n';
+import { CalendarWords, L } from '../data/i18n';
 import { calendarEngine } from '../domain/KhmerCalendar';
 import { Zodiac, ZODIAC_SIGNS } from '../domain/Zodiac';
 import { ganzhiAnimalLabel, type GanzhiColumn } from '../domain/Ganzhi';
@@ -8,12 +8,20 @@ import { setupModal, showModal, hideModal } from './Modal';
 import { escapeHtml } from './html';
 
 export type AstrologyKind = 'big3' | 'ganzhi';
+export interface AstrologyDate {
+  year: number;
+  month: number;
+  day: number;
+}
+
 export interface AstrologyDetails {
   kind: AstrologyKind;
   khmer: boolean;
   tableHtml: string;
   western: readonly WesternZodiacColumn[];
   ganzhi: readonly GanzhiColumn[];
+  date?: AstrologyDate;
+  time?: string | null;
 }
 
 export function astrologyTitle(kind: AstrologyKind, khmer: boolean): string {
@@ -32,18 +40,111 @@ export function astrologyBackground(details: AstrologyDetails): string | undefin
   return year ? Zodiac.getAnimalDrawable(year.branch.index, true) : undefined;
 }
 
+const GANZHI_ROLES_EN: Record<string, string> = {
+  year: 'Year',
+  month: 'Month',
+  day: 'Day',
+  hour: 'Hour'
+};
+
+const GANZHI_ROLES_KM: Record<string, string> = {
+  year: 'ឆ្នាំ',
+  month: 'ខែ',
+  day: 'ថ្ងៃ',
+  hour: 'ម៉ោង'
+};
+
+const BIG3_LABELS_EN: Record<string, string> = {
+  sun: 'Sun',
+  moon: 'Moon',
+  rising: 'Rising'
+};
+
+const BIG3_LABELS_KM: Record<string, string> = {
+  sun: 'ព្រះអាទិត្យ (Sun)',
+  moon: 'ព្រះចន្ទ (Moon)',
+  rising: 'រះ (Rising)'
+};
+
+function toKhmerDigits(value: string | number): string {
+  const kmDigits = ['\u17E0', '\u17E1', '\u17E2', '\u17E3', '\u17E4', '\u17E5', '\u17E6', '\u17E7', '\u17E8', '\u17E9'];
+  return String(value).replace(/\d/g, d => kmDigits[Number(d)]);
+}
+
+function formatKhmerGanzhiTime(time: string): string {
+  const [hStr, mStr] = time.split(':');
+  const hKm = CalendarWords.number(Number(hStr), true);
+  const mKm = toKhmerDigits(mStr);
+  return ` ម៉ោង ${hKm} និង ${mKm} នាទី`;
+}
+
 export function astrologySearchQuery(details: AstrologyDetails): string {
-  const { khmer } = details;
-  const values = details.kind === 'big3'
-    ? details.western.flatMap(({ key, sign }) => sign
-      ? [`${L.text(`ui.western_zodiac_${key}`, khmer)}: ${sign.englishName}`] : [])
-    : details.ganzhi.flatMap(({ key, pillar }) => pillar
-      ? [`${L.text(`ui.ganzhi_${key === 'day' || key === 'hour' ? `${key}_column` : key}`, khmer)}: `
-        + `${pillar.nameZh} ${ganzhiAnimalLabel(pillar.branch, khmer, false)} `
-        + `(${L.text('ui.ganzhi_clash', khmer)}: ${ganzhiAnimalLabel(pillar.clashBranch, khmer, false)})`] : []);
-  return L.text('ui.astrology_ai_query', khmer, {
-    details: `${astrologyTitle(details.kind, khmer)}: ${values.join('; ')}`
+  const { khmer, kind, date, time } = details;
+
+  if (kind === 'ganzhi') {
+    const validPillars = details.ganzhi.filter(col => col.pillar !== null);
+    let intro: string;
+    if (khmer) {
+      const datePart = date
+        ? ` ដែលត្រូវនឹងថ្ងៃទី ${CalendarWords.number(date.day, true)} ${CalendarWords.month(date.month, true)} ឆ្នាំ ${CalendarWords.number(date.year, true)}${time ? formatKhmerGanzhiTime(time) : ''}`
+        : '';
+      intro = `ចូរពន្យល់អត្ថន័យតាមហោរាសាស្ត្រចិន(干支)${datePart}៖`;
+    } else {
+      const datePart = date
+        ? ` for ${CalendarWords.month(date.month, false)} ${date.day}, ${date.year}${time ? `, at ${time}` : ''}`
+        : '';
+      intro = `Please explain the traditional astrological meanings of the Chinese Ganzhi (干支)${datePart}:`;
+    }
+
+    const lines = validPillars.map(({ key, pillar }, index) => {
+      const isLast = index === validPillars.length - 1;
+      if (khmer) {
+        const label = GANZHI_ROLES_KM[key];
+        const animal = ganzhiAnimalLabel(pillar!.branch, true, false);
+        const clash = ganzhiAnimalLabel(pillar!.clashBranch, true, false);
+        const end = isLast ? '។' : '';
+        return `- ${label}៖ ${pillar!.nameZh} ${animal} (ឆុង៖ ${clash})${end}`;
+      } else {
+        const label = GANZHI_ROLES_EN[key];
+        const animal = ganzhiAnimalLabel(pillar!.branch, false, false);
+        const clash = ganzhiAnimalLabel(pillar!.clashBranch, false, false);
+        const end = isLast ? '.' : ';';
+        return `- ${label}: ${pillar!.nameZh} ${animal} (Clash: ${clash})${end}`;
+      }
+    });
+
+    return lines.length > 0 ? `${intro}\n${lines.join('\n')}` : intro;
+  }
+
+  // kind === 'big3'
+  const validSigns = details.western.filter(col => col.sign !== null);
+  let intro: string;
+  if (khmer) {
+    const datePart = date
+      ? ` សម្រាប់ថ្ងៃទី ${CalendarWords.number(date.day, true)} ${CalendarWords.month(date.month, true)} ឆ្នាំ ${CalendarWords.number(date.year, true)}${time ? ` ម៉ោង ${toKhmerDigits(time)}` : ''}`
+      : '';
+    intro = `ចូរពន្យល់ពីអត្ថន័យតាមក្បួនហោរាសាស្ត្រលោកខាងលិច នៃធាតុសំខាន់ទាំង ៣ (Big 3)${datePart} (ទីតាំងមិនបានបញ្ជាក់)៖`;
+  } else {
+    const datePart = date
+      ? ` for ${CalendarWords.month(date.month, false)} ${date.day}, ${date.year}${time ? `, at ${time}` : ''}`
+      : '';
+    intro = `Please explain the traditional astrological meanings of the Big 3 (Sun, Moon, and Rising)${datePart} (unspecified location):`;
+  }
+
+  const lines = validSigns.map(({ key, sign }, index) => {
+    const isLast = index === validSigns.length - 1;
+    if (khmer) {
+      const label = BIG3_LABELS_KM[key];
+      const end = isLast ? ' ។' : '';
+      return `- ${label}៖ ${sign!.englishName}${end}`;
+    } else {
+      const label = BIG3_LABELS_EN[key];
+      const end = isLast ? '.' : ';';
+      return `- ${label}: ${sign!.englishName}${end}`;
+    }
   });
+
+  return lines.length > 0 ? `${intro}\n${lines.join('\n')}` : intro;
 }
 
 /** Keep horizontal/vertical scrolling separate from whole-table activation. */

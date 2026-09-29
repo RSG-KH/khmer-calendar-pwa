@@ -333,6 +333,8 @@ export class DateDetailsDialogModal {
       bindAstrologyTable(element, () => {
         this.astrologyModal ??= new AstrologyDetailsModal();
         this.astrologyModal.open({ kind, khmer: isKhmer, western, ganzhi,
+          date: { year: info.year, month: info.month, day: info.day },
+          time: this.customTime,
           tableHtml: kind === 'big3' ? westernZodiacHtml : ganzhiHtml });
       });
     });

@@ -380,6 +380,7 @@ svg { flex-shrink: 0; }
 .month-picker-dialog .month-picker-grid { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .month-picker-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .month-picker-cell { min-height: 52px; border: 0; border-radius: 12px; background: var(--bg-surface-variant); color: var(--text-primary); text-align: center; font-size: calc(14px * var(--font-scale)); cursor: pointer; }
+.month-picker-cell.active { background: var(--accent); color: var(--on-accent); font-weight: 700; }
 .dialog-event-item { border: 0; font-family: inherit; text-align: left; padding: 7px 10px; }
 .dialog-event-content { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .dialog-event-title { font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--text-primary); line-height: 1.4; overflow-wrap: anywhere; }

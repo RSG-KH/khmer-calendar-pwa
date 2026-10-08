@@ -18,6 +18,7 @@ const { RecurringEvents, calendarCatalog } = await server.ssrLoadModule('/src/da
 const { EventRepository } = await server.ssrLoadModule('/src/data/EventRepository.ts');
 const { holyDayLotus } = await server.ssrLoadModule('/src/ui/HolyDayLotus.ts');
 const { Storage, DEFAULT_SETTINGS } = await server.ssrLoadModule('/src/data/Storage.ts');
+const { L } = await server.ssrLoadModule('/src/data/i18n.ts');
 
 const catalogBytes = await readFile(new URL('../src/data/khmer-calendar-data-0.5.0.json', import.meta.url));
 const storageMap = new Map();
@@ -563,11 +564,15 @@ test('event details dialog renders clean categories and descriptions without raw
     'ផ្ទាល់ខ្លួន · 14:00 · ម៉ោងកម្ពុជា (UTC+7)'
   );
 
-  // Holy day event category
+  // Holy days keep their title and explanation without repeating the body category.
   const holyDayEvent = EventRepository.getYearEvents(2026).find(e => e.kind === 'HOLY_DAY');
   if (holyDayEvent) {
-    modal.open(holyDayEvent, false);
-    assert.ok(modal.overlay.innerHTML.includes('class="event-detail-category holy_day"'), 'Holy day category has holy_day class');
+    for (const khmer of [false, true]) {
+      modal.open(holyDayEvent, khmer);
+      assert.ok(!modal.overlay.innerHTML.includes('event-detail-category'), 'Redundant holy-day body category is hidden');
+      assert.ok(modal.overlay.innerHTML.includes(khmer ? holyDayEvent.titleKm : holyDayEvent.titleEn), 'Holy-day title remains');
+      assert.ok(modal.overlay.innerHTML.includes(L.text('ui.a_buddhist_observance_on_the_8th_and_15th_waxing_days_t.4bac2c', khmer)), 'Holy-day explanation remains');
+    }
   }
 
   // 2b. Learn more dialog: stacked bilingual knowledge, app language first, plus the online search query

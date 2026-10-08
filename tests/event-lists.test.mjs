@@ -81,6 +81,22 @@ test('Khmer grouped rows retain localized dates and escape personal-event text a
   assert.equal(html.includes('<script>'), false);
 });
 
+test('holy-day rows use the bud on the eighth lunar day and blossom at the end of the fortnight', () => {
+  const html = renderEventRows([
+    event('eighth-day', 'HOLY_DAY', undefined, '2026-09-05'),
+    event('fortnight-end', 'HOLY_DAY', undefined, '2026-09-11'),
+    event('personal', 'CUSTOM', undefined, '2026-09-11'),
+    event('observance', 'OBSERVANCE', undefined, '2026-09-11')
+  ], false);
+  const buttons = html.match(/<button\b[\s\S]*?<\/button>/g);
+  assert.match(buttons[0], /holy-day-event-row/);
+  assert.match(buttons[0], /assets\/drawables\/holy_day_lotus\.png/);
+  assert.match(buttons[1], /holy-day-event-row/);
+  assert.match(buttons[1], /assets\/drawables\/holy_day_lotus_blossom\.png/);
+  assert.match(buttons[2], /custom-event-row/);
+  for (const button of buttons.slice(2)) assert.doesNotMatch(button, /holy-day-event-row|event-lotus-image/);
+});
+
 test('monthly events heading is scoped to calendar-month-events-header and hidden in portrait mode', async () => {
   const mainTs = await readFile(new URL('../src/main.ts', import.meta.url), 'utf8');
   assert.match(mainTs, /<div class="calendar-month-events-header"[^>]*>[\s\S]*?ui\.all_events_in_month/);
@@ -217,7 +233,6 @@ test('personal event lists apply personal event color to big day number', async 
   const componentsCss = await readFile(new URL('../src/styles/components.css', import.meta.url), 'utf8');
   assert.match(componentsCss, /\.event-row-daynum\.custom\s*\{\s*color:\s*#E53935;\s*\}/);
 });
-
 
 
 

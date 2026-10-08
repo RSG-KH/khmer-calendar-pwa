@@ -488,13 +488,12 @@ export class EventDetailsDialogModal {
           <div class="card-divider" style="margin: 4px 0;"></div>
 
           <!-- Category & Description -->
-          <div class="event-detail-category ${event.kind.toLowerCase()}" style="font-weight: 600;">
+          ${event.kind !== 'HOLY_DAY' ? `<div class="event-detail-category ${event.kind.toLowerCase()}" style="font-weight: 600;">
             ${event.basis === 'calculated' ? L.text('rules.calculated_label', isKhmer) :
               event.kind === 'HOLIDAY' ? L.text('ui.holiday.253332', isKhmer) :
-              event.kind === 'HOLY_DAY' ? L.text('ui.holy_day.28786d', isKhmer) :
               event.kind === 'OBSERVANCE' ? L.text('ui.observance.5b9a87', isKhmer) :
               L.text('ui.custom.917053', isKhmer)}
-          </div>
+          </div>` : ''}
           ${!isCustom ? `
             <div style="font-size: calc(13px * var(--font-scale)); font-weight: 700; color: var(--on-surface-variant);">
               ${escapeHtml(titleWithOriginYear)}

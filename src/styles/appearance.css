@@ -12,7 +12,10 @@
   --outline: rgba(60, 60, 67, 0.12);
   --outline-variant: rgba(60, 60, 67, 0.12);
   --nav-background: rgba(249, 249, 252, 0.88);
-  --zodiac-watermark-opacity: 0.05;
+  --zodiac-watermark-opacity: 0.07;
+  --event-lotus-opacity: 0.20;
+  --personal-star-opacity: 0.08;
+  --calendar-card-radius: 22px;
   --modal-scrim: rgba(0, 0, 0, 0.3);
 }
 :root[lang="km"] { --font-family: 'Kantumruy Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
@@ -27,7 +30,9 @@
   --outline: rgba(235, 235, 245, 0.14);
   --outline-variant: rgba(235, 235, 245, 0.14);
   --nav-background: rgba(28, 28, 30, 0.88);
-  --zodiac-watermark-opacity: 0.03;
+  --zodiac-watermark-opacity: 0.05;
+  --event-lotus-opacity: 0.15;
+  --personal-star-opacity: 0.10;
   --modal-scrim: rgba(0, 0, 0, 0.55);
 }
 /* Browser tabs follow the toolbar's dynamic viewport. Keep the shell in flow;
@@ -80,7 +85,7 @@ svg { flex-shrink: 0; }
 .arrow-btn { width: 32px; height: 32px; min-height: 32px; flex-shrink: 0; align-self: center; padding: 0; color: var(--accent); }
 .arrow-btn svg { width: 20px; height: 20px; }
 .btn-today-pill { min-height: 44px; font-size: calc(14px * var(--font-scale)); }
-.calendar-month-card { border: 0; border-radius: 22px; box-shadow: none; padding: 14px 10px 10px; touch-action: pan-y pinch-zoom; }
+.calendar-month-card { border: 0; border-radius: var(--calendar-card-radius); box-shadow: none; padding: 14px 10px 10px; touch-action: pan-y pinch-zoom; }
 .weekdays-row { font-size: calc(12px * var(--font-scale)); padding-block: 2px 8px; }
 .weekdays-row > span { min-width: 0; white-space: nowrap; }
 :root[data-background-accent] { --nav-background: var(--bg-color); }
@@ -132,7 +137,7 @@ svg { flex-shrink: 0; }
   .date-summary-card { flex-direction: column; gap: 4px; }
   .date-summary-right { align-items: flex-start; }
 }
-.events-list-container { --event-row-padding: 14px; --event-date-width: 44px; --event-bar-gap: 9px; gap: 0; background: var(--bg-surface); border-radius: 18px; overflow: hidden; }
+.events-list-container { --event-row-padding: 14px; --event-date-width: 44px; --event-bar-gap: 9px; gap: 0; background: var(--bg-surface); border-radius: var(--calendar-card-radius); overflow: hidden; }
 .event-row-card { border: 0; border-radius: 0; margin: 0; padding: 9px var(--event-row-padding); min-height: 50px; text-align: left; background: var(--event-row-background, var(--bg-surface)); }
 .event-row-card, .dialog-event-item { --button-press-color: var(--accent); }
 .event-day-group.is-today { --event-row-background: color-mix(in srgb, var(--accent) 2%, var(--bg-surface)); background: var(--event-row-background); }
@@ -176,6 +181,8 @@ svg { flex-shrink: 0; }
 .filter-chip { border-radius: 18px; border: 0; min-height: 36px; padding: 6px 14px; }
 .filter-chip.active { background: var(--accent); color: var(--on-accent); }
 .events-month-title { font-size: calc(18px * var(--font-scale)); }
+.events-month-name { white-space: nowrap; }
+.events-month-name.is-centered { flex: 0 0 var(--month-date-width); margin-inline-start: var(--month-date-offset); text-align: center; }
 .add-event-button { width: 44px; height: 44px; border: 0; background: transparent; color: var(--accent); display: grid; place-items: center; cursor: pointer; }
 .add-event-button svg { width: 26px; height: 26px; fill: currentColor; }
 .settings-container { width: 100%; max-width: 640px; padding: 6px 2px 24px; }

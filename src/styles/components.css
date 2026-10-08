@@ -370,17 +370,23 @@
   transition: background 0.15s;
 }
 
-/* Match Android's custom-event artwork, 2 dp vertical inset and 5% opacity. */
-.custom-event-row::before {
+/* Decorative artwork follows Android's inset and theme-specific opacity. */
+.custom-event-row::before, .holy-day-event-row::before {
   content: '';
   position: absolute;
-  inset: 2px 21px 2px 0;
+  inset: 2px 29px 2px 0;
   z-index: -1;
+  pointer-events: none;
+}
+.custom-event-row::before {
   background: #E53935;
   -webkit-mask: url('/assets/drawables/custom_event_star.png') right center / contain no-repeat;
   mask: url('/assets/drawables/custom_event_star.png') right center / contain no-repeat;
-  opacity: 0.05;
-  pointer-events: none;
+  opacity: var(--personal-star-opacity);
+}
+.holy-day-event-row::before {
+  background: var(--event-lotus-image) right center / contain no-repeat;
+  opacity: var(--event-lotus-opacity);
 }
 
 .event-row-date {
@@ -830,7 +836,7 @@
   width: 72%;
   height: 72%;
   object-fit: contain;
-  opacity: 0.25;
+  opacity: 0.30;
   pointer-events: none;
 }
 

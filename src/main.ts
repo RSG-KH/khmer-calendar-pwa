@@ -25,6 +25,7 @@ import { fitWeekdayHeadings } from './ui/WeekdayHeadings';
 import { fitCalendarWidth } from './ui/CalendarWidth';
 import { startTodayRefresh } from './ui/TodayRefresh';
 import { renderEventRows } from './ui/EventRows';
+import { fitEventMonthHeadings } from './ui/EventMonthHeadings';
 
 const updateReceiptKey = `khmer-calendar:update:${import.meta.env.BASE_URL}`;
 function consumeUpdateReceipt(): number | undefined {
@@ -50,6 +51,7 @@ class KhmerCalendarApp {
   private cleanupSettings?: () => void;
   private cleanupWeekdays?: () => void;
   private cleanupCalendarWidth?: () => void;
+  private cleanupEventMonthHeadings?: () => void;
   private todayRefresh?: ReturnType<typeof startTodayRefresh>;
   private updateScrollTop = consumeUpdateReceipt();
   private updater = new AppUpdater(
@@ -176,6 +178,8 @@ class KhmerCalendarApp {
   }
 
   private render() {
+    this.cleanupEventMonthHeadings?.();
+    this.cleanupEventMonthHeadings = undefined;
     this.cleanupCalendarWidth?.();
     this.cleanupCalendarWidth = undefined;
     this.cleanupWeekdays?.();
@@ -507,19 +511,28 @@ class KhmerCalendarApp {
     const query = this.eventsSearchQuery.trim().toLowerCase();
     const todayStr = todayInZone(this.settings.todayTimeZone);
 
-    // Apply Filter & Search Query
-    const filteredEvents = rawEvents.filter(e => {
+    // Counts share the current year, visibility settings and search, but not the active filter.
+    const matchingEvents = rawEvents.filter(e => {
       if (!this.settings.showHolyDaysInEvents && e.kind === 'HOLY_DAY') return false;
       if (!this.settings.showObservances && e.kind === 'OBSERVANCE') return false;
-      if (this.eventsFilter === 1 && e.kind !== 'HOLIDAY') return false;
-      if (this.eventsFilter === 2 && e.kind !== 'OBSERVANCE' && e.kind !== 'HOLIDAY') return false;
-      if (this.eventsFilter === 3 && e.kind !== 'HOLY_DAY') return false;
-      if (this.eventsFilter === 4 && e.kind !== 'CUSTOM') return false;
-
       if (query) {
         const searchStr = `${e.titleKm} ${e.titleEn} ${e.date} ${e.notes || ''}`.toLowerCase();
         if (!searchStr.includes(query)) return false;
       }
+      return true;
+    });
+    const filterCounts = [matchingEvents.length,
+      matchingEvents.filter(e => e.kind === 'HOLIDAY').length,
+      matchingEvents.filter(e => e.kind === 'OBSERVANCE' || e.kind === 'HOLIDAY').length,
+      matchingEvents.filter(e => e.kind === 'HOLY_DAY').length,
+      matchingEvents.filter(e => e.kind === 'CUSTOM').length];
+    const filterKeys = ['ui.all.c10205', 'ui.holidays.8a894c', 'ui.observances.e4454c', 'ui.holy_days.9569a6', 'ui.custom.917053'];
+    const filterLabel = (filter: number) => `${L.text(filterKeys[filter], k)} (${CalendarWords.number(filterCounts[filter], k)})`;
+    const filteredEvents = matchingEvents.filter(e => {
+      if (this.eventsFilter === 1 && e.kind !== 'HOLIDAY') return false;
+      if (this.eventsFilter === 2 && e.kind !== 'OBSERVANCE' && e.kind !== 'HOLIDAY') return false;
+      if (this.eventsFilter === 3 && e.kind !== 'HOLY_DAY') return false;
+      if (this.eventsFilter === 4 && e.kind !== 'CUSTOM') return false;
       return true;
     });
 
@@ -541,7 +554,7 @@ class KhmerCalendarApp {
       monthsListHtml += `
         <div class="events-month-group">
           <div class="events-month-title">
-            <span>${CalendarWords.month(m, k)}</span>
+            <span class="events-month-name">${CalendarWords.month(m, k)}</span>
             <span class="events-month-count">${CalendarWords.number(evs.length, k)}</span>
           </div>
           <div class="events-list-container">
@@ -560,7 +573,12 @@ class KhmerCalendarApp {
       });
     });
     if (existingEvents) {
+      this.cleanupEventMonthHeadings?.();
       container.querySelector('.events-results')!.innerHTML = resultsHtml;
+      container.querySelectorAll<HTMLElement>('[data-filter]').forEach(chip => {
+        chip.textContent = filterLabel(Number(chip.dataset.filter));
+      });
+      this.cleanupEventMonthHeadings = fitEventMonthHeadings(container);
       bindEventRows();
       return;
     }
@@ -587,11 +605,11 @@ class KhmerCalendarApp {
 
         <!-- Filter Chips -->
         <div class="events-filter-chips">
-          <button class="filter-chip ${this.eventsFilter === 0 ? 'active' : ''}" data-filter="0">${L.text('ui.all.c10205', k)}</button>
-          <button class="filter-chip ${this.eventsFilter === 4 ? 'active' : ''}" data-filter="4">${L.text('ui.custom.917053', k)}</button>
-          <button class="filter-chip ${this.eventsFilter === 1 ? 'active' : ''}" data-filter="1">${L.text('ui.holidays.8a894c', k)}</button>
-          ${this.settings.showObservances ? `<button class="filter-chip ${this.eventsFilter === 2 ? 'active' : ''}" data-filter="2">${L.text('ui.observances.e4454c', k)}</button>` : ''}
-          ${this.settings.showHolyDaysInEvents ? `<button class="filter-chip ${this.eventsFilter === 3 ? 'active' : ''}" data-filter="3">${L.text('ui.holy_days.9569a6', k)}</button>` : ''}
+          <button class="filter-chip ${this.eventsFilter === 0 ? 'active' : ''}" data-filter="0">${filterLabel(0)}</button>
+          <button class="filter-chip ${this.eventsFilter === 4 ? 'active' : ''}" data-filter="4">${filterLabel(4)}</button>
+          <button class="filter-chip ${this.eventsFilter === 1 ? 'active' : ''}" data-filter="1">${filterLabel(1)}</button>
+          ${this.settings.showObservances ? `<button class="filter-chip ${this.eventsFilter === 2 ? 'active' : ''}" data-filter="2">${filterLabel(2)}</button>` : ''}
+          ${this.settings.showHolyDaysInEvents ? `<button class="filter-chip ${this.eventsFilter === 3 ? 'active' : ''}" data-filter="3">${filterLabel(3)}</button>` : ''}
         </div>
 
         <!-- Grouped List -->
@@ -600,6 +618,7 @@ class KhmerCalendarApp {
       </div>
     `;
 
+    this.cleanupEventMonthHeadings = fitEventMonthHeadings(container);
     // Navigation
     container.querySelector('.btn-events-year')?.addEventListener('click', () => {
       this.eventsYearPicker.open(this.eventsYear, 1, k);

@@ -81,7 +81,7 @@ The Earthly Branch emoji sequence, indexed from Rat through Pig, is **`🐭 🐮
 
 **Maintainer requested — 28 September 2026.** The event details popup footer and action row (`.event-detail-footer`) has a **30px top margin**, matching the 30px spacing of the date-details action row, the astrology child popups, and the Time and location picker footer. In event details, calculated observances display the category label **“Observance (Calculated)”** / **“ពិធី និងទិវា (តាមការគណនា)”** (while event lists display the standard **“Observance”** / **“ពិធី និងទិវា”**) and the shared engine attribution: **“Calculations by Khmer Calendar Engine v{version}.”** / **“គណនាដោយ Khmer Calendar Engine កំណែ {version} ។”** (10px × font scale, line height 1.6, `var(--on-surface-variant)`).
 
-**Maintainer requested — 28 September 2026.** In the event details popup, the event title (`.event-detail-title`) uses the accent color (`var(--accent)`), matching Android. The category heading (`.event-detail-category`) uses the dedicated event type color matching Android (`var(--tertiary)` for holidays, `var(--secondary)` for Buddhist holy days, `var(--accent)` for observances, and `#E53935` for custom/personal events). For custom or personal events with a time, the top Gregorian date line displays only the calendar date, and the event time is moved down below the lunar info into `.event-detail-time-block`. When local time != Cambodia time / UTC+7, the event details popup displays **two rows** (`.event-detail-time` in `#E53935`):
+**Maintainer requested — 28 September 2026.** In the event details popup, the event title (`.event-detail-title`) uses the accent color (`var(--accent)`), matching Android. The category heading (`.event-detail-category`) uses the dedicated event type color matching Android (`var(--tertiary)` for holidays, `var(--accent)` for observances, and `#E53935` for custom/personal events). **Updated 8 October 2026:** Buddhist holy-day popups omit the redundant body category heading, keeping the header title, translated title and explanation. For custom or personal events with a time, the top Gregorian date line displays only the calendar date, and the event time is moved down below the lunar info into `.event-detail-time-block`. When local time != Cambodia time / UTC+7, the event details popup displays **two rows** (`.event-detail-time` in `#E53935`):
 1. Local time with UTC offset: e.g. `09:00 · Local time (UTC+2)` / `09:00 · ម៉ោងក្នុងតំបន់ (UTC+2)`
 2. Cambodia time with UTC+7: e.g. `14:00 · Cambodia time (UTC+7)` / `14:00 · ម៉ោងកម្ពុជា (UTC+7)`
 In English, the Gregorian date heading uses **“{weekday name}, {month} {day number}, {year}”** (e.g. `Tuesday, September 29, 2026`), while Khmer preserves **“{weekday name} ទី{day number} {month} {year}”** (e.g. `ថ្ងៃអង្គារ ទី២៩ ខែកញ្ញា ២០២៦`). If the local and Cambodia dates differ across midnight, the non-calendar date is displayed alongside the time: in English, using the short format **“{month} {day number}”** (e.g. `Sep 30`), and in Khmer preserving **“{day number} {month}”** (e.g. `៣០ កញ្ញា`). When local time == Cambodia time (UTC+7), a single time row is shown for the active setting. In event list subtitles and date details items (`.event-row-kind`, `.dialog-event-kind`), when local time != Cambodia time / UTC+7, personal event subtitles clarify the active calendar time zone (e.g. `Personal · 14:00 · Cambodia time (UTC+7)` or `Personal · 09:00 · Local time (UTC+2)`).
@@ -133,6 +133,23 @@ In the calendar's monthly event list and the Events tab, today's entire day grou
 ## Modal background dim (scrim)
 
 **Maintainer requested — 28 September 2026.** Popups and dialogs use `--modal-scrim` on `.modal-overlay`. For light theme, preserve the certified 30% background dim (`rgba(0, 0, 0, 0.3)`). For dark theme, increase the background dim to 55% (`rgba(0, 0, 0, 0.55)`) so popup dialog surfaces (`var(--bg-surface)`) stand out with sufficient contrast and depth over dark calendar content behind the overlay.
+
+## In-app artwork and event-list refinements
+
+**Maintainer requested — 8 October 2026.** Sync these Android refinements into the PWA:
+
+| Decoration | Light | Dark |
+| --- | ---: | ---: |
+| Animal and Western zodiac backgrounds in the calendar and all detail popups | **7%** | **5%** |
+| Lotus in calendar cells | **30%** | **30%** |
+| Lotus in Buddhist holy-day event rows | **20%** | **15%** |
+| Star in personal event rows | **8%** | **10%** |
+
+The shared event-row renderer applies artwork to selected-day/monthly lists and the Events tab. Use the bud lotus on the eighth lunar day and the blossom at the end of the fortnight. Retain the lotus image's original petal colors and detail; personal stars keep their red tint. Both row decorations have 2px vertical insets and a 29px right inset. They are decorative and do not change row height or accessible names.
+
+Event-list containers and the month card share the PWA's **22px corner radius**. In the Events tab, center a month name over the first date column only when its loaded text fits that column. Longer names retain the existing left inset. Measure after font loading and viewport changes, and release the observer/font listener when rebuilding or leaving Events.
+
+Each Events filter title includes a localized count in parentheses. Counts use the selected year, search query, visibility settings and personal-event occurrences, independently of the selected filter. The Observances count includes holidays, matching that filter's existing behavior. Preserve the PWA Settings layout and all existing Events vertical spacing, including the filter row and month-count headings.
 
 ## Sync and review rule
 

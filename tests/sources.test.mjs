@@ -28,15 +28,7 @@ test('bundled legal texts in src/legal stay identical to the served files in pub
   }
 });
 
-test('archive and holiday sources and copy translations resolve in English and Khmer', () => {
-  assert.equal(
-    L.text('about.event_archive_source', false),
-    'Traditional Chinese festivals and historical commemorations are preserved from Khmer Lunar Calendar records.'
-  );
-  assert.equal(
-    L.text('about.event_archive_source', true),
-    'ពិធីបុណ្យប្រពៃណីចិន និងទិវាប្រវត្តិសាស្ត្រនានា ត្រូវបានដកស្រង់ចេញពីកំណត់ត្រាប្រតិទិនចន្ទគតិខ្មែរ។'
-  );
+test('calculation, holiday source and copy translations resolve in English and Khmer', () => {
   assert.equal(
     L.text('about.public_holiday_source', false),
     'Official public holidays are confirmed from Royal Government of Cambodia Sub-Decrees (Anukret) and official government publications.'
@@ -63,8 +55,6 @@ test('archive and holiday sources and copy translations resolve in English and K
   );
   assert.equal(L.text('ui.copy', false), 'Copy');
   assert.equal(L.text('ui.copy', true), 'ចម្លង');
-  assert.equal(L.text('ui.url_copied', false), 'URL copied');
-  assert.equal(L.text('ui.url_copied', true), 'បានចម្លងតំណភ្ជាប់');
 });
 
 function createMockDom() {

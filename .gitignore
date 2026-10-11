@@ -5,16 +5,11 @@ coverage/
 .vite/
 *.tsbuildinfo
 
-# Local environment values and Cloudflare development state
+# Local environment values
 .env
 .env.*
 !.env.example
 !.env.*.example
-.dev.vars
-.dev.vars.*
-!.dev.vars.example
-!.dev.vars.*.example
-.wrangler/
 *.local
 
 # Logs and local editor/OS files

@@ -1,11 +1,19 @@
 {
-  "ui.select_date": { "km": "ជ្រើសរើសកាលបរិច្ឆេទ", "en": "Select date" },
-  "ui.event_date": { "km": "កាលបរិច្ឆេទ", "en": "Date" },
-  "ui.month": { "km": "ខែ", "en": "Month" },
-  "ui.date_range_error": { "km": "សូមជ្រើសរើសកាលបរិច្ឆេទត្រឹមត្រូវក្នុងឆ្នាំ ១៨០០–២២០០។", "en": "Choose a valid date in 1800–2200." },
-  "about.source_link": {
-    "km": "Khmer Lunar Calendar ↗",
-    "en": "Khmer Lunar Calendar ↗"
+  "ui.select_date": {
+    "km": "ជ្រើសរើសកាលបរិច្ឆេទ",
+    "en": "Select date"
+  },
+  "ui.event_date": {
+    "km": "កាលបរិច្ឆេទ",
+    "en": "Date"
+  },
+  "ui.month": {
+    "km": "ខែ",
+    "en": "Month"
+  },
+  "ui.date_range_error": {
+    "km": "សូមជ្រើសរើសកាលបរិច្ឆេទត្រឹមត្រូវក្នុងឆ្នាំ ១៨០០–២២០០។",
+    "en": "Choose a valid date in 1800–2200."
   },
   "about.version": {
     "km": "កំណែ {version} (Apache-2.0)",
@@ -78,10 +86,6 @@
   "calendar.lunar_full": {
     "km": "{short} ខែ{month}",
     "en": "{day} {phase} · {month}"
-  },
-  "calendar.lunar_legend": {
-    "km": "ក · កើត    រ · រោច",
-    "en": "K · Koeut (waxing)    R · Roach (waning)"
   },
   "calendar.lunar_month.0": {
     "km": "មិគសិរ",
@@ -379,517 +383,9 @@
     "km": "សៅរ៍",
     "en": "Sat"
   },
-  "common.clock_label": {
-    "km": "{zone} · ទម្រង់ ២៤ ម៉ោង",
-    "en": "{zone} · 24-hour clock format"
-  },
-  "common.reminder_hours": {
-    "km": "{hours} ម៉ោង",
-    "en": "{hours} hours"
-  },
-  "event.angkor_was_inscribed_on_the_unesco_world_heritage_list.d0e172": {
-    "km": "តំបន់​រមណី​ដ្ឋាន​អង្គរ ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិក​ភណ្ឌ​ពិភពលោករបស់អង្គការយូណេស្កូ ខួបលើកទី{anniversary}",
-    "en": "Angkor was inscribed on the UNESCO World Heritage List"
-  },
-  "event.anti_corruption_day.89570f": {
-    "km": "ទិវា​ប្រយុទ្ធ​ប្រឆាំង​អំពើ​ពុករលួយ",
-    "en": "Anti-Corruption Day"
-  },
-  "event.arbor_day.b643a6": {
-    "km": "រុក្ខ​ទិវា",
-    "en": "Arbor Day"
-  },
-  "event.beginning_of_buddhist_lent.05b5d9": {
-    "km": "ចូល​ព្រះ​វស្សា",
-    "en": "Beginning of Buddhist Lent"
-  },
-  "event.ben_1.e38b39": {
-    "km": "បិណ្ឌ ១",
-    "en": "Ben 1"
-  },
-  "event.ben_10.48eb08": {
-    "km": "បិណ្ឌ ១០",
-    "en": "Ben 10"
-  },
-  "event.ben_11.e9170d": {
-    "km": "បិណ្ឌ ១១",
-    "en": "Ben 11"
-  },
-  "event.ben_12.499d48": {
-    "km": "បិណ្ឌ ១២",
-    "en": "Ben 12"
-  },
-  "event.ben_13.a5850f": {
-    "km": "បិណ្ឌ ១៣",
-    "en": "Ben 13"
-  },
-  "event.ben_2.beb1a5": {
-    "km": "បិណ្ឌ ២",
-    "en": "Ben 2"
-  },
-  "event.ben_3.a36945": {
-    "km": "បិណ្ឌ ៣",
-    "en": "Ben 3"
-  },
-  "event.ben_4.c8c3e3": {
-    "km": "បិណ្ឌ ៤",
-    "en": "Ben 4"
-  },
-  "event.ben_5.ee7326": {
-    "km": "បិណ្ឌ ៥",
-    "en": "Ben 5"
-  },
-  "event.ben_6.3d61f3": {
-    "km": "បិណ្ឌ ៦",
-    "en": "Ben 6"
-  },
-  "event.ben_7.19ca30": {
-    "km": "បិណ្ឌ ៧",
-    "en": "Ben 7"
-  },
-  "event.ben_8.1250aa": {
-    "km": "បិណ្ឌ ៨",
-    "en": "Ben 8"
-  },
-  "event.ben_9.7d0f01": {
-    "km": "បិណ្ឌ ៩",
-    "en": "Ben 9"
-  },
-  "event.birth_of_the_national_police.46ffae": {
-    "km": "កំណើត​នគរ​បាល​ជាតិ ខួបលើកទី{anniversary}",
-    "en": "Birth of the National Police"
-  },
-  "event.buddhist_lent_candles_making_day.d79e76": {
-    "km": "ពិធី​សិត​ទៀន​ព្រះ​វស្សា",
-    "en": "Buddhist Lent Candles Making Day"
-  },
-  "event.calculated_new_year_first": {
-    "km": "ពិធី​បុណ្យ​ចូល​ឆ្នាំ​ថ្មី ប្រពៃណី​ជាតិ – មហា​សង្ក្រាន្ត",
-    "en": "Khmer New Year – Moha Sankranta"
-  },
-  "event.cambodia_became_a_member_of_the_united_nations.47dbde": {
-    "km": "កម្ពុជា​ចូល​ជា​សមា​ជិក​អង្គ​ការ​សហ​ប្រជាជាតិ ខួបលើកទី{anniversary}",
-    "en": "Cambodia became a member of the United Nations"
-  },
-  "event.cambodia_joined_the_association_of_southeast_asian_nati.5046de": {
-    "km": "កម្ពុជា​ចូល​ជា​សមា​ជិក​អាស៊ាន ខួបលើកទី{anniversary}",
-    "en": "Cambodia joined The Association of Southeast Asian Nations (ASEAN)"
-  },
-  "event.cambodia_joined_unesco.56a0d9": {
-    "km": "កម្ពុជា​ចូល​ជា​សមា​ជិក​អង្គ​ការ​យូណេស្កូ ខួបលើកទី{anniversary}",
-    "en": "Cambodia joined UNESCO"
-  },
-  "event.cambodian_older_persons_day_and_the_international_day_o.f57b12": {
-    "km": "ទិវា​មនុស្ស​ចាស់​កម្ពុជា និងទិវាមនុស្សចាស់អន្តរជាតិ ខួបលើកទី{anniversary}",
-    "en": "Cambodian Older Persons Day and the International Day of Older Persons"
-  },
-  "event.chapei_dang_veng_inscribed_on_the_list_of_intangible_cu.0d94bc": {
-    "km": "ចាប៉ី​ដង​វែង ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិក​ភណ្ឌ​វប្បធម៌អរូបីនៃមនុស្សជាតិ ខួបលើកទី{anniversary}",
-    "en": "Chapei Dang Veng inscribed on the List of Intangible Cultural Heritage in Need of Urgent Safeguarding"
-  },
-  "event.chapei_dang_veng_inscribed_on_the_list_of_intangible_cu.a22393": {
-    "km": "ចាប៉ី​ដង​វែង ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិក​ភណ្ឌ​វប្បធម៌អរូបីនៃមនុស្សជាតិ",
-    "en": "Chapei Dang Veng inscribed on the List of Intangible Cultural Heritage in Need of Urgent Safeguarding"
-  },
-  "event.chinese_new_year.096545": {
-    "km": "ចូល​ឆ្នាំ​ចិន",
-    "en": "Chinese New Year"
-  },
-  "event.chinese_new_year_s_eve.109f65": {
-    "km": "ថ្ងៃ​សែន​ចូល​ឆ្នាំ​ចិន",
-    "en": "Chinese New Year's Eve"
-  },
-  "event.christmas_day.bbc2eb": {
-    "km": "បុណ្យ​ណូអែល",
-    "en": "Christmas Day"
-  },
-  "event.civil_aviation_day.dcb19c": {
-    "km": "ទិវា​អា​កាស​ចរណ៍ស៊ីវិល",
-    "en": "Civil Aviation Day"
-  },
-  "event.constitution_day.eed048": {
-    "km": "ទិវា​ប្រកាស​រដ្ឋ​ធម្មនុញ្ញ ខួបលើកទី{anniversary}",
-    "en": "Constitution Day"
-  },
-  "event.ending_of_buddhist_lent.cfe1e4": {
-    "km": "ចេញ​ព្រះ​វស្សា",
-    "en": "Ending of Buddhist Lent"
-  },
-  "event.father_s_day.ab0c88": {
-    "km": "ទិវា​បីតា",
-    "en": "Father's Day"
-  },
-  "event.ghost_festival.b6dc14": {
-    "km": "សែន​ក្បាល​ទឹក",
-    "en": "Ghost Festival"
-  },
-  "event.halloween.0bcc92": {
-    "km": "បុណ្យ​ហាឡូវីន",
-    "en": "Halloween"
-  },
-  "event.happy_world_day_against_child_labour.1372d8": {
-    "km": "ទិវា​ពិភព​លោក​ប្រឆាំង​ពលកម្ម​កុមារ ខួបលើកទី{anniversary}",
-    "en": "Happy World Day Against Child Labour"
-  },
-  "event.happy_world_day_against_child_labour.59145d": {
-    "km": "ទិវា​ពិភព​លោក​ប្រឆាំង​ពលកម្ម​កុមារ",
-    "en": "Happy World Day Against Child Labour"
-  },
   "event.holy_day": {
     "km": "ថ្ងៃសីល",
     "en": "Buddhist Holy Day"
-  },
-  "event.independence_day.991b45": {
-    "km": "ពិធី​បុណ្យ​ឯករាជ្យ​ជាតិ ខួបលើកទី{anniversary}",
-    "en": "Independence Day"
-  },
-  "event.international_buddhist_day.43eb6e": {
-    "km": "ទិវា​ព្រះ​ពុទ្ធ​សាសនា​អន្តរជាតិ",
-    "en": "International Buddhist Day"
-  },
-  "event.international_children_s_day.472dd8": {
-    "km": "ទិវា​កុមារ​អន្តរ​ជាតិ ខួបលើកទី{anniversary}",
-    "en": "International Children's Day"
-  },
-  "event.international_court_of_justice_in_the_hague_declared_ca.7da923": {
-    "km": "តុលា​ការ​យុត្តិ​ធម៌​អន្តរ​ជាតិ​ក្រុង​ឡា​អេ សម្រេច​ឱ្យ​កម្ពុជាជាម្ចាស់កម្មសិទ្ធិ លើប្រាសាទព្រះវិហារ ខួបលើកទី{anniversary}",
-    "en": "International Court of Justice in The Hague declared Cambodia is the owner of the Preah Vihear Temple"
-  },
-  "event.international_day_against_drug_abuse_and_illicit_traffi.1ab0bb": {
-    "km": "ទិវា​អន្តរ​ជាតិ​ប្រយុទ្ធ​ប្រឆាំង​គ្រឿង​ញៀន",
-    "en": "International Day Against Drug Abuse and Illicit Trafficking"
-  },
-  "event.international_day_for_the_preservation_of_the_ozone_lay.632951": {
-    "km": "ទិវា​អន្តរ​ជាតិ​ការពារ​ស្រទាប់​អូ​ហ្សូន ខួបលើកទី{anniversary}",
-    "en": "International Day for the Preservation of the Ozone Layer"
-  },
-  "event.international_day_of_disabled_persons.3bc78e": {
-    "km": "ទិវា​ជន​មាន​ពិការភាព​អន្តរជាតិ",
-    "en": "International Day of Disabled Persons"
-  },
-  "event.international_day_of_families.2988a9": {
-    "km": "ទិវា​អន្តរ​ជាតិ​នៃ​គ្រួសារ",
-    "en": "International Day of Families"
-  },
-  "event.international_day_of_peace.352229": {
-    "km": "ទិវា​សន្តិ​ភាព​អន្តរ​ជាតិ",
-    "en": "International Day of Peace"
-  },
-  "event.international_day_of_the_world_s_indigenous_peoples.5f632d": {
-    "km": "ទិវា​អន្តរ​ជាតិ​ជនជាតិដើមភាគតិចពិភពលោក",
-    "en": "International Day of the World's Indigenous Peoples"
-  },
-  "event.international_human_rights_day.488db1": {
-    "km": "ទិវា​សិទ្ធិ​មនុស្ស​អន្តរជាតិ ខួបលើកទី{anniversary}",
-    "en": "International Human Rights Day"
-  },
-  "event.international_labor_day.7090da": {
-    "km": "ទិវា​ពលកម្ម​អន្តរជាតិ ខួបលើកទី{anniversary}",
-    "en": "International Labor Day"
-  },
-  "event.international_literacy_day.491ce5": {
-    "km": "ទិវា​អក្ខរ​កម្ម​អន្តរ​ជាតិ",
-    "en": "International Literacy Day"
-  },
-  "event.international_women_s_day.81b3fd": {
-    "km": "ទិវា​នារី​អន្តរជាតិ ខួបលើកទី{anniversary}",
-    "en": "International Women's Day"
-  },
-  "event.international_youth_day.6ff8cc": {
-    "km": "ទិវា​យុវជន​អន្តរ​ជាតិ",
-    "en": "International Youth Day"
-  },
-  "event.kathen_kal.b6fb86": {
-    "km": "កឋិន​កាល",
-    "en": "Kathen Kal"
-  },
-  "event.khmer_new_year_moha_sankranta_at_time.fc662c": {
-    "km": "ពិធី​បុណ្យ​ចូល​ឆ្នាំ​ថ្មី ប្រពៃណី​ជាតិ - មហា​សង្ក្រាន្ត ម៉ោង {time}",
-    "en": "Khmer New Year - Moha Sankranta at {time}"
-  },
-  "event.khmer_new_year_veareak_laeung_sak.1b6528": {
-    "km": "ពិធី​បុណ្យ​ចូល​ឆ្នាំ​ថ្មី ប្រពៃណី​ជាតិ - ថ្ងៃ​ឡើង​ស័ក",
-    "en": "Khmer New Year - Veareak Laeung Sak"
-  },
-  "event.khmer_new_year_veareak_vanabat.cc2d1f": {
-    "km": "ពិធី​បុណ្យ​ចូល​ឆ្នាំ​ថ្មី ប្រពៃណី​ជាតិ - វារៈ​វ័ន​បត",
-    "en": "Khmer New Year - Veareak Vanabat"
-  },
-  "event.khmer_shadow_theatre_inscribed_on_the_representative_li.1d6e86": {
-    "km": "ល្ខោន​ស្រមោល​ស្បែក​ ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិក​ភណ្ឌវប្បធម៌អរូបីនៃមនុស្សជាតិ ខួបលើកទី{anniversary}",
-    "en": "Khmer Shadow Theatre inscribed on the Representative List of the Intangible Cultural Heritage of Humanity"
-  },
-  "event.khmer_shadow_theatre_inscribed_on_the_representative_li.35657d": {
-    "km": "ល្ខោន​ស្រមោល​ស្បែក​ ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិក​ភណ្ឌវប្បធម៌អរូបីនៃមនុស្សជាតិ",
-    "en": "Khmer Shadow Theatre inscribed on the Representative List of the Intangible Cultural Heritage of Humanity"
-  },
-  "event.king_father_s_commemoration_day.1ade05": {
-    "km": "ទិវា​ប្រារព្ធ​ពិធី​គោរព​ព្រះវិញ្ញាណក្ខន្ធ ព្រះករុណា​ព្រះបាទ​សម្តេច​ព្រះ នរោត្តម សីហនុ ព្រះមហាវីរក្សត្រ ព្រះ​វររាជ​បិតា​ឯករាជ្យ បូរណភាព​ទឹកដី និង​ឯកភាព​ជាតិ​ខ្មែរ",
-    "en": "King Father's Commemoration Day"
-  },
-  "event.king_s_coronation_day.cac0a2": {
-    "km": "ព្រះ​រាជ​ពិធី​គ្រង​ព្រះ​បរម​រាជ​សម្បត្តិ ព្រះ​ករុណា​ព្រះ​បាទ​សម្តេច​ព្រះ​បរមនាថ នរោត្តម សីហមុនី ព្រះ​មហាក្សត្រ​នៃ​ព្រះរាជាណាចក្រ​កម្ពុជា",
-    "en": "King's Coronation Day"
-  },
-  "event.king_sihamoni_s_birthday.902625": {
-    "km": "ព្រះ​រាជ​ពិធី​បុណ្យ​ចម្រើន​ព្រះ​ជន្ម ព្រះ​ករុណា​ព្រះ​បាទ​សម្តេច​ព្រះ​បរម​នាថ នរោត្តម សីហមុនី ព្រះ​មហាក្សត្រ​នៃ​ព្រះរាជាណាចក្រ​កម្ពុជា",
-    "en": "King Sihamoni's Birthday"
-  },
-  "event.kitchen_god_festival.339851": {
-    "km": "ថ្ងៃ​សែន​ដក​ជើង​ធូប",
-    "en": "Kitchen God Festival"
-  },
-  "event.koh_ker_inscribed_on_the_unesco_world_heritage_list.131f4f": {
-    "km": "តំបន់​ប្រាសាទ​កោះ​កេរ ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិក​ភណ្ឌ​ពិភពលោករបស់អង្គការយូណេស្កូ ខួបលើកទី{anniversary}",
-    "en": "Koh Ker inscribed on the UNESCO World Heritage List"
-  },
-  "event.koh_ker_inscribed_on_the_unesco_world_heritage_list.f214cf": {
-    "km": "តំបន់​ប្រាសាទ​កោះ​កេរ ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិក​ភណ្ឌ​ពិភពលោករបស់អង្គការយូណេស្កូ",
-    "en": "Koh Ker inscribed on the UNESCO World Heritage List"
-  },
-  "event.krama_inscribed_on_the_representative_list_of_the_intan.586013": {
-    "km": "ក្រមា ត្រូវ​បាន​ចុះក្នុងបញ្ជីបេតិកភណ្ឌវប្បធម៌អរូបីនៃមនុស្សជាតិ ខួបលើកទី{anniversary}",
-    "en": "Krama inscribed on the Representative List of the Intangible Cultural Heritage of Humanity"
-  },
-  "event.krama_inscribed_on_the_representative_list_of_the_intan.f7d9f7": {
-    "km": "ក្រមា ត្រូវ​បាន​ចុះក្នុងបញ្ជីបេតិកភណ្ឌវប្បធម៌អរូបីនៃមនុស្សជាតិ",
-    "en": "Krama inscribed on the Representative List of the Intangible Cultural Heritage of Humanity"
-  },
-  "event.kun_lbokator_inscribed_on_the_representative_list_of_th.6aa90e": {
-    "km": "គុន​ល្បុក្ក​តោ ត្រូវ​បាន​ចុះក្នុងបញ្ជីបេតិកភណ្ឌវប្បធម៌អរូបីនៃមនុស្សជាតិ",
-    "en": "Kun Lbokator inscribed on the Representative List of the Intangible Cultural Heritage of Humanity"
-  },
-  "event.kun_lbokator_inscribed_on_the_representative_list_of_th.b4dda7": {
-    "km": "គុន​ល្បុក្ក​តោ ត្រូវ​បាន​ចុះក្នុងបញ្ជីបេតិកភណ្ឌវប្បធម៌អរូបីនៃមនុស្សជាតិ ខួបលើកទី{anniversary}",
-    "en": "Kun Lbokator inscribed on the Representative List of the Intangible Cultural Heritage of Humanity"
-  },
-  "event.lkhon_khol_wat_svay_andet_inscribed_on_the_list_of_inta.913be2": {
-    "km": "ល្ខោន​ខោល​វត្ត​ស្វាយ​អណ្តែត ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិក​ភណ្ឌ​វប្ប​ធម៌​អរូបីនៃមនុស្សជាតិ",
-    "en": "Lkhon Khol Wat Svay Andet inscribed on the List of Intangible Cultural Heritage in Need of Urgent Safeguarding"
-  },
-  "event.lkhon_khol_wat_svay_andet_inscribed_on_the_list_of_inta.9870f6": {
-    "km": "ល្ខោន​ខោល​វត្ត​ស្វាយ​អណ្តែត ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិក​ភណ្ឌ​វប្ប​ធម៌​អរូបីនៃមនុស្សជាតិ ខួបលើកទី{anniversary}",
-    "en": "Lkhon Khol Wat Svay Andet inscribed on the List of Intangible Cultural Heritage in Need of Urgent Safeguarding"
-  },
-  "event.m_13_tuol_sleng_genocide_museum_and_choeung_ek_were_ins.615dc3": {
-    "km": "បូជនីយដ្ឋាន​ចងចាំ​នៃ​កម្ពុជា៖ ពីទីតាំង​ឧក្រិដ្ឋកម្ម មកជា​មណ្ឌល​ផ្សះផ្សា និង​សន្តិភាព ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិកភណ្ឌ​ពិភពលោក​របស់​អង្គការ​យូណេស្កូ ខួបលើកទី{anniversary}",
-    "en": "M-13, Tuol Sleng Genocide Museum, and Choeung Ek were inscribed on the UNESCO World Heritage List"
-  },
-  "event.m_13_tuol_sleng_genocide_museum_and_choeung_ek_were_ins.8566e7": {
-    "km": "បូជនីយដ្ឋាន​ចងចាំ​នៃ​កម្ពុជា៖ ពីទីតាំង​ឧក្រិដ្ឋកម្ម មកជា​មណ្ឌល​ផ្សះផ្សា និង​សន្តិភាព ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិកភណ្ឌ​ពិភពលោក​របស់​អង្គការ​យូណេស្កូ",
-    "en": "M-13, Tuol Sleng Genocide Museum, and Choeung Ek were inscribed on the UNESCO World Heritage List"
-  },
-  "event.meak_bochea.52e0e8": {
-    "km": "ពិធី​បុណ្យ​មាឃបូជា",
-    "en": "Meak Bochea"
-  },
-  "event.mid_autumn_festival.dc76bc": {
-    "km": "ពិធី​បុណ្យ​សែន​ព្រះ​ខែ",
-    "en": "Mid-Autumn Festival"
-  },
-  "event.mother_s_day.55935f": {
-    "km": "ទិវាមាតា",
-    "en": "Mother's Day"
-  },
-  "event.national_and_world_environment_day.fd3953": {
-    "km": "ទិវា​បរិ​ស្ថាន​ជាតិ និង​បរិ​ស្ថាន​ពិភព​លោក ខួបលើកទី{anniversary}",
-    "en": "National and World Environment Day"
-  },
-  "event.national_anti_human_trafficking_day.7a9493": {
-    "km": "ទិវា​ជាតិ​ប្រឆាំង​ការ​ជួញ​ដូរ​មនុស្ស",
-    "en": "National Anti-Human Trafficking Day"
-  },
-  "event.national_authors_day.d78af9": {
-    "km": "ទិវា​ជាតិ​អ្នក​និពន្ធ",
-    "en": "National Authors' Day"
-  },
-  "event.national_culture_day.a654f6": {
-    "km": "ទិវា​វប្ប​ធម៌​ជាតិ ខួបលើកទី{anniversary}",
-    "en": "National Culture Day"
-  },
-  "event.national_day_of_remembrance.2f6336": {
-    "km": "ទិវា​ជាតិ​នៃ​ការ​ចង​ចាំ",
-    "en": "National Day of Remembrance"
-  },
-  "event.national_day_on_maternal_newborn_and_child_health.7d068e": {
-    "km": "ទិវា​ជាតិ​សុខភាព​មាតា ទារក និង​កុមារ",
-    "en": "National Day on Maternal, Newborn and Child Health"
-  },
-  "event.national_environmental_sanitation_day.905735": {
-    "km": "ទិវា​អនា​ម័យ​បរិ​ស្ថាន​ជាតិ",
-    "en": "National Environmental Sanitation Day"
-  },
-  "event.national_fish_day.1fa511": {
-    "km": "ទិវា​មច្ឆា​ជាតិ",
-    "en": "National Fish Day"
-  },
-  "event.national_mine_awareness_day.f49e4d": {
-    "km": "ទិវា​ជាតិ​យល់​ដឹង​ពី​មីន ខួបលើកទី{anniversary}",
-    "en": "National Mine Awareness Day"
-  },
-  "event.national_population_day_and_world_population_day.766612": {
-    "km": "ទិវា​​ប្រជាជនជាតិ និង​​ប្រជាជន​ពិភព​លោក",
-    "en": "National Population Day and World Population Day"
-  },
-  "event.new_year_s_day.1b578c": {
-    "km": "ទិវា​ចូល​ឆ្នាំ​សាកល",
-    "en": "New Year's Day"
-  },
-  "event.paris_peace_agreement_day.df33c1": {
-    "km": "ទិវារំលឹក​ខួប​នៃ​កិច្ចព្រមព្រៀង​សន្តិភាព​ទីក្រុង​ប៉ារីស",
-    "en": "Paris Peace Agreement Day"
-  },
-  "event.pchum_ben_festival.6c3dd1": {
-    "km": "ពិធី​បុណ្យ​ភ្ជុំ​បិណ្ឌ",
-    "en": "Pchum Ben Festival"
-  },
-  "event.peace_day_in_cambodia.c7066d": {
-    "km": "ទិវា​សន្តិ​ភាព​នៅ​កម្ពុជា",
-    "en": "Peace Day in Cambodia"
-  },
-  "event.queen_mother_s_birthday.c5a1c1": {
-    "km": "ព្រះ​រាជ​ពិធី​បុណ្យ​ចម្រើន​ព្រះ​ជន្ម សម្តេច​ព្រះ​មហាក្សត្រី នរោត្តម មុនិនាថ សីហនុ ព្រះ​វររាជ​មាតា​ជាតិ​ខ្មែរ ក្នុង​សេរីភាព សេចក្តីថ្លៃថ្នូរ និង​សុភមង្គល",
-    "en": "Queen Mother's Birthday"
-  },
-  "event.royal_ballet_of_cambodia_inscribed_on_the_representativ.4d9b25": {
-    "km": "របាំ​ព្រះ​រាជ​ទ្រព្យ ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិ​កភណ្ឌ​វប្បធម៌អរូបីនៃមនុស្សជាតិ ខួបលើកទី{anniversary}",
-    "en": "Royal Ballet of Cambodia inscribed on the Representative List of the Intangible Cultural Heritage of Humanity"
-  },
-  "event.royal_ballet_of_cambodia_inscribed_on_the_representativ.c9971c": {
-    "km": "របាំ​ព្រះ​រាជ​ទ្រព្យ ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិ​កភណ្ឌ​វប្បធម៌អរូបីនៃមនុស្សជាតិ",
-    "en": "Royal Ballet of Cambodia inscribed on the Representative List of the Intangible Cultural Heritage of Humanity"
-  },
-  "event.royal_ploughing_ceremony.3679be": {
-    "km": "ព្រះ​រាជ​ពិធី​ច្រត់​ព្រះ​នង្គ័ល",
-    "en": "Royal Ploughing Ceremony"
-  },
-  "event.spirit_parade.a39f4d": {
-    "km": "ហែ​អ្នក​តា​ចិន",
-    "en": "Spirit Parade"
-  },
-  "event.sticky_rice_dumplings_zongzi.1f93d1": {
-    "km": "សែន​នំ​ចាំង",
-    "en": "Sticky Rice Dumplings (Zongzi)"
-  },
-  "event.temple_of_preah_vihear_was_inscribed_on_the_unesco_worl.4193aa": {
-    "km": "ប្រាសាទ​ព្រះ​វិហារ ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិក​ភណ្ឌ​ពិភពលោករបស់អង្គការយូណេស្កូ ខួបលើកទី{anniversary}",
-    "en": "Temple of Preah Vihear was inscribed on the UNESCO World Heritage List"
-  },
-  "event.temple_of_preah_vihear_was_inscribed_on_the_unesco_worl.5c1a60": {
-    "km": "ប្រាសាទ​ព្រះ​វិហារ ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិក​ភណ្ឌ​ពិភពលោករបស់អង្គការយូណេស្កូ",
-    "en": "Temple of Preah Vihear was inscribed on the UNESCO World Heritage List"
-  },
-  "event.temple_zone_of_sambor_prei_kuk_was_inscribed_on_the_une.1127b6": {
-    "km": "តំបន់​ប្រាសាទ​សំបូរ​ព្រៃ​គុក ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិក​ភណ្ឌ​ពិភពលោករបស់អង្គការយូណេស្កូ",
-    "en": "Temple Zone of Sambor Prei Kuk was inscribed on the UNESCO World Heritage List"
-  },
-  "event.temple_zone_of_sambor_prei_kuk_was_inscribed_on_the_une.afc11f": {
-    "km": "តំបន់​ប្រាសាទ​សំបូរ​ព្រៃ​គុក ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិក​ភណ្ឌ​ពិភពលោករបស់អង្គការយូណេស្កូ ខួបលើកទី{anniversary}",
-    "en": "Temple Zone of Sambor Prei Kuk was inscribed on the UNESCO World Heritage List"
-  },
-  "event.the_archives_of_tuol_sleng_genocide_museum_are_register.121736": {
-    "km": "បណ្ណសារ​សារមន្ទីរ​ឧក្រិដ្ឋកម្ម​ប្រល័យ​ពូជសាសន៍​ទួល​ស្លែង ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​ស្មារតី​ចងចាំ​នៃ​ពិភព​លោក​របស់​យូណេស្កូ",
-    "en": "The archives of Tuol Sleng Genocide Museum are registered as part of the Memory of the World by UNESCO"
-  },
-  "event.the_archives_of_tuol_sleng_genocide_museum_are_register.f9c3c3": {
-    "km": "បណ្ណសារ​សារមន្ទីរ​ឧក្រិដ្ឋកម្ម​ប្រល័យ​ពូជសាសន៍​ទួល​ស្លែង ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​ស្មារតី​ចងចាំ​នៃ​ពិភព​លោក​របស់​យូណេស្កូ ខួបលើកទី{anniversary}",
-    "en": "The archives of Tuol Sleng Genocide Museum are registered as part of the Memory of the World by UNESCO"
-  },
-  "event.the_ordained_dragon_monk.44dda5": {
-    "km": "ពិធី​បំបួស​នាគ​ខ្នាន",
-    "en": "The Ordained Dragon Monk"
-  },
-  "event.tomb_sweeping_day_qingming_festival.fb0c0b": {
-    "km": "ឆេង​ម៉េង",
-    "en": "Tomb-Sweeping Day (Qingming Festival)"
-  },
-  "event.tug_of_war_inscribed_on_the_representative_list_of_the_.706e02": {
-    "km": "ល្បែង​ទាញ​ព្រ័ត្រ ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិក​ភណ្ឌ​វប្បធម៌អរូបីនៃមនុស្សជាតិ ខួបលើកទី{anniversary}",
-    "en": "Tug of War inscribed on the Representative List of the Intangible Cultural Heritage of Humanity"
-  },
-  "event.tug_of_war_inscribed_on_the_representative_list_of_the_.ed3156": {
-    "km": "ល្បែង​ទាញ​ព្រ័ត្រ ត្រូវ​បាន​ចុះ​ក្នុង​បញ្ជី​បេតិក​ភណ្ឌ​វប្បធម៌អរូបីនៃមនុស្សជាតិ",
-    "en": "Tug of War inscribed on the Representative List of the Intangible Cultural Heritage of Humanity"
-  },
-  "event.valentine_s_day.ceb81b": {
-    "km": "ថ្ងៃ​បុណ្យ​នៃ​សេចក្តី​ស្រលាញ់",
-    "en": "Valentine's Day"
-  },
-  "event.victory_over_genocide_day.f4ab75": {
-    "km": "ទិវា​ជ័យ​ជម្នះ​លើ​របប​ប្រល័យ​ពូជ​សាសន៍ ខួបលើកទី{anniversary}",
-    "en": "Victory Over Genocide Day"
-  },
-  "event.visak_bochea.7e3881": {
-    "km": "ពិធី​បុណ្យ​វិសាខ​បូជា",
-    "en": "Visak Bochea"
-  },
-  "event.water_festival.2457d0": {
-    "km": "ព្រះ​រាជ​ពិធី​បុណ្យ​អុំ​ទូក បណ្ដែត​ប្រទីប និង​សំពះ​ព្រះ​ខែ អកអំបុក",
-    "en": "Water Festival"
-  },
-  "event.water_policy_day.63f82f": {
-    "km": "ទិវា​នយោបាយ​ទឹក",
-    "en": "Water Policy Day"
-  },
-  "event.win_win_policy_day.277016": {
-    "km": "ទិវា​នយោ​បាយ​ឈ្នះ ឈ្នះ",
-    "en": "Win-win Policy Day"
-  },
-  "event.winter_solstice_festival.3a425c": {
-    "km": "សែននំអ៊ី",
-    "en": "Winter Solstice Festival"
-  },
-  "event.world_aids_day.6e5f9c": {
-    "km": "ទិវា​ពិភព​លោក​ប្រយុទ្ធ​ប្រឆាំង​នឹង​ជំងឺ​អេដស៍",
-    "en": "World AIDS Day"
-  },
-  "event.world_day_for_safety_and_health_at_work.6ea44a": {
-    "km": "ទិវា​ពិភព​លោក ដើម្បីសុវត្ថិភាព និងសុខភាពការងារ ខួបលើកទី{anniversary}",
-    "en": "World Day for Safety and Health at Work"
-  },
-  "event.world_day_for_safety_and_health_at_work.cc45e4": {
-    "km": "ទិវា​ពិភព​លោក ដើម្បីសុវត្ថិភាព និងសុខភាពការងារ",
-    "en": "World Day for Safety and Health at Work"
-  },
-  "event.world_health_day.18e2ba": {
-    "km": "ទិវា​សុខ​ភាព​ពិភព​លោក",
-    "en": "World Health Day"
-  },
-  "event.world_no_tobacco_day.3a3d79": {
-    "km": "ទិវា​ពិភព​លោក​គ្មាន​ថ្នាំ​ជក់",
-    "en": "World No Tobacco Day"
-  },
-  "event.world_press_freedom_day.b66799": {
-    "km": "ទិវា​សេរី​ភាព​សារព័ត៌មាន​ពិភព​លោក ខួបលើកទី{anniversary}",
-    "en": "World Press Freedom Day"
-  },
-  "event.world_ranger_day.32ad72": {
-    "km": "ទិវា​ឧទ្យានុ​រក្សពិភពលោក",
-    "en": "World Ranger Day"
-  },
-  "event.world_ranger_day.d91468": {
-    "km": "ទិវា​ឧទ្យានុ​រក្សពិភពលោក ខួបលើកទី{anniversary}",
-    "en": "World Ranger Day"
-  },
-  "event.world_red_cross_and_red_crescent_day.991942": {
-    "km": "ទិវា​ពិភព​លោក​កាក​បាទ​ក្រហម និង​អឌ្ឍចន្ទក្រហម",
-    "en": "World Red Cross and Red Crescent Day"
-  },
-  "event.world_teacher_s_day.3ad087": {
-    "km": "ទិវា​គ្រូ​បង្រៀន​ពិភព​លោក",
-    "en": "World Teacher's Day"
-  },
-  "event.world_tourism_day.7d2d48": {
-    "km": "ទិវា​ទេស​ចរណ៍​ពិ​ភព​លោក",
-    "en": "World Tourism Day"
-  },
-  "event.world_tuberculosis_day.15c9a6": {
-    "km": "ទិវា​ពិភពលោក​កំចាត់​រោគ​របេង",
-    "en": "World Tuberculosis Day"
-  },
-  "event.world_water_and_world_meteorological_day.128137": {
-    "km": "ទិវាទឹក និងឧតុនិយមពិភពលោក",
-    "en": "World Water and World Meteorological Day"
   },
   "language.english": {
     "km": "English",
@@ -899,69 +395,9 @@
     "km": "ខ្មែរ",
     "en": "ខ្មែរ"
   },
-  "notifications.channel": {
-    "km": "ព្រឹត្តិការណ៍ប្រតិទិន",
-    "en": "Calendar events"
-  },
-  "notifications.channel_description": {
-    "km": "ព្រឹត្តិការណ៍ប្រតិទិន និងការរំលឹកផ្ទាល់ខ្លួន",
-    "en": "Calendar events and custom reminders"
-  },
-  "notifications.choose_push_time": {
-    "km": "ជ្រើសរើសម៉ោងជូនដំណឹង",
-    "en": "Choose push time"
-  },
-  "notifications.reminder_interval": {
-    "km": "ចន្លោះពេលរំលឹក",
-    "en": "Reminder interval"
-  },
-  "notifications.title": {
-    "km": "ព្រឹត្តិការណ៍ · {date}",
-    "en": "Events · {date}"
-  },
-  "notifications.push_custom": {
-    "km": "ជូនដំណឹងព្រឹត្តិការណ៍ផ្ទាល់ខ្លួន",
-    "en": "Push personal events"
-  },
-  "notifications.push_custom_subtitle": {
-    "km": "តាមម៉ោងព្រឹត្តិការណ៍នីមួយៗ",
-    "en": "At each event's scheduled time"
-  },
-  "notifications.push_holidays": {
-    "km": "ជូនដំណឹងថ្ងៃឈប់សម្រាក",
-    "en": "Push holidays"
-  },
-  "notifications.push_holidays_subtitle": {
-    "km": "ថ្ងៃឈប់សម្រាកផ្លូវការ",
-    "en": "Official public holidays"
-  },
-  "notifications.push_holy_days": {
-    "km": "ជូនដំណឹងថ្ងៃសីល",
-    "en": "Push Buddhist holy days"
-  },
-  "notifications.push_holy_days_subtitle": {
-    "km": "តែពេលបង្ហាញថ្ងៃសីល",
-    "en": "Only when holy days are shown"
-  },
-  "notifications.push_observances": {
-    "km": "ជូនដំណឹងទិវា និងពិធីបុណ្យ",
-    "en": "Push observances"
-  },
-  "notifications.push_observances_subtitle": {
-    "km": "ទិវា និងពិធីបុណ្យនានា",
-    "en": "Festivals and others"
-  },
-  "rules.calculated_details": {
-    "km": "គណនាតាមក្បួនព្រឹត្តិការណ៍កើតឡើងរៀងរាល់ឆ្នាំ។ កាលបរិច្ឆេទ និងចំនួនខួប គឺជាការប៉ាន់ស្មាន មិនមែនជាកំណត់ត្រានៃការប្រារព្ធពិធី ឬថ្ងៃឈប់សម្រាកផ្លូវការទេ។ សេចក្តីប្រកាសប្រចាំឆ្នាំអាចផ្លាស់ប្ដូរកាលវិភាគ។",
-    "en": "Calculated from a recurring calendar rule. The date and any anniversary count are estimates, not a record of a celebration or an official day off. Annual announcements may change the schedule."
-  },
   "rules.calculated_label": {
     "km": "ពិធី និងទិវា (តាមការគណនា)",
     "en": "Observance (Calculated)"
-  },
-  "rules.coverage": {
-    "km": "កំណត់ត្រាព្រឹត្តិការណ៍មានសម្រាប់តែឆ្នាំ ២០០០–២០៣០ ប៉ុណ្ណោះ។ ចំពោះឆ្នាំផ្សេងទៀត នឹងបង្ហាញត្រឹមពិធីបុណ្យដែលបានគណនា ថ្ងៃសីល និងព្រឹត្តិការណ៍ផ្ទាល់ខ្លួនរបស់អ្នក។",
-    "en": "Recorded events cover 2000–2030. Other years display only calculated observances, holy days, and your personal events."
   },
   "rules.source_summary": {
     "km": "ទិវា និងពិធីបុណ្យប្រចាំឆ្នាំនានា ត្រូវបានគណនាដោយស្វ័យប្រវត្តិចន្លោះឆ្នាំ ១៨០០–២២០០ ផ្អែកលើប្រតិទិនសុរិយគតិ និងចន្ទគតិខ្មែរ។ ចំពោះទិវាសម័យទំនើបដែលមានកាលបរិច្ឆេទថេរ មិនត្រូវបានគណនាថយក្រោយហួសឆ្នាំបង្កើតដំបូងឡើយ។ ការគណនានេះមិនអាចយកជាការបញ្ជាក់អំពីថ្ងៃឈប់សម្រាកការងារផ្លូវការនោះទេ។",
@@ -995,21 +431,9 @@
     "km": "ព្រឹត្តិការណ៍ទាំងអស់ក្នុង{month}",
     "en": "All events in {month}"
   },
-  "ui.allow_precise_reminders.733d9d": {
-    "km": "អនុញ្ញាតការរំលឹកតាមម៉ោងជាក់លាក់",
-    "en": "Allow precise reminders"
-  },
-  "ui.allow_precise_reminders_for_the_selected_time_otherwise.03a1cd": {
-    "km": "អនុញ្ញាតម៉ោងរំលឹកជាក់លាក់ ដើម្បីជូនដំណឹងតាមម៉ោងដែលបានកំណត់។ បើមិនអនុញ្ញាត Android អាចពន្យារពេល។",
-    "en": "Allow precise reminders for the selected time. Otherwise Android may delay delivery."
-  },
   "ui.amber.195385": {
     "km": "លឿងទុំ",
     "en": "Amber"
-  },
-  "ui.an_event_from_khmer_lunar_calendar_saved_for_offline_vi.98ee90": {
-    "km": "ព្រឹត្តិការណ៍ពីប្រតិទិន Khmer Lunar Calendar ដែលរក្សាទុកសម្រាប់មើលដោយមិនប្រើអ៊ីនធឺណិត។",
-    "en": "An event from Khmer Lunar Calendar, saved for offline viewing."
   },
   "ui.appearance.23e609": {
     "km": "រូបរាង",
@@ -1026,14 +450,6 @@
   "ui.buddhist_era.ea617c": {
     "km": "ពុទ្ធសករាជ",
     "en": "Buddhist Era"
-  },
-  "ui.buddhist_holy_day.829195": {
-    "km": "ថ្ងៃសីល",
-    "en": "Buddhist holy day"
-  },
-  "ui.buddhist_holy_days.ad67f9": {
-    "km": "បង្ហាញថ្ងៃសីល",
-    "en": "Buddhist holy days"
   },
   "ui.buddhist_holy_days_in_calendar.d1e9b6": {
     "km": "ថ្ងៃសីលក្នុងប្រតិទិន",
@@ -1063,17 +479,9 @@
     "km": "ម៉ោងកម្ពុជា (UTC+7)",
     "en": "Cambodia time (UTC+7)"
   },
-  "ui.cambodia_utc_7.458037": {
-    "km": "កម្ពុជា (UTC+7)",
-    "en": "Cambodia (UTC+7)"
-  },
   "ui.cancel.5bf834": {
     "km": "បោះបង់",
     "en": "Cancel"
-  },
-  "ui.choose_month_and_year.252299": {
-    "km": "ជ្រើសរើសខែ និងឆ្នាំ",
-    "en": "Choose month and year"
   },
   "ui.choose_year.0853a0": {
     "km": "ជ្រើសរើសឆ្នាំ",
@@ -1086,10 +494,6 @@
   "ui.close.7df7dc": {
     "km": "បិទ",
     "en": "Close"
-  },
-  "ui.could_not_delete_the_event_please_try_again.c02587": {
-    "km": "មិនអាចលុបព្រឹត្តិការណ៍បានទេ។ សូមសាកល្បងម្ដងទៀត។",
-    "en": "Could not delete the event. Please try again."
   },
   "ui.could_not_save_changes_please_try_again.140b3e": {
     "km": "មិនអាចរក្សាទុកការផ្លាស់ប្ដូរបានទេ។ សូមសាកល្បងម្ដងទៀត។",
@@ -1107,10 +511,6 @@
     "km": "ព័ត៌មានលម្អិត",
     "en": "Date details"
   },
-  "ui.date_yyyy_mm_dd.fb201f": {
-    "km": "កាលបរិច្ឆេទ",
-    "en": "Date"
-  },
   "ui.delete.4708f4": {
     "km": "លុប",
     "en": "Delete"
@@ -1127,29 +527,9 @@
     "km": "កែប្រែព្រឹត្តិការណ៍",
     "en": "Edit event"
   },
-  "ui.enable_event_notifications.b4d4f8": {
-    "km": "បើកការជូនដំណឹងព្រឹត្តិការណ៍",
-    "en": "Enable event notifications"
-  },
-  "ui.event_data_covers_2000_2030_lunar_dates_holy_days_and_y.27c235": {
-    "km": "ទិន្នន័យព្រឹត្តិការណ៍មានសម្រាប់ឆ្នាំ២០០០–២០៣០។ ប្រតិទិនចន្ទគតិ ថ្ងៃសីល និងព្រឹត្តិការណ៍ផ្ទាល់ខ្លួននៅតែអាចប្រើបានសម្រាប់ឆ្នាំនេះ។",
-    "en": "Event data covers 2000–2030. Lunar dates, holy days and your personal events remain available for this year."
-  },
   "ui.events.11d867": {
     "km": "ព្រឹត្តិការណ៍",
     "en": "Events"
-  },
-  "ui.events_2000_2030_from_khmer_lunar_calendar_available_of.93ee10": {
-    "km": "ព្រឹត្តិការណ៍សម្រាប់ឆ្នាំ ២០០០–២០៣០ ត្រូវបានដកស្រង់ចេញពីគេហទំព័រផ្លូវការមួយចំនួនរបស់រដ្ឋាភិបាល និងប្រតិទិនចន្ទគតិខ្មែរ រួមជាមួយនឹងការសម្រិតសម្រាំង និងការកែតម្រូវបន្ថែម។",
-    "en": "Events for 2000–2030 were sourced from some official government websites and Khmer Chhankitek Calendar, with additional curation and corrections."
-  },
-  "ui.events_for_year_available_offline.be5b8f": {
-    "km": "ព្រឹត្តិការណ៍ ឆ្នាំ{year} · រក្សាទុកក្នុងកម្មវិធី",
-    "en": "Events for {year} · available offline"
-  },
-  "ui.events_include_festivals_and_observances_public_holiday.06e0ee": {
-    "km": "ព្រឹត្តិការណ៍រួមបញ្ចូលពិធីបុណ្យ និងទិវាផ្សេងៗ។ កាលបរិច្ឆេទថ្ងៃឈប់សម្រាកបានផ្ទៀងផ្ទាត់ជាមួយបញ្ជីរដ្ឋាភិបាល ឆ្នាំ២០២៥ និង២០២៦។",
-    "en": "Events include festivals and observances. Public-holiday labels identify dates checked against the 2025 and 2026 government lists."
   },
   "ui.events_on_the_day.a174fc": {
     "km": "ព្រឹត្តិការណ៍ក្នុងថ្ងៃនេះ",
@@ -1191,10 +571,6 @@
     "km": "ថ្ងៃសីល",
     "en": "Buddhist holy days"
   },
-  "ui.hour.5f4163": {
-    "km": "ម៉ោង",
-    "en": "Hour"
-  },
   "ui.jump_to_month.b37571": {
     "km": "ទៅកាន់",
     "en": "Jump to"
@@ -1235,17 +611,9 @@
     "km": "ម៉ោងក្នុងតំបន់",
     "en": "Local time"
   },
-  "ui.lunar_calendar_1900_2100_based_on_work_by_phylypo_tum_t.d8396b": {
-    "km": "ប្រតិទិនចន្ទគតិ៖ ឆ្នាំ១៨០០–២២០០។ គណនាតាមការងាររបស់ Phylypo Tum, Thyrith Sor និង MetheaX (MIT)។",
-    "en": "Lunar calendar: 1800–2200. Based on work by Phylypo Tum, Thyrith Sor and MetheaX (MIT)."
-  },
   "ui.lunar_dates_in_calendar.4dffed": {
     "km": "បង្ហាញថ្ងៃចន្ទគតិ",
     "en": "Lunar dates in calendar"
-  },
-  "ui.minute.823acf": {
-    "km": "នាទី",
-    "en": "Minute"
   },
   "ui.new_event_years_and_corrections_are_delivered_through_a.a6af2d": {
     "km": "ព្រឹត្តិការណ៍ថ្មីៗ និងការកែសម្រួល នឹងត្រូវបានផ្ដល់ជូនតាមរយៈការធ្វើបច្ចុប្បន្នភាពកម្មវិធី។",
@@ -1259,29 +627,13 @@
     "km": "ឆ្នាំបន្ទាប់",
     "en": "Next year"
   },
-  "ui.no_account_no_internet_no_tracking_just_your_calendar_a.9bc7bf": {
-    "km": "មិនត្រូវការគណនី មិនត្រូវការអ៊ីនធឺណិត មិនប្រមូលទិន្នន័យ មានតែប្រតិទិនរបស់អ្នក និងថ្ងៃសំខាន់ៗ។",
-    "en": "No account, no internet, no data collection. Just your calendar and the dates that matter."
-  },
   "ui.no_browser_or_search_app": {
     "km": "គ្មានកម្មវិធីរុករក ឬកម្មវិធីស្វែងរក",
     "en": "No browser or search app available"
   },
-  "ui.no_matching_events_try_another_filter_or_search.57812b": {
-    "km": "គ្មានព្រឹត្តិការណ៍។ សាកល្បងប្ដូរតម្រង ឬពាក្យស្វែងរក។",
-    "en": "No matching events. Try another filter or search."
-  },
   "ui.notes_optional.fde199": {
     "km": "កំណត់ចំណាំ",
     "en": "Notes"
-  },
-  "ui.notifications.ddc781": {
-    "km": "ការជូនដំណឹង",
-    "en": "NOTIFICATIONS"
-  },
-  "ui.notifications_are_blocked_in_android_settings.46aaf7": {
-    "km": "Android បានបិទការជូនដំណឹងសម្រាប់កម្មវិធីនេះ។",
-    "en": "Notifications are blocked in Android settings."
   },
   "ui.observance.5b9a87": {
     "km": "ពិធី និងទិវា",
@@ -1291,21 +643,9 @@
     "km": "ពិធី និងទិវា",
     "en": "Observances"
   },
-  "ui.off.9af9e6": {
-    "km": "បិទ",
-    "en": "Off"
-  },
-  "ui.official_source.953191": {
-    "km": "ប្រភពផ្លូវការ",
-    "en": "Official source"
-  },
   "ui.ok.04c4aa": {
     "km": "យល់ព្រម",
     "en": "OK"
-  },
-  "ui.open_android_settings.8d0574": {
-    "km": "បើកការកំណត់ Android",
-    "en": "Open Android settings"
   },
   "ui.open_source_license.ab00af": {
     "km": "អាជ្ញាប័ណ្ណប្រភពបើកចំហ",
@@ -1327,26 +667,6 @@
     "km": "ឆ្នាំមុន",
     "en": "Previous year"
   },
-  "ui.public_holiday.5bd66a": {
-    "km": "ថ្ងៃឈប់សម្រាក",
-    "en": "Public holiday"
-  },
-  "ui.push_time.8421c3": {
-    "km": "ម៉ោងជូនដំណឹង",
-    "en": "Push time"
-  },
-  "ui.remind_every.a38a5d": {
-    "km": "រំលឹករៀងរាល់",
-    "en": "Remind every"
-  },
-  "ui.reminders_for_holidays_and_events.fe018c": {
-    "km": "ការរំលឹកសម្រាប់ថ្ងៃឈប់សម្រាក និងព្រឹត្តិការណ៍",
-    "en": "Reminders for holidays and events"
-  },
-  "ui.repeat_interval_throughout_the_day.46e808": {
-    "km": "ចន្លោះពេលរំលឹកឡើងវិញពេញមួយថ្ងៃ",
-    "en": "Repeat interval throughout the day"
-  },
   "ui.rose.ea1e14": {
     "km": "ផ្កាឈូក",
     "en": "Rose"
@@ -1363,17 +683,9 @@
     "km": "ជ្រើសរើសម៉ោង",
     "en": "Select time"
   },
-  "ui.set_timezone.cdea40": {
-    "km": "កំណត់តំបន់ម៉ោង",
-    "en": "Set timezone"
-  },
   "ui.settings.0e0a4f": {
     "km": "ការកំណត់",
     "en": "Settings"
-  },
-  "ui.show_in_the_calendar_and_events.2ce7f4": {
-    "km": "បង្ហាញក្នុងប្រតិទិន និងព្រឹត្តិការណ៍",
-    "en": "Show in the calendar and events"
   },
   "ui.show_in_the_events_list_and_filters.425758": {
     "km": "បង្ហាញក្នុងបញ្ជីព្រឹត្តិការណ៍ និងតម្រង",
@@ -1394,14 +706,6 @@
   "ui.sunday_when_turned_off.e40816": {
     "km": "បិទដើម្បីផ្តើមសប្តាហ៍ពីថ្ងៃអាទិត្យ",
     "en": "Sunday when turned off"
-  },
-  "ui.system.8f97a4": {
-    "km": "ប្រព័ន្ធ",
-    "en": "System"
-  },
-  "ui.the_app_won_t_guarantee_to_fire_notifications_correctly.b4cad2": {
-    "km": "កម្មវិធីមិនធានាថានឹងជូនដំណឹងបានត្រឹមត្រូវទេ លុះត្រាតែអ្នកអនុញ្ញាតការរំលឹកតាមម៉ោងជាក់លាក់។",
-    "en": "The app won't guarantee to fire notifications correctly unless you allow precise reminders."
   },
   "ui.theme.99ca72": {
     "km": "រចនាប័ទ្ម",
@@ -1430,14 +734,6 @@
   "ui.time_hh_mm.8cf351": {
     "km": "ម៉ោង · ទម្រង់ ២៤ ម៉ោង (HH:mm)",
     "en": "Time 24-hour (HH:mm)"
-  },
-  "ui.time_to_deliver_daily_reminders.7806df": {
-    "km": "សម្រាប់ព្រឹត្តិការណ៍គ្មានម៉ោងកំណត់",
-    "en": "For events with no times"
-  },
-  "ui.timezone.72f68d": {
-    "km": "តំបន់ម៉ោង",
-    "en": "TIMEZONE"
   },
   "ui.title.a4c172": {
     "km": "ចំណងជើង",
@@ -1547,14 +843,6 @@
     "km": "សម្រាប់ទំព័រ និងរបាររុករក",
     "en": "Tint pages and navigation"
   },
-  "ui.collapsed": {
-    "km": "បានបង្រួម",
-    "en": "Collapsed"
-  },
-  "ui.expanded": {
-    "km": "បានពង្រីក",
-    "en": "Expanded"
-  },
   "ui.highlight_weekday_names": {
     "km": "រំលេចឈ្មោះថ្ងៃ",
     "en": "Highlight weekday names"
@@ -1579,17 +867,9 @@
     "km": "កម្ពុជា",
     "en": "Cambodia"
   },
-  "about.event_archive_source": {
-    "km": "ពិធីបុណ្យប្រពៃណីចិន និងទិវាប្រវត្តិសាស្ត្រនានា ត្រូវបានដកស្រង់ចេញពីកំណត់ត្រាប្រតិទិនចន្ទគតិខ្មែរ។",
-    "en": "Traditional Chinese festivals and historical commemorations are preserved from Khmer Lunar Calendar records."
-  },
   "ui.copy": {
     "km": "ចម្លង",
     "en": "Copy"
-  },
-  "ui.url_copied": {
-    "km": "បានចម្លងតំណភ្ជាប់",
-    "en": "URL copied"
   },
   "about.public_holiday_source": {
     "km": "ថ្ងៃឈប់សម្រាកការងារផ្លូវការ ត្រូវបានផ្ទៀងផ្ទាត់ និងបញ្ជាក់ចេញពីអនុក្រឹត្យរបស់រាជរដ្ឋាភិបាលកម្ពុជា និងឯកសារផ្លូវការរបស់រដ្ឋ។",
@@ -1714,9 +994,5 @@
   "ui.chinese_ganzhi_title": {
     "en": "Chinese Ganzhi (干支)",
     "km": "ហោរាសាស្ត្រចិន (干支)"
-  },
-  "ui.astrology_ai_query": {
-    "en": "Explain the traditional astrological meanings of {details}.",
-    "km": "ពន្យល់អត្ថន័យតាមហោរាសាស្ត្រនៃ {details}។"
   }
 }

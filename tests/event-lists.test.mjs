@@ -212,7 +212,7 @@ test('holiday subtitle is formatted as Observance · Holiday and Events tab filt
   assert.match(mainTs, /if\s*\(this\.eventsFilter === 2 && e\.kind !== 'OBSERVANCE' && e\.kind !== 'HOLIDAY'\)\s*return false;/);
 });
 
-test('timeline day numbers retain holiday precedence and otherwise use normal text', async () => {
+test('timeline day numbers retain holiday precedence and otherwise use normal text', () => {
   const customEvent = event('Meeting', 'CUSTOM');
   const holidayEvent = event('Holiday', 'HOLIDAY');
   const observanceEvent = event('Observance', 'OBSERVANCE');
@@ -231,8 +231,6 @@ test('timeline day numbers retain holiday precedence and otherwise use normal te
   assert.equal(observanceHtml.includes('class="event-row-daynum holiday"'), false);
   assert.equal(observanceHtml.includes('class="event-row-daynum custom"'), false);
 
-  const componentsCss = await readFile(new URL('../src/styles/components.css', import.meta.url), 'utf8');
-  assert.match(componentsCss, /\.event-row-daynum\.custom\s*\{\s*color:\s*#E53935;\s*\}/);
 });
 
 test('Today markers bracket visible Today or mark its gap only in the current month', () => {

@@ -13,7 +13,6 @@ const server = await createServer({ server: { middlewareMode: true, ws: false },
 after(() => server.close());
 const { KhmerCalendar, calendarEngine, toEpochDay, fromEpochDay } = await server.ssrLoadModule('/src/domain/KhmerCalendar.ts');
 const { KhmerDateDetails } = await server.ssrLoadModule('/src/domain/KhmerDateDetails.ts');
-const { KhmerNewYear } = await server.ssrLoadModule('/src/domain/KhmerNewYear.ts');
 const { RecurringEvents, calendarCatalog } = await server.ssrLoadModule('/src/data/RecurringEvents.ts');
 const { EventRepository } = await server.ssrLoadModule('/src/data/EventRepository.ts');
 const { holyDayLotus } = await server.ssrLoadModule('/src/ui/HolyDayLotus.ts');
@@ -32,14 +31,14 @@ const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 
 test('pinned engine corrects 2012 dates and separate animal/Sak transitions', () => {
   assert.equal(calendarEngine.version, '0.6.0');
-  assert.deepEqual(KhmerNewYear.forYear(2012).dates, ['2012-04-13', '2012-04-14', '2012-04-15']);
+  assert.deepEqual(calendarEngine.newYear(2012).dates.map(date => date.iso), ['2012-04-13', '2012-04-14', '2012-04-15']);
   const dates = [12, 13, 14, 15].map(day => KhmerDateDetails.fromGregorian(2012, 4, day));
   assert.equal(dates[1].animalYear, (dates[0].animalYear + 1) % 12);
   assert.deepEqual(dates.map(d => d.animalYearChangesToday), [false, true, false, false]);
   assert.equal(dates[0].sak, dates[2].sak);
   assert.equal(dates[3].sak, (dates[2].sak + 1) % 10);
-  assert.equal(KhmerNewYear.forYear(2024).days, 4);
-  assert.throws(() => KhmerNewYear.forYear(1799), RangeError);
+  assert.equal(calendarEngine.newYear(2024).days, 4);
+  assert.throws(() => calendarEngine.newYear(1799), /Supported calendar years: 1800\.\.2200/);
   assert.throws(() => KhmerCalendar.fromGregorian(NaN, 1, 1), RangeError);
 });
 
@@ -79,9 +78,9 @@ test('all 113 app definitions yield 30,371 unique in-year occurrences across 401
       assert.equal(new Set(dates).size, dates.length);
       count += dates.length;
     }
-    const result = KhmerNewYear.forYear(year);
+    const result = calendarEngine.newYear(year);
     assert.equal(result.dates.length, result.days);
-    assert.equal(result.startDate, result.dates[0]);
+    assert.equal(result.start.iso, result.dates[0].iso);
   }
   assert.equal(count, 30371);
   assert.equal(families.size, 7);
@@ -257,9 +256,9 @@ test('all 12 official government holiday calendars (2016–2027) apply public ho
   assert.equal(kny2027.titleEn, 'Khmer New Year – Moha Sankranta 4:48 PM (Estimated time)');
   assert.equal(kny2027.titleKm, 'ពិធី​បុណ្យ​ចូល​ឆ្នាំ​ថ្មី ប្រពៃណី​ជាតិ – មហា​សង្ក្រាន្ត ម៉ោង ០៤:៤៨ ល្ងាច (ម៉ោងប៉ាន់ស្មាន)');
 
-  // Engine v0.6.0 arrivalEstimate contract on KhmerNewYear
-  const ny2027 = KhmerNewYear.forYear(2027);
-  assert.deepEqual(ny2027.arrivalEstimate, { minuteOfDay: 1008, hour: 16, minute: 48 });
+  // The arrival estimate is read directly by RecurringEvents.
+  const { minuteOfDay, hour, minute } = calendarEngine.newYear(2027).arrivalEstimate;
+  assert.deepEqual({ minuteOfDay, hour, minute }, { minuteOfDay: 1008, hour: 16, minute: 48 });
 
   // Verify 100% explicit eventId linkage and 0 mismatches across all 12 holiday calendars
   const catalogEventIds = new Set(calendarCatalog.events.map(e => e.id));

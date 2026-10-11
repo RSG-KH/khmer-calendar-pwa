@@ -32,9 +32,6 @@ export interface AppSettings {
   highlightSunday: boolean;
   showLunar: boolean;
   todayTimeZone: TodayTimeZone;
-  notificationsEnabled: boolean;
-  shavingDayReminder: boolean;
-  holidayReminder: boolean;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -59,10 +56,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   showObservances: true,
   highlightSunday: true,
   showLunar: true,
-  todayTimeZone: 'local',
-  notificationsEnabled: false,
-  shavingDayReminder: false,
-  holidayReminder: true
+  todayTimeZone: 'local'
 };
 
 export function enabledAstrologyFeatures(settings: AppSettings): { western: boolean; ganzhi: boolean } {
@@ -78,7 +72,7 @@ export interface CustomEvent {
   date: string; // 'YYYY-MM-DD'
   time?: string; // 'HH:mm'
   notes?: string;
-  remind?: boolean;
+  remind?: boolean; // Preserve this legacy stored value when editing; reminders are unavailable.
   instant?: string;
   repeat?: EventRepeat;
 }

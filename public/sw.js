@@ -1,4 +1,4 @@
-// Khmer Calendar PWA Service Worker (Offline Cache + Web Push)
+// Khmer Calendar PWA Service Worker (Offline Cache)
 // The production build injects a content version and the complete file list.
 const APP_URL = self.registration.scope;
 const APP_PATH = new URL(APP_URL).pathname;
@@ -59,60 +59,6 @@ self.addEventListener('fetch', (event) => {
       }
       // Missing assets must fail normally, never receive HTML as a fallback.
       return fetch(event.request);
-    })
-  );
-});
-
-// iOS 16.4+ Web Push notification listener
-function notificationTarget(value) {
-  if (typeof value !== 'string') return APP_URL;
-  try {
-    const url = new URL(value, APP_URL);
-    if (url.origin === self.location.origin && url.pathname.startsWith(APP_PATH) && !url.username && !url.password) {
-      return url.href;
-    }
-  } catch {
-    // Malformed targets fall back to this installation's home screen.
-  }
-  return APP_URL;
-}
-
-self.addEventListener('push', (event) => {
-  let data = {};
-  try {
-    data = event.data ? event.data.json() : {};
-  } catch (e) {
-    data = { title: 'Khmer Calendar', body: event.data ? event.data.text() : 'Upcoming calendar event' };
-  }
-  if (!data || typeof data !== 'object' || Array.isArray(data)) data = {};
-
-  const title = data.title || 'Khmer Calendar';
-  const options = {
-    body: data.body || 'Holy Day / Holiday Reminder',
-    icon: new URL('icons/app-logo.png', APP_URL).href,
-    badge: new URL('icons/apple-touch-icon.png', APP_URL).href,
-    data: notificationTarget(data.url),
-    tag: data.tag || 'khmer-cal-alert',
-    renotify: true
-  };
-
-  event.waitUntil(self.registration.showNotification(title, options));
-});
-
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  const targetUrl = notificationTarget(event.notification.data);
-
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      for (const client of clientList) {
-        if (client.url === targetUrl && 'focus' in client) {
-          return client.focus();
-        }
-      }
-      if (clients.openWindow) {
-        return clients.openWindow(targetUrl);
-      }
     })
   );
 });

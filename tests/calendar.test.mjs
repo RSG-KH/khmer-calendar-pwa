@@ -239,28 +239,30 @@ test('observance and Ganzhi settings persist independently', () => {
   values.clear();
 });
 
-test('weekday labels resolve in both languages and user text is rendered literally', () => {
+test('calendar labels resolve in both languages and user text is rendered literally', () => {
   for (let day = 0; day < 7; day++) {
     for (const khmer of [true, false]) {
-      for (const style of ['narrow', 'grid_long']) assert.ok(!CalendarWords.weekday(day, khmer, style).includes('calendar.'));
+      for (const style of ['full', 'short', 'narrow', 'grid_long']) assert.ok(!CalendarWords.weekday(day, khmer, style).startsWith('calendar.'));
     }
+  }
+  for (const khmer of [true, false]) {
+    const labels = [
+      ...Array.from({ length: 12 }, (_, index) => [CalendarWords.month(index + 1, khmer), CalendarWords.month(index + 1, khmer, true)]).flat(),
+      ...Array.from({ length: 14 }, (_, index) => CalendarWords.lunarMonth(index, khmer)),
+      ...Array.from({ length: 12 }, (_, index) => CalendarWords.animal(index, khmer)),
+      ...Array.from({ length: 10 }, (_, index) => CalendarWords.sak(index, khmer)),
+      ...[true, false].flatMap(waxing => [CalendarWords.phase(waxing, khmer), CalendarWords.phase(waxing, khmer, true)])
+    ];
+    assert.ok(labels.every(label => label && !label.startsWith('calendar.')), 'Dynamic calendar labels retain their translations');
   }
   assert.equal(escapeHtml('<img src=x> "Family" & friends'), '&lt;img src=x&gt; &quot;Family&quot; &amp; friends');
 });
 
-test('v0.8.0 personal event, notification and reminder translations match Android', () => {
+test('personal event labels use app terminology in both languages', () => {
   assert.equal(L.text('ui.custom.917053', false), 'Personal');
   assert.equal(L.text('ui.custom.917053', true), 'ផ្ទាល់ខ្លួន');
   assert.equal(L.text('ui.a_custom_event_saved_on_your_device.96d6e7', false), 'A personal event saved on your device.');
   assert.equal(L.text('ui.a_custom_event_saved_on_your_device.96d6e7', true), 'ព្រឹត្តិការណ៍ផ្ទាល់ខ្លួនដែលរក្សាទុកក្នុងឧបករណ៍របស់អ្នក។');
-  assert.equal(L.text('ui.time_to_deliver_daily_reminders.7806df', false), 'For events with no times');
-  assert.equal(L.text('ui.time_to_deliver_daily_reminders.7806df', true), 'សម្រាប់ព្រឹត្តិការណ៍គ្មានម៉ោងកំណត់');
-  assert.equal(L.text('notifications.push_custom', false), 'Push personal events');
-  assert.equal(L.text('notifications.push_custom', true), 'ជូនដំណឹងព្រឹត្តិការណ៍ផ្ទាល់ខ្លួន');
-  assert.equal(L.text('notifications.push_observances', false), 'Push observances');
-  assert.equal(L.text('notifications.push_observances', true), 'ជូនដំណឹងទិវា និងពិធីបុណ្យ');
-  assert.equal(L.text('notifications.push_observances_subtitle', false), 'Festivals and others');
-  assert.equal(L.text('notifications.push_observances_subtitle', true), 'ទិវា និងពិធីបុណ្យនានា');
 });
 
 test('v0.9.0 learn-more, online-search and date-label translations match Android', () => {

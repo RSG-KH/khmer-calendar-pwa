@@ -17,7 +17,7 @@
   position: relative;
 }
 
-/* Screen Content Area (Centered 640px max) */
+/* Scrollable screen area; each page controls its own content width. */
 .screen-container {
   flex: 1;
   height: 100%;
@@ -27,13 +27,6 @@
   flex-direction: column;
   align-items: center;
   padding: 8px 10px 24px 10px;
-}
-
-.screen-inner {
-  width: 100%;
-  max-width: 640px;
-  display: flex;
-  flex-direction: column;
 }
 
 /* ==========================================================================
@@ -244,18 +237,6 @@
   white-space: nowrap;
 }
 
-.cell-lotus-icon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 75%;
-  height: 75%;
-  opacity: 0.25;
-  pointer-events: none;
-  fill: var(--secondary);
-}
-
 .cell-event-marks {
   display: flex;
   gap: 4px;
@@ -333,7 +314,7 @@
 }
 
 /* ==========================================================================
-   EVENT ROW ITEMS (matching EventRow in CalendarApp.kt)
+   EVENT TIMELINE ROWS
    ========================================================================== */
 .event-row-card {
   position: relative;
@@ -390,28 +371,11 @@
   color: var(--tertiary);
 }
 
-.event-row-daynum.custom {
-  color: #E53935;
-}
-
 .event-row-weekday {
   font-size: calc(10px * var(--font-scale));
   color: var(--on-surface-variant);
   margin-top: -1px;
 }
-
-.event-row-bar {
-  width: 3px;
-  height: 25px;
-  border-radius: 2px;
-  margin: 0 12px;
-  flex-shrink: 0;
-}
-
-.event-row-bar.holiday { background: var(--tertiary); }
-.event-row-bar.holy_day { background: var(--secondary); }
-.event-row-bar.observance { background: var(--accent); }
-.event-row-bar.custom { background: #E53935; }
 
 .event-row-content {
   flex: 1;

@@ -15,7 +15,7 @@ const siblingCache = `khmer-cal:${origin}/another-project/:old-version`;
 function worker() {
   const listeners = {};
   const stores = new Map([['another-app-cache', new Map()], [oldCache, new Map()], [siblingCache, new Map()]]);
-  const state = { offline: false, fail: undefined, claimed: false, skipped: false, notification: undefined, opened: undefined, clientList: [] };
+  const state = { offline: false, fail: undefined, claimed: false, skipped: false };
   const key = request => new URL(typeof request === 'string' ? request : request.url, origin).href;
   const fetch = async request => {
     const url = new URL(key(request));
@@ -46,17 +46,13 @@ function worker() {
       };
     }
   };
-  const clients = {
-    claim: async () => { state.claimed = true; },
-    matchAll: async () => state.clientList,
-    openWindow: async url => { state.opened = url; }
-  };
+  const clients = { claim: async () => { state.claimed = true; } };
   runInNewContext(source, {
     URL, Request, caches, fetch, clients,
     self: {
       location: { origin }, clients,
       skipWaiting: async () => { state.skipped = true; },
-      registration: { scope: appUrl, showNotification: async (title, options) => { state.notification = { title, options }; } },
+      registration: { scope: appUrl },
       addEventListener: (name, handler) => { listeners[name] = handler; }
     }
   });
@@ -158,48 +154,4 @@ test('Home Screen metadata resolves inside the deployed app and its icons are av
       assert.ok((await app.request(iconUrl.href)).ok);
     }
   }
-});
-
-test('notifications use this installation for icons and opening the app', async () => {
-  const app = worker();
-  await app.lifecycle('push');
-  const { options } = app.state.notification;
-  assert.equal(options.icon, `${appUrl}icons/app-logo.png`);
-  assert.equal(options.badge, `${appUrl}icons/apple-touch-icon.png`);
-  assert.equal(options.data, appUrl);
-  app.state.clientList = [{ url: `${appUrl}another-project/`, focus: () => assert.fail('Focused another project') }];
-  await app.lifecycle('notificationclick', { notification: { data: options.data, close() {} } });
-  assert.equal(app.state.opened, appUrl);
-});
-
-test('push and existing notification clicks cannot leave the app scope', async () => {
-  const unsafeTargets = [
-    'https://other.test/phishing', '//other.test/phishing',
-    'javascript:alert(1)', 'data:text/html,hello', 'https://[invalid',
-    `${origin.replace('://', '://user:password@')}${basePath}`,
-    null, 42, { url: appUrl }
-  ];
-  if (basePath !== '/') unsafeTargets.push('/another-project/', '../another-project/', `${basePath.slice(0, -1)}-other/`);
-  for (const target of unsafeTargets) {
-    const app = worker();
-    await app.lifecycle('push', { data: { json: () => ({ url: target }) } });
-    assert.equal(app.state.notification.options.data, appUrl);
-    // Also cover notifications created by an older worker or the local prototype.
-    await app.lifecycle('notificationclick', { notification: { data: target, close() {} } });
-    assert.equal(app.state.opened, appUrl);
-  }
-});
-
-test('valid notification links focus an existing app window and null payloads are tolerated', async () => {
-  const app = worker();
-  const target = `${appUrl}?event=123`;
-  await app.lifecycle('push', { data: { json: () => ({ url: '?event=123' }) } });
-  assert.equal(app.state.notification.options.data, target);
-  let focused = false;
-  app.state.clientList = [{ url: target, focus: () => { focused = true; } }];
-  await app.lifecycle('notificationclick', { notification: { data: target, close() {} } });
-  assert.equal(focused, true);
-  assert.equal(app.state.opened, undefined);
-  await app.lifecycle('push', { data: { json: () => null } });
-  assert.equal(app.state.notification.options.data, appUrl);
 });

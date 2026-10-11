@@ -140,13 +140,6 @@ export class Zodiac {
     }
   }
 
-  static labelWithoutSymbol(sign: ZodiacSign, khmer: boolean): string {
-    if (khmer && sign.signNameKm) {
-      return `${sign.signNameKm} (${sign.elementKm} · ${sign.planetKm})`;
-    }
-    return `${sign.signName} (${sign.element} · ${sign.planet})`;
-  }
-
   static label(sign: ZodiacSign, khmer: boolean): string {
     if (khmer && sign.signNameKm) {
       return `${sign.symbol} ${sign.signNameKm} (${sign.elementKm} · ${sign.planetKm})`;

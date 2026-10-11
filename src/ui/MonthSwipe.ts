@@ -20,6 +20,26 @@ export function adjacentMonth(year: number, month: number, direction: MonthDirec
 
 /** Bind once to the app root so click suppression survives a month re-render. */
 export function bindMonthSwipe(root: HTMLElement, onSwipe: (direction: MonthDirection) => void): () => void {
+  return bindHorizontalSwipe(root, '.calendar-month-card', onSwipe,
+    card => Math.min(64, Math.max(36, card.getBoundingClientRect().width * 0.12)));
+}
+
+export function adjacentEventsYear(year: number, direction: MonthDirection): number | null {
+  const next = year + direction;
+  return next >= KhmerCalendar.minYear && next <= KhmerCalendar.maxYear ? next : null;
+}
+
+export function bindEventsYearSwipe(root: HTMLElement, onSwipe: (direction: MonthDirection) => void): () => void {
+  return bindHorizontalSwipe(root, '.events-screen-container', onSwipe, () => 80,
+    'input, textarea, select, [contenteditable], .events-filter-chips');
+}
+
+export function bindDatePickerSwipe(root: HTMLElement, onSwipe: (direction: MonthDirection) => void): () => void {
+  return bindHorizontalSwipe(root, '.event-date-grid', onSwipe, () => 80);
+}
+
+function bindHorizontalSwipe(root: HTMLElement, selector: string, onSwipe: (direction: MonthDirection) => void,
+  thresholdFor: (card: Element) => number, excluded?: string): () => void {
   const doc = root.ownerDocument;
   const host = doc.defaultView;
   let gesture: { id: number; x: number; y: number; card: Element; threshold: number; axis?: 'x' | 'y' } | undefined;
@@ -41,10 +61,12 @@ export function bindMonthSwipe(root: HTMLElement, onSwipe: (direction: MonthDire
     }
     if (!event.isPrimary || event.button !== 0) return;
     suppressClick = false;
-    const card = (event.target as Element | null)?.closest?.('.calendar-month-card');
+    const target = event.target as Element | null;
+    if (excluded && target?.closest?.(excluded)) return;
+    const card = target?.closest?.(selector);
     if (card && root.contains(card)) {
       // Shorter travel on phone-sized grids, with enough distance to reject tap jitter.
-      const threshold = Math.min(64, Math.max(36, card.getBoundingClientRect().width * 0.12));
+      const threshold = thresholdFor(card);
       gesture = { id: event.pointerId, x: event.clientX, y: event.clientY, card, threshold };
     }
   };

@@ -46,7 +46,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   holyDayMarkers: true,
   showHolyDaysInEvents: false,
   mondayFirst: false,
-  showLongerWeekdayNames: false,
+  showLongerWeekdayNames: true,
   highlightWeekdayNames: true,
   showCopyButtons: false,
   enableAstrologyAndZodiac: true,

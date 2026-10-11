@@ -23,6 +23,7 @@ import type { BirthplaceSelection } from '../data/Birthplaces';
 import { AstrologyDetailsModal, astrologyTitle, bindAstrologyTable, type AstrologyKind } from './AstrologyDetails';
 import { askAiButton, launchAiSearch } from './AskAi';
 import { formatEventSubtitle, getCustomEventTimeInfo } from './EventTime';
+import { setupEventDateField } from './EventDateField';
 
 function renderLocationEmoji(place: BirthplaceSelection | null): string {
   const country = place?.countryCode;
@@ -145,7 +146,8 @@ export class DateDetailsDialogModal {
     this.cleanupDateCopy?.();
     const parts = dateStr.split('-').map(Number);
     const info = KhmerDateDetails.fromGregorian(parts[0], parts[1], parts[2]);
-    const fullDate = isKhmer ? CalendarWords.fullKhmerDate(info) : CalendarWords.fullEnglishDate(info);
+    const fullDate = isKhmer ? CalendarWords.fullKhmerDate(info)
+      : `${CalendarWords.weekday(new Date(`${dateStr}T00:00:00Z`).getUTCDay(), false)}\n${CalendarWords.fullEnglishDate(info)}`;
     const settings = Storage.getSettings();
     const astrology = enabledAstrologyFeatures(settings);
     const showWesternZodiac = astrology.western;
@@ -166,7 +168,7 @@ export class DateDetailsDialogModal {
       day: info.day,
       year: info.year
     });
-    const dialogTitle = isKhmer ? dateTitle : `${CalendarWords.weekday(new Date(`${dateStr}T00:00:00Z`).getUTCDay(), false)}, ${dateTitle}`;
+    const dialogTitle = dateTitle;
     const renderHeaderTimeControl = () => {
       if (!canPickTime) return '';
       const label = showWesternZodiac ? timeAndLocationTitle(isKhmer)
@@ -224,7 +226,7 @@ export class DateDetailsDialogModal {
           <div style="display: flex; flex-direction: column; gap: 9px;">
             <div class="date-description">
               <div class="date-description-row">
-                <div class="full-lunar-date">${escapeHtml(fullDate)}</div>
+                <div class="full-lunar-date${isKhmer ? '' : ' english-date-description'}">${escapeHtml(fullDate)}</div>
                 <button type="button" class="btn-copy-text btn-copy-date" aria-label="${L.text('ui.copy_full_date', isKhmer)}">
                   <span aria-hidden="true">${Icons.copy}</span>
                 </button>
@@ -260,12 +262,12 @@ export class DateDetailsDialogModal {
             ${showAstrology || !showHolyDay ? '<div class="card-divider" style="margin: 0;"></div>' : ''}
             <div style="display: flex; flex-direction: column; gap: 6px;">
               ${events.map(e => {
-                const subtitle = formatEventSubtitle(e, isKhmer, settings.todayTimeZone);
+                const subtitle = formatEventSubtitle(e, isKhmer, settings.todayTimeZone, false);
                 return `
                 <button class="dialog-event-item" data-ev-id="${escapeHtml(e.id)}" style="display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 10px; background: color-mix(in srgb, var(--bg-surface-variant) 50%, transparent); cursor: pointer;">
                   <span class="mark-shape ${e.kind.toLowerCase()}"></span>
                   <div class="dialog-event-content" style="flex: 1; display: flex; flex-direction: column; gap: 3px;">
-                    <span class="dialog-event-title" style="font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--text-primary); line-height: 1.4;">${escapeHtml(isKhmer ? e.titleKm : e.titleEn)}</span>
+                    <span class="dialog-event-title" style="font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--text-primary); line-height: 1.4;">${e.time ? `<span class="event-row-time">${escapeHtml(e.time)}</span>` : ''}<span>${escapeHtml(isKhmer ? e.titleKm : e.titleEn)}</span></span>
                     <span class="dialog-event-kind ${e.kind.toLowerCase()}" style="font-size: calc(11px * var(--font-scale)); line-height: 1.3;">${escapeHtml(subtitle)}</span>
                   </div>
                   <span style="font-size: calc(18px * var(--font-scale)); color: var(--on-surface-variant);">›</span>
@@ -446,7 +448,7 @@ export class EventDetailsDialogModal {
         <div class="event-detail-header" style="position: relative; z-index: 1;">
           <div class="event-title-copy">
             <div class="event-title-row">
-              <span class="event-detail-title">${escapeHtml(title)}</span><button type="button" class="btn-copy-text btn-copy-title" aria-label="${L.text('ui.copy_event_title', isKhmer)}">
+              <span class="event-detail-title ${event.kind.toLowerCase()}">${escapeHtml(title)}</span><button type="button" class="btn-copy-text btn-copy-title" aria-label="${L.text('ui.copy_event_title', isKhmer)}">
                 <span aria-hidden="true">${Icons.copy}</span>
               </button>
             </div>
@@ -704,6 +706,7 @@ export class CustomEventModal {
   private overlay: HTMLElement;
   private onSaved: (event: CustomEvent) => void;
   private cleanupTimeField?: () => void;
+  private cleanupDateField?: () => void;
   private repeatField?: EventRepeatField;
 
   constructor(onSaved: (event: CustomEvent) => void) {
@@ -717,6 +720,7 @@ export class CustomEventModal {
   }
 
   open(dateStr: string, isKhmer: boolean, existing?: CustomEvent) {
+    this.cleanupDateField?.();
     this.cleanupTimeField?.();
     this.cleanupTimeField = undefined;
     this.repeatField?.dispose();
@@ -753,7 +757,7 @@ export class CustomEventModal {
           <div class="event-datetime-fields">
             <div>
               <label for="ev-date" style="display: block; font-size: calc(13px * var(--font-scale)); font-weight: 500; color: var(--on-surface-variant); margin-bottom: 4px;">
-                ${L.text('ui.date_yyyy_mm_dd.fb201f', isKhmer)}
+                ${L.text('ui.event_date', isKhmer)} · ${CalendarWords.number(1800, isKhmer)}–${CalendarWords.number(2200, isKhmer)}
               </label>
               <div class="event-native-field">
                 <input type="date" id="ev-date" required min="1800-01-01" max="2200-12-31" value="${escapeHtml(initialDate)}" />
@@ -800,6 +804,7 @@ export class CustomEventModal {
 
     const form = this.overlay.querySelector('#custom-event-form') as HTMLFormElement;
     this.repeatField = new EventRepeatField(form.querySelector('.event-repeat-block')!, form.querySelector('#ev-date')!, isKhmer, seriesZone, existing?.repeat);
+    this.cleanupDateField = setupEventDateField(form.querySelector('#ev-date')!, isKhmer);
     if (!nativeTimePicker) {
       this.cleanupTimeField = setupTimeField(
         form.querySelector('.custom-time-field')!, form.querySelector<HTMLInputElement>('#ev-time')!, isKhmer
@@ -858,6 +863,8 @@ export class CustomEventModal {
   }
 
   close() {
+    this.cleanupDateField?.();
+    this.cleanupDateField = undefined;
     this.cleanupTimeField?.();
     this.cleanupTimeField = undefined;
     this.repeatField?.dispose();

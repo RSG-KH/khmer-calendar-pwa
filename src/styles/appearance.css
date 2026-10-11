@@ -124,7 +124,6 @@ svg { flex-shrink: 0; }
   .card-legend-row { padding: 2px 0; gap: 4px 10px; }
   .card-legend-row.tight-legend { gap: 4px 6px; }
 }
-.cal-cell.today .mark-shape.holy_day { background: transparent !important; border-bottom-color: var(--on-accent); }
 /* Certified summary sizing and stacking: docs/maintainer-certified-calendar-ui.md. */
 .date-summary-card { text-align: left; gap: 18px; border: 0; border-radius: 16px; padding: 16px; }
 .date-summary-left, .date-summary-right { min-width: 0; gap: 0; line-height: calc(20px * var(--font-scale)); }
@@ -137,19 +136,29 @@ svg { flex-shrink: 0; }
   .date-summary-card { flex-direction: column; gap: 4px; }
   .date-summary-right { align-items: flex-start; }
 }
-.events-list-container { --event-row-padding: 14px; --event-date-width: 44px; --event-bar-gap: 9px; gap: 0; background: var(--bg-surface); border-radius: var(--calendar-card-radius); overflow: hidden; }
-.event-row-card { border: 0; border-radius: 0; margin: 0; padding: 9px var(--event-row-padding); min-height: 50px; text-align: left; background: var(--event-row-background, var(--bg-surface)); }
+.events-list-container { --event-row-padding: 14px; --event-date-width: 44px; --timeline-left-gap: 12px; --timeline-width: 3px; --timeline-position: calc(var(--event-row-padding) + var(--event-date-width) + var(--timeline-left-gap)); --timeline-color: color-mix(in srgb, var(--accent) 50%, transparent); gap: 0; background: var(--bg-surface); border-radius: var(--calendar-card-radius); overflow: hidden; }
+.event-day-group { position: relative; background: var(--event-row-background, var(--bg-surface)); }
+.event-day-group::before { content: ''; position: absolute; top: 0; bottom: 0; left: var(--timeline-position); width: var(--timeline-width); background: var(--timeline-color); pointer-events: none; z-index: 2; }
+.event-day-content { position: relative; display: grid; grid-template-columns: calc(var(--timeline-position) + var(--timeline-width) / 2) minmax(0, 1fr); }
+.event-day-events { min-width: 0; }
+.event-row-card { border: 0; border-radius: 0; margin: 0; padding: 9px var(--event-row-padding) 9px calc(16px + var(--timeline-width) / 2); min-height: 50px; text-align: left; background: var(--event-row-background, var(--bg-surface)); }
 .event-row-card, .dialog-event-item { --button-press-color: var(--accent); }
 .event-day-group.is-today { --event-row-background: color-mix(in srgb, var(--accent) 2%, var(--bg-surface)); background: var(--event-row-background); }
-.event-day-group + .event-day-group { border-top: 1px solid var(--outline); }
-/* Same-day separators start at the event bar, leaving the shared date column clear. */
-.event-row-card + .event-row-card::after { content: ''; position: absolute; top: 0; inset-inline-start: calc(var(--event-row-padding) + var(--event-date-width) + var(--event-bar-gap)); inset-inline-end: 0; height: 1px; background: var(--outline); pointer-events: none; }
-.event-row-date { width: var(--event-date-width); }
+.event-day-divider { position: relative; height: 1px; background: var(--outline); }
+.event-day-divider.highlighted { background: var(--timeline-color); }
+.event-day-divider.has-today-node { height: 13px; background: linear-gradient(var(--timeline-color), var(--timeline-color)) center / 100% 1px no-repeat; }
+.event-day-group.is-today .event-day-content::after, .event-day-divider.has-today-node::after { content: ''; position: absolute; top: 50%; left: calc(var(--timeline-position) + var(--timeline-width) / 2); width: 13px; height: 13px; border-radius: 50%; background: var(--accent); transform: translate(-50%, -50%); pointer-events: none; z-index: 3; }
+/* Same-day separators leave the single date column clear. */
+.event-row-card + .event-row-card::after { content: ''; position: absolute; top: 0; inset-inline: 0; height: 1px; background: var(--outline); pointer-events: none; }
+.event-row-date { width: 100%; min-height: 44px; padding: 8px calc(var(--timeline-left-gap) + var(--timeline-width) / 2) 8px var(--event-row-padding); border: 0; border-radius: 0; background: transparent; cursor: pointer; }
+.event-row-date:focus-visible { outline-offset: -3px; }
 .event-row-daynum { line-height: 1.25; }
 .event-row-weekday { line-height: 1.3; margin-top: calc(-1px - 0.2em); }
-.event-row-title { white-space: normal; overflow-wrap: anywhere; line-height: 1.5; font-size: calc(14px * var(--font-scale)); }
-.event-row-bar { height: 28px; width: 2px; margin-inline: var(--event-bar-gap) 12px; }
-.event-row-kind { line-height: 1.3; }
+.event-row-title { display: flex; gap: 5px; white-space: normal; overflow-wrap: anywhere; line-height: 1.5; font-size: calc(14px * var(--font-scale)); }
+.event-row-time { flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.event-row-kind { font-size: calc(10px * var(--font-scale)); line-height: 1.2; }
+.events-screen-container { touch-action: pan-y pinch-zoom; }
+.events-filter-chips { touch-action: pan-x pan-y pinch-zoom; }
 .event-row-chevron { opacity: 0.6; }
 /* Let the controls set the row height. The Home indicator inset replaces
    ordinary bottom padding instead of adding a second empty row below it. */
@@ -169,7 +178,7 @@ svg { flex-shrink: 0; }
 .rail-item { min-height: 66px; }
 .rail-item svg { width: 22px; height: 22px; }
 .rail-label { font-size: calc(10px * var(--font-scale)); }
-.events-screen-container { max-width: 720px; }
+.events-screen-container, .settings-container { max-width: 720px; }
 .events-header { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); column-gap: 4px; min-height: 70px; }
 .events-title { font-size: 22px; font-weight: 700; color: var(--text-primary); }
 .events-year-nav { display: flex; align-items: center; justify-self: center; gap: 4px; }
@@ -185,7 +194,7 @@ svg { flex-shrink: 0; }
 .events-month-name.is-centered { flex: 0 0 var(--month-date-width); margin-inline-start: var(--month-date-offset); text-align: center; }
 .add-event-button { width: 44px; height: 44px; border: 0; background: transparent; color: var(--accent); display: grid; place-items: center; cursor: pointer; }
 .add-event-button svg { width: 26px; height: 26px; fill: currentColor; }
-.settings-container { width: 100%; max-width: 640px; padding: 6px 2px 24px; }
+.settings-container { width: 100%; padding: 6px 0 24px; }
 .section-label { padding: 0 16px 7px; font-size: calc(12px * var(--font-scale)); font-weight: 500; color: var(--on-surface-variant); }
 .settings-card { border: 0; border-radius: 14px; margin-bottom: 26px; }
 .settings-row { min-height: 45px; gap: 14px; padding: 10px 16px; border-top: 1px solid var(--outline); }
@@ -363,6 +372,10 @@ svg { flex-shrink: 0; }
 .event-title-copy { position: relative; margin-bottom: 12px; }
 .event-title-row { display: flex; align-items: flex-start; gap: 6px; font-size: calc(18px * var(--font-scale)); font-weight: 600; color: var(--accent); line-height: 1.4; overflow-wrap: anywhere; }
 .event-detail-title { flex: 1; min-width: 0; color: var(--accent); }
+.event-detail-title.holiday { color: var(--tertiary); }
+.event-detail-title.custom { color: #E53935; }
+.full-lunar-date.english-date-description { font-size: calc(16px * var(--font-scale)); line-height: 1.75; padding-top: max(0px, calc((44px - 28px * var(--font-scale)) / 2)); }
+.dialog-event-title { display: flex; gap: 5px; }
 .event-detail-title { white-space: pre-wrap; user-select: text; -webkit-user-select: text; }
 .event-detail-title { padding-top: max(0px, calc((44px - 25px * var(--font-scale)) / 2)); }
 .full-lunar-date { padding-top: max(0px, calc((44px - 31px * var(--font-scale)) / 2)); }
@@ -416,6 +429,22 @@ svg { flex-shrink: 0; }
 .event-native-field input { display: block; appearance: none; -webkit-appearance: none; width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; margin: 0; padding: 10px 0; border: 0; border-radius: 0; background: transparent; color: var(--text-primary); }
 .event-native-field:focus-within { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 .event-native-field input:focus-visible { outline: none; box-shadow: none; }
+.event-date-field { display: flex; align-items: center; gap: 6px; }
+.event-date-field input { flex: 1; font-variant-numeric: tabular-nums; }
+.btn-event-date-pick { flex-shrink: 0; min-height: 44px; padding: 6px; color: var(--accent); background: transparent; border: 0; border-radius: 6px; }
+.event-date-dialog { max-width: 440px; }
+.event-date-heading { color: var(--accent); font-size: calc(16px * var(--font-scale)); margin-bottom: 14px; }
+.event-date-navigation { display: flex; align-items: center; gap: 4px; margin-bottom: 12px; }
+.event-date-month { min-width: 0; flex: 1; }
+.event-date-year { width: 80px; }
+.event-date-navigation :is(input, select) { min-height: 44px; padding: 4px; background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--outline); border-radius: 8px; font-size: calc(13px * var(--font-scale)); }
+.event-date-weekdays, .event-date-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; }
+.event-date-weekdays { font-size: calc(10px * var(--font-scale)); color: var(--on-surface-variant); }
+.event-date-grid { touch-action: pan-y pinch-zoom; }
+.event-date-grid button { min-width: 0; height: 44px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: var(--text-primary); }
+.event-date-grid button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+.event-date-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+.event-date-save { background: var(--accent); color: var(--on-accent); }
 /* Fixed picker menus must sit above the scrolling event editor. */
 .modal-overlay.open .custom-time-editor { transform: none; }
 .custom-time-field { --time-picker-icon-width: 12px; --time-picker-icon-gap: 7px; display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 6px 12px; border: 1px solid var(--outline); border-radius: 8px; }

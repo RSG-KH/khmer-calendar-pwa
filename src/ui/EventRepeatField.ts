@@ -4,6 +4,7 @@ import { CalendarWords, L } from '../data/i18n';
 import { isSupportedDate } from '../domain/DateTime';
 import { EventRepeat, RepeatFrequency, repeatDates, validRepeat } from '../domain/EventRepeat';
 import { escapeHtml } from './html';
+import { setupEventDateField } from './EventDateField';
 
 export function repeatDateLabel(date: string, khmer: boolean): string {
   const [year, month, day] = date.split('-').map(Number);
@@ -19,6 +20,7 @@ export class EventRepeatField {
   private end: HTMLInputElement;
   private thirty: HTMLInputElement;
   private february: HTMLInputElement;
+  private cleanupDateField: () => void;
 
   constructor(private root: HTMLElement, private start: HTMLInputElement, private khmer: boolean,
     private timeZone: string, initial?: EventRepeat) {
@@ -66,6 +68,7 @@ export class EventRepeatField {
     });
     [start, this.interval, this.end, this.thirty, this.february].forEach(input => input.addEventListener('input', () => this.render(), options));
     this.render();
+    this.cleanupDateField = setupEventDateField(this.end, khmer);
   }
 
   value(): EventRepeat | undefined {
@@ -83,7 +86,7 @@ export class EventRepeatField {
     return this.interval.reportValidity() && this.end.reportValidity();
   }
 
-  dispose() { this.abort.abort(); }
+  dispose() { this.cleanupDateField(); this.abort.abort(); }
 
   private render() {
     const find = (selector: string) => this.root.querySelector<HTMLElement>(selector)!;

@@ -4,15 +4,15 @@ import { createServer } from 'vite';
 
 const server = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom', optimizeDeps: { noDiscovery: true, include: [] } });
 after(() => server.close());
-const { adjacentMonth, bindMonthSwipe } = await server.ssrLoadModule('/src/ui/MonthSwipe.ts');
+const { adjacentMonth, bindMonthSwipe, bindEventsYearSwipe, adjacentEventsYear } = await server.ssrLoadModule('/src/ui/MonthSwipe.ts');
 
-function fixture(width = 640) {
+function fixture(width = 640, mode = 'month') {
   const host = new EventTarget();
   const doc = Object.assign(new EventTarget(), { defaultView: host });
   const captures = new Set();
   const createCard = () => ({ getBoundingClientRect: () => ({ width }) });
   let card = createCard();
-  const cell = { closest: () => card };
+  const cell = { closest: selector => selector === (mode === 'month' ? '.calendar-month-card' : '.events-screen-container') ? card : null };
   const root = Object.assign(new EventTarget(), {
     ownerDocument: doc,
     contains: element => element === card,
@@ -21,7 +21,7 @@ function fixture(width = 640) {
     releasePointerCapture: id => captures.delete(id)
   });
   const months = [];
-  const cleanup = bindMonthSwipe(root, direction => {
+  const cleanup = (mode === 'month' ? bindMonthSwipe : bindEventsYearSwipe)(root, direction => {
     months.push(direction);
     card = createCard(); // Rendering replaces the month card, but keeps the app root.
   });
@@ -58,6 +58,24 @@ test('left/right swipes advance once per release and suppress clicks across rend
   assert.deepEqual(f.months, [1, -1]);
   assert.ok(f.emit('click', { detail: 1 }).defaultPrevented);
   f.cleanup();
+});
+
+test('Events swipes require 80px, survive rerender, and leave input/filter gestures alone', () => {
+  const f = fixture(350, 'events');
+  f.drag(-79);
+  assert.deepEqual(f.months, []);
+  f.drag(-90, 10);
+  assert.deepEqual(f.months, [1]);
+  assert.ok(f.emit('click', { detail: 1 }).defaultPrevented);
+  f.drag(90);
+  assert.deepEqual(f.months, [1, -1]);
+  f.drag(-150, 0, { target: { closest: selector => selector.startsWith('input') ? {} : null } });
+  f.drag(-10, 150);
+  assert.deepEqual(f.months, [1, -1]);
+  f.cleanup();
+  assert.equal(adjacentEventsYear(1800, -1), null);
+  assert.equal(adjacentEventsYear(2200, 1), null);
+  assert.equal(adjacentEventsYear(2026, 1), 2027);
 });
 
 test('date taps and keyboard activation still work after a swipe', () => {

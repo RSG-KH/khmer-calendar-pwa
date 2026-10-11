@@ -214,11 +214,10 @@
 }
 
 .cal-cell.today {
-  background: var(--accent);
-  color: var(--on-accent);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
 }
 
-.cal-cell.active-day:not(.today) {
+.cal-cell.active-day {
   --button-shadow: inset 0 0 0 2px var(--accent);
 }
 
@@ -230,16 +229,11 @@
 }
 
 .cal-cell.today .cell-day-num {
-  color: var(--on-accent);
   font-weight: 700;
 }
 
 .cal-cell.is-holiday .cell-day-num {
   color: var(--tertiary);
-}
-
-.cal-cell.today.is-holiday .cell-day-num {
-  color: var(--on-accent);
 }
 
 .cell-lunar-label {
@@ -248,11 +242,6 @@
   margin-top: 1px;
   line-height: 1.1;
   white-space: nowrap;
-}
-
-.cal-cell.today .cell-lunar-label {
-  color: var(--on-accent);
-  opacity: 0.85;
 }
 
 .cell-lotus-icon {
@@ -265,10 +254,6 @@
   opacity: 0.25;
   pointer-events: none;
   fill: var(--secondary);
-}
-
-.cal-cell.today .cell-lotus-icon {
-  fill: var(--on-accent);
 }
 
 .cell-event-marks {
@@ -313,10 +298,6 @@
   clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
   /* Match the solid markers visually without increasing the marker row height. */
   transform: scale(1.4);
-}
-
-.cal-cell.today .mark-shape {
-  background: var(--on-accent) !important;
 }
 
 /* Card Horizontal Divider */

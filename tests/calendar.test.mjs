@@ -184,7 +184,9 @@ test('legacy events and preferences remain readable', () => {
   assert.equal(Storage.getSettings().language, 'en');
   assert.equal(Storage.getSettings().mondayFirst, false);
   assert.equal(Storage.getSettings().backgroundAccent, true);
-  assert.equal(Storage.getSettings().showLongerWeekdayNames, false);
+  assert.equal(Storage.getSettings().showLongerWeekdayNames, true);
+  values.set('khmer_calendar_settings', JSON.stringify({ showLongerWeekdayNames: false }));
+  assert.equal(Storage.getSettings().showLongerWeekdayNames, false, 'preserve a saved short-heading choice');
   assert.equal(Storage.getSettings().highlightWeekdayNames, true);
   assert.equal(Storage.getSettings().showObservances, true);
   assert.equal(Storage.getSettings().showGanzhi, true);

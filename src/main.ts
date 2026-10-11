@@ -17,7 +17,7 @@ import { renderSettings } from './ui/Settings';
 import { isAndroid, isPhone, prefersNativeScrollbars } from './ui/Platform';
 import { applyInstallMetadata } from './ui/InstallMetadata';
 import { bindAutoHideScrollbars } from './ui/Scrollbars';
-import { adjacentMonth, bindMonthSwipe, MonthDirection } from './ui/MonthSwipe';
+import { adjacentMonth, adjacentEventsYear, bindMonthSwipe, bindEventsYearSwipe, MonthDirection } from './ui/MonthSwipe';
 import { AppUpdater } from './ui/AppUpdater';
 import { appearanceBackground, effectiveTheme } from './ui/Appearance';
 import { holyDayLotus } from './ui/HolyDayLotus';
@@ -26,6 +26,7 @@ import { fitCalendarWidth } from './ui/CalendarWidth';
 import { startTodayRefresh } from './ui/TodayRefresh';
 import { renderEventRows } from './ui/EventRows';
 import { fitEventMonthHeadings } from './ui/EventMonthHeadings';
+import { fitLunarLabels } from './ui/LunarLabels';
 
 const updateReceiptKey = `khmer-calendar:update:${import.meta.env.BASE_URL}`;
 function consumeUpdateReceipt(): number | undefined {
@@ -50,6 +51,7 @@ class KhmerCalendarApp {
   private eventsSearchQuery: string = '';
   private cleanupSettings?: () => void;
   private cleanupWeekdays?: () => void;
+  private cleanupLunarLabels?: () => void;
   private cleanupCalendarWidth?: () => void;
   private cleanupEventMonthHeadings?: () => void;
   private todayRefresh?: ReturnType<typeof startTodayRefresh>;
@@ -99,9 +101,12 @@ class KhmerCalendarApp {
     this.customEventModal = new CustomEventModal(event => {
       const displayedDate = event.instant ? dateTimeInZone(new Date(event.instant), this.settings.todayTimeZone).date : event.date;
       this.eventsYear = Number(displayedDate.slice(0, 4));
-      this.activePage = 1;
-      this.eventsFilter = 4;
-      this.eventsSearchQuery = '';
+      this.dateDetailsModal.close();
+      this.eventDetailsModal.close();
+      if (this.activePage === 1) {
+        this.eventsFilter = 4;
+        this.eventsSearchQuery = '';
+      }
       this.render();
     });
 
@@ -136,6 +141,7 @@ class KhmerCalendarApp {
       document.getElementById('screen-container')!.scrollTop = this.updateScrollTop;
     }
     bindMonthSwipe(document.getElementById('app')!, direction => this.changeMonth(direction));
+    bindEventsYearSwipe(document.getElementById('app')!, direction => this.changeEventsYear(direction));
     this.updater.start();
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => this.applySettings());
     this.todayRefresh = startTodayRefresh(() => {
@@ -178,6 +184,8 @@ class KhmerCalendarApp {
   }
 
   private render() {
+    this.cleanupLunarLabels?.();
+    this.cleanupLunarLabels = undefined;
     this.cleanupEventMonthHeadings?.();
     this.cleanupEventMonthHeadings = undefined;
     this.cleanupCalendarWidth?.();
@@ -235,7 +243,12 @@ class KhmerCalendarApp {
 
     appEl.querySelectorAll('[data-page]').forEach(el => {
       el.addEventListener('click', () => {
-        this.activePage = parseInt((el as HTMLElement).dataset.page!, 10);
+        const nextPage = parseInt((el as HTMLElement).dataset.page!, 10);
+        if (nextPage === 1 && this.activePage !== 1) {
+          this.eventsFilter = 0;
+          this.eventsSearchQuery = '';
+        }
+        this.activePage = nextPage;
         this.render();
       });
     });
@@ -259,6 +272,13 @@ class KhmerCalendarApp {
     this.currentYear = next.year;
     this.currentMonth = next.month;
     this.selectedDateStr = `${next.year}-${String(next.month).padStart(2, '0')}-01`;
+    this.render();
+  }
+
+  private changeEventsYear(direction: MonthDirection) {
+    const next = adjacentEventsYear(this.eventsYear, direction);
+    if (next === null) return;
+    this.eventsYear = next;
     this.render();
   }
 
@@ -380,7 +400,7 @@ class KhmerCalendarApp {
               <div style="font-size: 13px; font-weight: 600; color: var(--on-surface-variant); margin: 10px 0 4px 6px;">
                 ${L.text('ui.events_on_the_day.a174fc', k)}
               </div>
-              <div class="events-list-container">${renderEventRows(selectedDayEvents, k)}</div>
+              <div class="events-list-container">${renderEventRows(selectedDayEvents, k, todayStr)}</div>
             </div>` : ''}
           </div>
 
@@ -445,7 +465,7 @@ class KhmerCalendarApp {
       cell.innerHTML = `
         ${lunar.isHolyDay && this.settings.holyDayMarkers ? `<img src="${holyDayLotus(lunar)}" class="cell-lotus-img" alt="" />` : ''}
         <span class="cell-day-num">${CalendarWords.number(dayNum, k)}</span>
-        ${this.settings.showLunar ? `<span class="cell-lunar-label">${CalendarWords.lunarShort(lunar.day, lunar.waxing, k)}</span>` : ''}
+        ${this.settings.showLunar ? `<span class="cell-lunar-label" data-lunar-day="${lunar.day}" data-waxing="${lunar.waxing}" data-full-lunar="${escapeHtml(CalendarWords.lunarShort(lunar.day, lunar.waxing, k))}">${CalendarWords.lunarShort(lunar.day, lunar.waxing, k)}</span>` : ''}
         ${marksHtml}
       `;
 
@@ -465,6 +485,7 @@ class KhmerCalendarApp {
       container.querySelector<HTMLElement>('.calendar-two-columns')!,
       container.querySelector<HTMLElement>('.calendar-month-card')!
     );
+    this.cleanupLunarLabels = fitLunarLabels(gridCellsContainer as HTMLElement, k);
 
     // Attach Header navigation events
     container.querySelector('.btn-prev-month')?.addEventListener('click', () => this.changeMonth(-1));
@@ -500,6 +521,7 @@ class KhmerCalendarApp {
         }
       });
     });
+    this.bindEventDates(container, k);
   }
 
   /* ==========================================================================
@@ -565,13 +587,16 @@ class KhmerCalendarApp {
     }
 
     const resultsHtml = monthsListHtml || `<div class="empty-events">${k ? 'គ្មានព្រឹត្តិការណ៍ទេ' : 'No events found'}</div>`;
-    const bindEventRows = () => container.querySelectorAll('.event-row-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const { eventId, eventDate } = (card as HTMLElement).dataset;
-        const event = rawEvents.find(event => event.id === eventId && event.date === eventDate);
-        if (event) this.eventDetailsModal.open(event, k);
+    const bindEventRows = () => {
+      this.bindEventDates(container, k);
+      container.querySelectorAll('.event-row-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const { eventId, eventDate } = (card as HTMLElement).dataset;
+          const event = rawEvents.find(event => event.id === eventId && event.date === eventDate);
+          if (event) this.eventDetailsModal.open(event, k);
+        });
       });
-    });
+    };
     if (existingEvents) {
       this.cleanupEventMonthHeadings?.();
       container.querySelector('.events-results')!.innerHTML = resultsHtml;
@@ -624,13 +649,11 @@ class KhmerCalendarApp {
       this.eventsYearPicker.open(this.eventsYear, 1, k);
     });
     container.querySelector('.btn-prev-events-year')?.addEventListener('click', () => {
-      this.eventsYear--;
-      this.render();
+      this.changeEventsYear(-1);
     });
 
     container.querySelector('.btn-next-events-year')?.addEventListener('click', () => {
-      this.eventsYear++;
-      this.render();
+      this.changeEventsYear(1);
     });
 
     // Search input
@@ -655,6 +678,23 @@ class KhmerCalendarApp {
 
     // Event Row Click: Open EventDetailsDialog
     bindEventRows();
+  }
+
+  private bindEventDates(container: HTMLElement, khmer: boolean) {
+    container.querySelectorAll<HTMLElement>('[data-open-date]').forEach(button => {
+      button.addEventListener('click', () => {
+        const date = button.dataset.openDate!;
+        this.selectedDateStr = date;
+        const events = EventRepository.forDate(date).filter(event =>
+          (this.settings.showHolyDaysInEvents || event.kind !== 'HOLY_DAY') &&
+          (this.settings.showObservances || event.kind !== 'OBSERVANCE'));
+        if (this.activePage === 0) {
+          [this.currentYear, this.currentMonth] = date.split('-').map(Number);
+          this.render();
+        }
+        this.dateDetailsModal.open(date, events, khmer);
+      });
+    });
   }
 
   /* ==========================================================================

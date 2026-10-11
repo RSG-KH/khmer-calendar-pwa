@@ -879,7 +879,8 @@ test('astrology settings gate zodiac and Ganzhi calculations in dialogs', async 
   assert.ok(dateModal.overlay.innerHTML.includes('Sun'), 'Sun column should show');
   assert.ok(dateModal.overlay.innerHTML.includes('Moon'), 'Moon column should show');
   assert.ok(dateModal.overlay.innerHTML.includes('Libra'), 'Western zodiac label should show when showWesternZodiac is true');
-  assert.ok(dateModal.overlay.innerHTML.includes('Wednesday, September 24, 2025'), 'Selected date is the dialog title');
+  assert.ok(dateModal.overlay.innerHTML.includes('September 24, 2025'), 'Selected date is the dialog title');
+  assert.match(dateModal.overlay.innerHTML, /english-date-description">Wednesday\n/, 'English weekday starts the copied body description');
   assert.ok(dateModal.overlay.innerHTML.includes('ganzhi-table'), 'Ganzhi table is visible by default');
   assert.ok(dateModal.overlay.innerHTML.includes('Clash'), 'Ganzhi clash row is visible');
   assert.match(dateModal.overlay.innerHTML, /<td class="highlight-cell"><span title="[^"]*">Libra<\/span><\/td>/, 'Sun sign cell has highlight-cell class');

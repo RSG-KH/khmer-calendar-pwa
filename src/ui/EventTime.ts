@@ -75,7 +75,8 @@ export function getCustomEventTimeInfo(
 export function formatEventSubtitle(
   event: Pick<CalendarEvent, 'kind' | 'date' | 'time' | 'instant'>,
   khmer: boolean,
-  zone: TodayTimeZone
+  zone: TodayTimeZone,
+  includeTime: boolean = true
 ): string {
   const kindLabel = event.kind === 'HOLIDAY'
     ? `${L.text('ui.observance.5b9a87', khmer)} · ${L.text('ui.holiday.253332', khmer)}`
@@ -90,13 +91,18 @@ export function formatEventSubtitle(
   }
 
   if (event.kind !== 'CUSTOM') {
-    return `${kindLabel} · ${event.time}`;
+    return includeTime ? `${kindLabel} · ${event.time}` : kindLabel;
   }
 
   const info = getCustomEventTimeInfo(event, khmer, zone);
   if (info.isDifferentZone && info.activeZoneLabel) {
-    return `${kindLabel} · ${event.time} · ${info.activeZoneLabel}`;
+    return `${kindLabel}${includeTime ? ` · ${event.time}` : ''} · ${info.activeZoneLabel}`;
   }
 
-  return `${kindLabel} · ${event.time}`;
+  return includeTime ? `${kindLabel} · ${event.time}` : kindLabel;
+}
+
+export function eventTitleWithTime(event: Pick<CalendarEvent, 'titleKm' | 'titleEn' | 'time'>, khmer: boolean): string {
+  const title = khmer ? event.titleKm : event.titleEn;
+  return event.time ? `${event.time} ${title}` : title;
 }

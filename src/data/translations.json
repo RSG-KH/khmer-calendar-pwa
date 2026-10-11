@@ -1,4 +1,8 @@
 {
+  "ui.select_date": { "km": "ជ្រើសរើសកាលបរិច្ឆេទ", "en": "Select date" },
+  "ui.event_date": { "km": "កាលបរិច្ឆេទ", "en": "Date" },
+  "ui.month": { "km": "ខែ", "en": "Month" },
+  "ui.date_range_error": { "km": "សូមជ្រើសរើសកាលបរិច្ឆេទត្រឹមត្រូវក្នុងឆ្នាំ ១៨០០–២២០០។", "en": "Choose a valid date in 1800–2200." },
   "about.source_link": {
     "km": "Khmer Lunar Calendar ↗",
     "en": "Khmer Lunar Calendar ↗"
@@ -1380,7 +1384,7 @@
     "en": "Show lotus markers and holy days"
   },
   "ui.show_sundays_in_red_like_holidays.245681": {
-    "km": "បង្ហាញថ្ងៃអាទិត្យជាពណ៌ក្រហម",
+    "km": "បង្ហាញពណ៌ក្រហមដូចថ្ងៃឈប់សម្រាក",
     "en": "Show Sundays in red like holidays"
   },
   "ui.start_week_on_monday.5578c3": {

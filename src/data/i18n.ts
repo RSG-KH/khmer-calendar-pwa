@@ -65,6 +65,10 @@ export class CalendarWords {
     });
   }
 
+  static lunarCompact(day: number, waxing: boolean, khmer: boolean): string {
+    return khmer ? `${this.number(day, true)} ${waxing ? 'ក' : 'រ'}` : this.lunarShort(day, waxing, false);
+  }
+
   static lunarFull(day: number, waxing: boolean, month: number, khmer: boolean): string {
     return L.text('calendar.lunar_full', khmer, {
       short: this.lunarShort(day, waxing, khmer),

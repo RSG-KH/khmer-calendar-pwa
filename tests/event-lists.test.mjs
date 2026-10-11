@@ -6,7 +6,7 @@ import { createServer } from 'vite';
 const server = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom', optimizeDeps: { noDiscovery: true, include: [] } });
 after(() => server.close());
 const { compareCalendarEvents, EventRepository } = await server.ssrLoadModule('/src/data/EventRepository.ts');
-const { renderEventRows } = await server.ssrLoadModule('/src/ui/EventRows.ts');
+const { renderEventRows, timelineBoundary } = await server.ssrLoadModule('/src/ui/EventRows.ts');
 const storage = new Map();
 globalThis.localStorage = {
   getItem: key => storage.get(key) ?? null,
@@ -62,11 +62,12 @@ test('grouped rows label each date once, retain holiday coloring, and give every
   assert.equal((html.match(/class="event-day-group"/g) ?? []).length, 2);
   assert.equal((html.match(/class="event-row-daynum/g) ?? []).length, 2);
   assert.equal((html.match(/class="event-row-weekday"/g) ?? []).length, 2);
-  const buttons = html.match(/<button\b[\s\S]*?<\/button>/g);
+  const buttons = html.match(/<button[^>]*class="event-row-card[^>]*>[\s\S]*?<\/button>/g);
   assert.equal(buttons.length, 4);
-  assert.match(buttons[0], /class="event-row-daynum holiday">24</);
+  assert.match(html, /class="event-row-daynum holiday">24</);
+  assert.equal((html.match(/data-open-date=/g) ?? []).length, 2);
   for (const button of buttons.slice(1, 3)) {
-    assert.match(button, /class="event-row-date" aria-hidden="true"><\/div>/);
+    assert.doesNotMatch(button, /event-row-date|event-row-bar/);
     assert.match(button, /aria-label="[^"\n]*September[^"\n]*2026/);
   }
   const filtered = renderEventRows(events.filter(e => e.kind === 'OBSERVANCE'), false);
@@ -76,7 +77,7 @@ test('grouped rows label each date once, retain holiday coloring, and give every
 
 test('Khmer grouped rows retain localized dates and escape personal-event text and attributes', () => {
   const html = renderEventRows([event('A "title" <script> &', 'CUSTOM')], true);
-  assert.match(html, /class="event-row-daynum custom">២៤</);
+  assert.match(html, /class="event-row-daynum">២៤</);
   assert.match(html, /A &quot;title&quot; &lt;script&gt; &amp;/);
   assert.equal(html.includes('<script>'), false);
 });
@@ -88,7 +89,7 @@ test('holy-day rows use the bud on the eighth lunar day and blossom at the end o
     event('personal', 'CUSTOM', undefined, '2026-09-11'),
     event('observance', 'OBSERVANCE', undefined, '2026-09-11')
   ], false);
-  const buttons = html.match(/<button\b[\s\S]*?<\/button>/g);
+  const buttons = html.match(/<button[^>]*class="event-row-card[^>]*>[\s\S]*?<\/button>/g);
   assert.match(buttons[0], /holy-day-event-row/);
   assert.match(buttons[0], /assets\/drawables\/holy_day_lotus\.png/);
   assert.match(buttons[1], /holy-day-event-row/);
@@ -211,13 +212,13 @@ test('holiday subtitle is formatted as Observance · Holiday and Events tab filt
   assert.match(mainTs, /if\s*\(this\.eventsFilter === 2 && e\.kind !== 'OBSERVANCE' && e\.kind !== 'HOLIDAY'\)\s*return false;/);
 });
 
-test('personal event lists apply personal event color to big day number', async () => {
+test('timeline day numbers retain holiday precedence and otherwise use normal text', async () => {
   const customEvent = event('Meeting', 'CUSTOM');
   const holidayEvent = event('Holiday', 'HOLIDAY');
   const observanceEvent = event('Observance', 'OBSERVANCE');
 
   const customHtml = renderEventRows([customEvent], false);
-  assert.match(customHtml, /class="event-row-daynum custom">24</);
+  assert.match(customHtml, /class="event-row-daynum">24</);
 
   const holidayHtml = renderEventRows([holidayEvent], false);
   assert.match(holidayHtml, /class="event-row-daynum holiday">24</);
@@ -232,6 +233,28 @@ test('personal event lists apply personal event color to big day number', async 
 
   const componentsCss = await readFile(new URL('../src/styles/components.css', import.meta.url), 'utf8');
   assert.match(componentsCss, /\.event-row-daynum\.custom\s*\{\s*color:\s*#E53935;\s*\}/);
+});
+
+test('Today markers bracket visible Today or mark its gap only in the current month', () => {
+  const today = '2026-10-11';
+  assert.deepEqual(timelineBoundary('2026-10-10', today, today, true), { highlight: true, node: false });
+  assert.deepEqual(timelineBoundary('2026-10-10', '2026-10-12', today, false), { highlight: true, node: true });
+  assert.deepEqual(timelineBoundary('2026-09-10', '2026-09-12', today, false), { highlight: false, node: false });
+  assert.deepEqual(timelineBoundary('2026-10-10', undefined, today, false), { highlight: false, node: false });
+  const events = [event('before', 'CUSTOM', undefined, '2026-10-10'), event('after', 'CUSTOM', undefined, '2026-10-12')];
+  assert.match(renderEventRows(events, false, today), /event-day-divider highlighted has-today-node/);
+  assert.doesNotMatch(renderEventRows(events.slice(0, 1), false, today), /has-today-node/);
+});
+
+test('timed titles keep Latin time in both languages and category subtitles omit repeated time', async () => {
+  const { formatEventSubtitle } = await server.ssrLoadModule('/src/ui/EventTime.ts');
+  const timed = event('<Meeting>', 'CUSTOM', '09:00');
+  for (const khmer of [true, false]) {
+    const html = renderEventRows([timed], khmer, undefined, 'cambodia');
+    assert.match(html, /class="event-row-time">09:00<\/span><span>&lt;Meeting&gt;/);
+    assert.doesNotMatch(formatEventSubtitle(timed, khmer, 'cambodia', false), /09:00/);
+    assert.match(html, /aria-label="09:00 &lt;Meeting&gt;,/);
+  }
 });
 
 

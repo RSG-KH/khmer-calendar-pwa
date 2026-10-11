@@ -8,12 +8,15 @@ export function fitEventMonthHeadings(container: HTMLElement): () => void {
       const title = name.parentElement!;
       const date = title.parentElement!.querySelector<HTMLElement>('.event-row-date')!;
       const dateBounds = date.getBoundingClientRect();
+      const style = getComputedStyle(date);
+      const leftPadding = parseFloat(style.paddingLeft);
+      const width = dateBounds.width - leftPadding - parseFloat(style.paddingRight);
       const range = document.createRange();
       range.selectNodeContents(name);
       return {
-        name, width: dateBounds.width,
-        offset: dateBounds.left - title.getBoundingClientRect().left - parseFloat(getComputedStyle(title).paddingLeft),
-        fits: dateBounds.width > 0 && range.getBoundingClientRect().width <= dateBounds.width
+        name, width,
+        offset: dateBounds.left + leftPadding - title.getBoundingClientRect().left - parseFloat(getComputedStyle(title).paddingLeft),
+        fits: width > 0 && range.getBoundingClientRect().width <= width
       };
     });
     for (const { name, width, offset, fits } of measurements) {

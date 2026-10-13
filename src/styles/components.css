@@ -275,7 +275,7 @@
 .mark-shape.observance {
   width: 7px;
   height: 7px;
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--accent);
 }
 

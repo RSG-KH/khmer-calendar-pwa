@@ -1,10 +1,13 @@
 import { trackModalViewport } from './ModalViewport';
+import { initializeModalHistory } from './ModalHistory';
 
 const previousFocus = new WeakMap<HTMLElement, HTMLElement>();
 const viewportCleanup = new WeakMap<HTMLElement, () => void>();
+const closeHandlers = new WeakMap<HTMLElement, () => void>();
 const focusableSelector = 'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], summary, [tabindex="0"]';
 
 export function setupModal(overlay: HTMLElement, onClose: () => void) {
+  closeHandlers.set(overlay, onClose);
   overlay.setAttribute('role', 'dialog');
   overlay.setAttribute('aria-modal', 'true');
   overlay.tabIndex = -1;
@@ -34,6 +37,8 @@ export function showModal(overlay: HTMLElement, label: string) {
   document.getElementById('app')!.inert = true;
   // Focus the sheet, preserving its top and avoiding an unwanted mobile keyboard.
   overlay.focus({ preventScroll: true });
+  const onClose = closeHandlers.get(overlay);
+  if (onClose) initializeModalHistory()?.show(overlay, onClose);
 }
 
 export function hideModal(overlay: HTMLElement) {
@@ -44,6 +49,7 @@ export function hideModal(overlay: HTMLElement) {
   const previous = previousFocus.get(overlay);
   previousFocus.delete(overlay);
   if (!wasOpen) return;
+  initializeModalHistory()?.hide(overlay);
   const remaining = Array.from(document.querySelectorAll<HTMLElement>('.modal-overlay.open')).at(-1);
   if (remaining) {
     // Closing a child sheet returns keyboard navigation to its parent.

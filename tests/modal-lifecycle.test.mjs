@@ -98,3 +98,30 @@ test('a removed child trigger falls back to the still-open parent sheet', () => 
   assert.equal(f.doc.activeElement, f.parent);
   hideModal(f.parent);
 });
+
+test('browser Back uses the real modal dismissal callback and preserves parent focus', () => {
+  const f = fixture();
+  const states = [null];
+  f.host.history = {
+    state: null,
+    pushState(state) { this.state = state; states.push(state); },
+    go() { assert.fail('browser Back must not traverse history again'); }
+  };
+  let childDismissals = 0;
+  setupModal(f.child, () => { childDismissals++; hideModal(f.child); });
+  showModal(f.parent, 'Parent');
+  f.trigger.focus();
+  showModal(f.child, 'Child');
+  f.host.history.state = states[1];
+  f.host.dispatchEvent(Object.assign(new Event('popstate'), { state: states[1] }));
+  assert.equal(childDismissals, 1);
+  assert.equal(f.child.classList.contains('open'), false);
+  assert.equal(f.parent.classList.contains('open'), true);
+  assert.equal(f.doc.activeElement, f.trigger);
+  assert.equal(f.app.inert, true);
+  f.host.history.state = null;
+  f.host.dispatchEvent(Object.assign(new Event('popstate'), { state: null }));
+  assert.equal(f.app.inert, false);
+  assert.equal(f.doc.activeElement, f.opener);
+  assert.equal(f.viewport.count, 0);
+});

@@ -27,6 +27,7 @@ import { startTodayRefresh } from './ui/TodayRefresh';
 import { renderEventRows } from './ui/EventRows';
 import { fitEventMonthHeadings } from './ui/EventMonthHeadings';
 import { fitLunarLabels } from './ui/LunarLabels';
+import { initializeModalHistory } from './ui/ModalHistory';
 
 const updateReceiptKey = `khmer-calendar:update:${import.meta.env.BASE_URL}`;
 function consumeUpdateReceipt(): number | undefined {
@@ -75,6 +76,7 @@ class KhmerCalendarApp {
   private customEventModal: CustomEventModal;
 
   constructor() {
+    initializeModalHistory();
     document.documentElement.toggleAttribute('data-android', isAndroid());
     // Maintainer-certified row sizes use this to keep wide phone landscape at phone height.
     document.documentElement.toggleAttribute('data-phone', isPhone());

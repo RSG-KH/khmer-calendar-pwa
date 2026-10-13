@@ -87,10 +87,10 @@ svg { flex-shrink: 0; }
 .btn-today-pill { min-height: 44px; font-size: calc(14px * var(--font-scale)); }
 .calendar-month-card { border: 0; border-radius: var(--calendar-card-radius); box-shadow: none; padding: 14px 10px 10px; touch-action: pan-y pinch-zoom; }
 .weekdays-row { font-size: calc(12px * var(--font-scale)); padding-block: 2px 8px; }
-.weekdays-row > span { min-width: 0; white-space: nowrap; }
+.weekdays-row > span { min-width: 0; width: max-content; justify-self: center; white-space: nowrap; }
 :root[data-background-accent] { --nav-background: var(--bg-color); }
-:root { --weekday-0: #D02C3A; --weekday-1: #8A6800; --weekday-2: #9639AE; --weekday-3: #53752D; --weekday-4: #187543; --weekday-5: #2675A3; --weekday-6: #56328C; }
-[data-theme="dark"] { --weekday-0: #FF8088; --weekday-1: #EDD271; --weekday-2: #DFA1F0; --weekday-3: #B1DB72; --weekday-4: #69C591; --weekday-5: #8BC7F1; --weekday-6: #B29ACF; }
+:root { --weekday-0: #D41E31; --weekday-1: #916600; --weekday-2: #A026BA; --weekday-3: #487C16; --weekday-4: #08783D; --weekday-5: #0875AC; --weekday-6: #60279D; }
+[data-theme="dark"] { --weekday-0: #FF7380; --weekday-1: #F3D45D; --weekday-2: #E28EF5; --weekday-3: #ADE05A; --weekday-4: #54D18D; --weekday-5: #72C7FA; --weekday-6: #BA91E8; }
 [data-colored-weekdays] [data-weekday="0"] { color: var(--weekday-0); }
 [data-colored-weekdays] [data-weekday="1"] { color: var(--weekday-1); }
 [data-colored-weekdays] [data-weekday="2"] { color: var(--weekday-2); }
@@ -115,7 +115,7 @@ svg { flex-shrink: 0; }
 }
 .cell-lotus-img { width: 100%; height: 100%; }
 .card-watermark-zodiac { width: 90%; height: 90%; }
-.tinted-watermark { background: var(--accent); -webkit-mask: var(--watermark-image) center / contain no-repeat; mask: var(--watermark-image) center / contain no-repeat; }
+.tinted-watermark { background: var(--artwork-accent); -webkit-mask: var(--watermark-image) center / contain no-repeat; mask: var(--watermark-image) center / contain no-repeat; }
 /* Match Android's zodiacAlpha() in the calendar and detail dialogs. */
 :root :is(.card-watermark-zodiac, .dialog-watermark-animal, .dialog-watermark-western) { opacity: var(--zodiac-watermark-opacity); }
 .card-legend-row { flex-wrap: wrap; gap: 4px 14px; padding: 4px 0 2px 0; }
@@ -373,7 +373,7 @@ svg { flex-shrink: 0; }
 .event-title-row { display: flex; align-items: flex-start; gap: 6px; font-size: calc(18px * var(--font-scale)); font-weight: 600; color: var(--accent); line-height: 1.4; overflow-wrap: anywhere; }
 .event-detail-title { flex: 1; min-width: 0; color: var(--accent); }
 .event-detail-title.holiday { color: var(--tertiary); }
-.event-detail-title.custom { color: #E53935; }
+.event-detail-title.custom { color: var(--personal-event); }
 .full-lunar-date.english-date-description { font-size: calc(16px * var(--font-scale)); line-height: 1.75; padding-top: max(0px, calc((44px - 28px * var(--font-scale)) / 2)); }
 .dialog-event-title { display: flex; gap: 5px; }
 .event-detail-title { white-space: pre-wrap; user-select: text; -webkit-user-select: text; }
@@ -408,14 +408,14 @@ svg { flex-shrink: 0; }
 .dialog-event-kind.holiday { color: var(--tertiary); }
 .dialog-event-kind.holy_day { color: var(--secondary); }
 .dialog-event-kind.observance { color: var(--accent); }
-.dialog-event-kind.custom { color: #E53935; }
+.dialog-event-kind.custom { color: var(--personal-event); }
 .event-detail-time-block { display: flex; flex-direction: column; gap: 4px; }
-.event-detail-time { color: #E53935; font-size: calc(14px * var(--font-scale)); font-weight: 500; }
+.event-detail-time { color: var(--personal-event); font-size: calc(14px * var(--font-scale)); font-weight: 500; }
 .event-detail-category { font-weight: 600; color: var(--accent); }
 .event-detail-category.holiday { color: var(--tertiary); }
 .event-detail-category.holy_day { color: var(--secondary); }
 .event-detail-category.observance { color: var(--accent); }
-.event-detail-category.custom { color: #E53935; }
+.event-detail-category.custom { color: var(--personal-event); }
 .form-error { color: var(--tertiary); font-size: calc(13px * var(--font-scale)); line-height: 1.7; }
 .event-delete-confirmation { margin-top: 24px; }
 .event-delete-confirmation .form-error { font-size: calc(14px * var(--font-scale)); font-weight: 500; }

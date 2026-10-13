@@ -163,16 +163,16 @@
   height: 60%;
   opacity: 0.04;
   pointer-events: none;
-  fill: var(--accent);
+  fill: var(--artwork-accent);
 }
 
 .weekdays-row {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   text-align: center;
   padding-bottom: 8px;
   font-size: calc(11px * var(--font-scale));
-  font-weight: 500;
+  font-weight: 600;
   color: var(--on-surface-variant);
 }
 
@@ -221,12 +221,19 @@
   color: var(--text-primary);
 }
 
-.cal-cell.today .cell-day-num {
-  font-weight: 700;
+.cal-cell.is-holiday .cell-day-num {
+  font-weight: 600;
+  color: var(--tertiary);
 }
 
-.cal-cell.is-holiday .cell-day-num {
-  color: var(--tertiary);
+.cal-cell.today .cell-day-num {
+  font-weight: 700;
+  /* Kantumruy Pro ends at 700; a subtle stroke adds emphasis without resizing. */
+  -webkit-text-stroke: 0.012em currentColor;
+}
+
+.cal-cell.today .cell-lunar-label {
+  font-weight: 700;
 }
 
 .cell-lunar-label {
@@ -275,7 +282,7 @@
 .mark-shape.custom {
   width: 7px;
   height: 7px;
-  background: #E53935;
+  background: var(--personal-event);
   clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
   /* Match the solid markers visually without increasing the marker row height. */
   transform: scale(1.4);
@@ -341,7 +348,7 @@
   pointer-events: none;
 }
 .custom-event-row::before {
-  background: #E53935;
+  background: var(--personal-event);
   -webkit-mask: url('/assets/drawables/custom_event_star.png') right center / contain no-repeat;
   mask: url('/assets/drawables/custom_event_star.png') right center / contain no-repeat;
   opacity: var(--personal-star-opacity);
@@ -402,12 +409,12 @@
 .event-row-kind.holiday { color: var(--tertiary); }
 .event-row-kind.holy_day { color: var(--secondary); }
 .event-row-kind.observance { color: var(--accent); }
-.event-row-kind.custom { color: #E53935; }
+.event-row-kind.custom { color: var(--personal-event); }
 
 .dialog-event-kind.holiday { color: var(--tertiary); }
 .dialog-event-kind.holy_day { color: var(--secondary); }
 .dialog-event-kind.observance { color: var(--accent); }
-.dialog-event-kind.custom { color: #E53935; }
+.dialog-event-kind.custom { color: var(--personal-event); }
 
 .event-detail-title {
   color: var(--accent);
@@ -420,7 +427,7 @@
 }
 
 .event-detail-time {
-  color: #E53935;
+  color: var(--personal-event);
   font-size: calc(14px * var(--font-scale));
   font-weight: 500;
 }
@@ -432,7 +439,7 @@
 .event-detail-category.holiday { color: var(--tertiary); }
 .event-detail-category.holy_day { color: var(--secondary); }
 .event-detail-category.observance { color: var(--accent); }
-.event-detail-category.custom { color: #E53935; }
+.event-detail-category.custom { color: var(--personal-event); }
 
 
 .event-row-chevron {

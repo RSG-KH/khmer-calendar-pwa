@@ -480,7 +480,7 @@ export class EventDetailsDialogModal {
           ${timeInfo ? `
             <div class="event-detail-time-block" style="display: flex; flex-direction: column; gap: 4px;">
               ${timeInfo.rows.map(r => `
-                <div class="event-detail-time" style="color: #E53935; font-size: calc(14px * var(--font-scale)); font-weight: 500;">
+                <div class="event-detail-time" style="color: var(--personal-event); font-size: calc(14px * var(--font-scale)); font-weight: 500;">
                   ${escapeHtml(r.time)} · ${escapeHtml(r.label)}${r.dateSuffix ? ` · ${escapeHtml(r.dateSuffix)}` : ''}
                 </div>
               `).join('')}
